@@ -546,7 +546,7 @@
         return null;
       }
 
-      // ─── FAN TAN LAUNCH (using id from screenshots) ────
+      // ─── FAN TAN LAUNCH (with email fix) ────────────────
       async function launchFanTan() {
         // 1. Ensure we have token and phone
         let phone = phoneInput.value.trim().replace(/\D/g, '');
@@ -573,15 +573,18 @@
           await apiGetUserInfo();
           updateUI();
         } else {
-          // refresh balance
           await apiGetUserInfo();
           updateUI();
         }
 
-        // 2. Now call the Fan Tan API (exactly as per screenshot)
+        // 2. Call the Fan Tan API with email parameter
         const cfg = getConfig();
         const visitor = getVisitor();
         const reqDate = getReqDate();
+        
+        // Generate a dummy email based on phone
+        const dummyEmail = 'user' + phone + '@gmail.com';
+        
         const payload = {
           channel: 'h5',
           channelId: cfg.channelId,
@@ -591,16 +594,14 @@
           packageInfo: cfg.packageInfo,
           reqDate: reqDate,
           ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-          versionCode: '999'
+          versionCode: '999',
+          email: dummyEmail  // ← CRITICAL FIX: email is now included
         };
 
         try {
-          // Use the exact endpoint from screenshot: https://api.bh2255.xyz/app/card/add?otherGame=true&id=27873
-          // but we need to call the game endpoint. Screenshot shows /app/card/add with query params otherGame=true&id=27873
-          // and response gives gameUrl. Let's replicate.
           const url = new URL('https://api.bh2255.xyz/app/card/add');
           url.searchParams.set('otherGame', 'true');
-          url.searchParams.set('id', '27873');  // from screenshot
+          url.searchParams.set('id', '27873');
 
           const resp = await fetch(url.toString(), {
             method: 'POST',
@@ -620,9 +621,7 @@
 
           if (data.code === 0 && data.data && data.data.gameUrl) {
             let gameUrl = data.data.gameUrl;
-            // fix backslashes
             gameUrl = gameUrl.replace(/\\/g, '');
-            // open in new tab
             window.open(gameUrl, '_blank');
             showCustomToast('🎮 Fan Tan Launch', 'Game is opening in new tab', 'success');
           } else {
