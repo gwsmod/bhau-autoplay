@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>BHau Lotto · Open Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: #0a0e1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            background-image: 
+                radial-gradient(ellipse at 10% 20%, rgba(61, 90, 160, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(125, 255, 179, 0.08) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: linear-gradient(145deg, #111827, #0d1528);
+            border-radius: 40px;
+            padding: 28px 22px 32px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(125, 255, 179, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(125, 255, 179, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(61, 90, 160, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(61, 90, 160, 0.2), rgba(125, 255, 179, 0.1));
+            border: 1px solid rgba(125, 255, 179, 0.15);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 10px;
+            color: #7dffb3;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7dffb3 0%, #3d5aa0 50%, #7dffb3 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s ease-in-out infinite;
+            letter-spacing: -1px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header .sub {
+            color: #6a7a9a;
+            font-size: 13px;
+            margin-top: 4px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header .sub .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #3d5aa0;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(16, 24, 43, 0.8), rgba(10, 16, 30, 0.9));
+            border-radius: 24px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(125, 255, 179, 0.1), transparent);
+        }
+
+        .card-glow {
+            border-color: rgba(125, 255, 179, 0.08);
+            box-shadow: 0 0 30px rgba(125, 255, 179, 0.02);
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #7a8aaa;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 22, 41, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            color: #eef2f9;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: rgba(125, 255, 179, 0.3);
+            box-shadow: 0 0 20px rgba(125, 255, 179, 0.05);
+            background: rgba(15, 22, 41, 0.95);
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3d5aa0, #2a4a8a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(61, 90, 160, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(61, 90, 160, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #1f8b4c, #167a3e);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(31, 139, 76, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(31, 139, 76, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #b13e4b, #8a2e3a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(177, 62, 75, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(177, 62, 75, 0.4);
+        }
+
+        .btn-game {
+            background: linear-gradient(135deg, #d4a020, #b8841a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(212, 160, 32, 0.3);
+        }
+
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 160, 32, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #8a9aaa;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 12px;
+            width: auto;
+            border-radius: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .form-row .btn {
+            flex: 1;
+            padding: 14px 16px;
+        }
+
+        .form-row .btn-outline {
+            flex: 0.5;
+            min-width: 100px;
+        }
+
+        .quick-amounts {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+
+        .quick-amounts .btn-sm {
+            flex: 1;
+            min-width: 50px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #8a9aaa;
+            box-shadow: none;
+            padding: 8px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+
+        .quick-amounts .btn-sm:hover {
+            background: rgba(125, 255, 179, 0.05);
+            border-color: rgba(125, 255, 179, 0.15);
+            color: #7dffb3;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 400px;
+            width: 90%;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: rgba(20, 28, 50, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 16px 20px;
+            border-left: 4px solid #5a76b0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toast-item:hover {
+            transform: translateX(-4px);
+        }
+
+        .toast-item.error {
+            border-left-color: #ff4757;
+            background: rgba(40, 20, 30, 0.95);
+        }
+
+        .toast-item.success {
+            border-left-color: #2ed573;
+            background: rgba(20, 40, 30, 0.95);
+        }
+
+        .toast-item .toast-content {
+            flex: 1;
+        }
+
+        .toast-item .toast-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7a8aaa;
+            margin-bottom: 2px;
+        }
+
+        .toast-item .toast-msg {
+            font-size: 14px;
+            color: #eef2f9;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .toast-item .toast-msg .highlight {
+            color: #7dffb3;
+            font-weight: 700;
+        }
+
+        .toast-item .toast-close {
+            background: rgba(255, 255, 255, 0.03);
+            border: none;
+            color: #6a7a9a;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-top: -4px;
+        }
+
+        .toast-item .toast-close:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #eef2f9;
+        }
+
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(60px) scale(0.95); }
+            100% { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        @keyframes slideOutRight {
+            0% { opacity: 1; transform: translateX(0) scale(1); }
+            100% { opacity: 0; transform: translateX(60px) scale(0.95); }
+        }
+
+        .toast-item.hiding {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-item {
+            background: rgba(12, 20, 39, 0.6);
+            padding: 14px 18px;
+            border-radius: 16px;
+            border-left: 3px solid #3d5aa0;
+            transition: all 0.3s ease;
+        }
+
+        .info-item .label {
+            font-size: 10px;
+            color: #6a7a9a;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 6px;
+            color: #eef2f9;
+        }
+
+        .info-item .value.balance {
+            color: #7dffb3;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .info-item .value.balance .currency {
+            font-size: 18px;
+            color: #6a7a9a;
+            font-weight: 600;
+        }
+
+        .info-item.balance-item {
+            border-left-color: #7dffb3;
+            background: rgba(125, 255, 179, 0.03);
+        }
+
+        .bank-card {
+            background: linear-gradient(135deg, rgba(12, 20, 39, 0.8), rgba(8, 14, 28, 0.9));
+            padding: 14px 18px;
+            border-radius: 16px;
+            border-left: 3px solid #ffd700;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .bank-card:hover {
+            transform: translateX(4px);
+            border-left-color: #ffed4a;
+        }
+
+        .bank-card .bank-name {
+            font-weight: 700;
+            color: #ffd700;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bank-card .details {
+            font-size: 14px;
+            color: #b0c0da;
+            margin-top: 4px;
+        }
+
+        .bank-card .card-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .withdraw-section {
+            background: rgba(15, 26, 42, 0.6);
+            border-radius: 16px;
+            padding: 14px;
+            margin-top: 8px;
+            border: 1px solid rgba(212, 160, 32, 0.08);
+        }
+
+        .withdraw-section .withdraw-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .withdraw-section .withdraw-header .title {
+            font-weight: 700;
+            color: #d4a020;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .selected-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #8a9aaa;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .selected-card strong {
+            color: #ffd700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.online {
+            background: rgba(125, 255, 179, 0.08);
+            color: #7dffb3;
+            border: 1px solid rgba(125, 255, 179, 0.1);
+        }
+
+        .status-badge .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #7dffb3;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .phone-display {
+            font-size: 18px;
+            font-weight: 700;
+            color: #eef2f9;
+            letter-spacing: -0.3px;
+        }
+
+        .last-updated {
+            font-size: 10px;
+            color: #4a5a7a;
+            margin-top: 4px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #2a3a5a;
+            margin-top: 18px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .footer span {
+            color: #3d5aa0;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(42, 58, 90, 0.3);
+            border-top: 3px solid #7dffb3;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .game-launch-btn {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #0a0e1a;
+            font-weight: 800;
+            font-size: 18px;
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(247, 151, 30, 0.4);
+            border: none;
+            width: 100%;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .game-launch-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(247, 151, 30, 0.6);
+        }
+
+        .game-launch-btn:active {
+            transform: scale(0.97);
+        }
+
+        .game-launch-btn i {
+            font-size: 22px;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px 16px 24px; }
+            .header h1 { font-size: 28px; }
+            .info-item .value.balance { font-size: 24px; }
+            .form-row { flex-direction: column; }
+            .form-row .btn-outline { flex: 1; min-width: auto; }
+            .toast-container { right: 10px; left: 10px; width: auto; top: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div class="container" id="app">
+        <div class="header">
+            <div class="header-badge">✦ Premium Dashboard</div>
+            <h1>🎯 BHAU LOTTO</h1>
+            <div class="sub">
+                <span class="dot"></span>
+                <span>Secure · Instant</span>
+                <span class="dot"></span>
+            </div>
+        </div>
+
+        <!-- LOGIN SECTION -->
+        <div id="loginSection">
+            <div class="card">
+                <div class="input-group">
+                    <label>📱 Phone Number</label>
+                    <input type="tel" id="phoneInput" placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric" />
+                </div>
+                <button class="btn btn-primary btn-full" id="loginBtn">🔑 Login to Dashboard</button>
+                <div id="loginStatus" class="toast hidden"></div>
+            </div>
+        </div>
+
+        <!-- USER INFO SECTION -->
+        <div id="userInfoSection" class="hidden">
+            <div class="card card-glow">
+                <!-- Status Bar -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <span class="status-badge online">
+                        <span class="status-dot"></span> Online
+                    </span>
+                    <span class="phone-display" id="userPhoneDisplay">📱 +91</span>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="info-grid">
+                    <div class="info-item balance-item">
+                        <div class="label">
+                            <span>💰 Wallet Balance</span>
+                            <button class="btn-sm" id="refreshBalanceBtn" style="background:rgba(42,58,90,0.3);border:1px solid rgba(255,255,255,0.04);color:#8a9aaa;padding:4px 14px;border-radius:40px;font-size:10px;font-weight:600;cursor:pointer;">⟳ Refresh</button>
+                        </div>
+                        <div class="value balance" id="balanceDisplay">
+                            <span class="currency">₹</span> —
+                        </div>
+                        <div class="last-updated" id="lastUpdated">Last updated: —</div>
+                    </div>
+                </div>
+
+                <!-- OPEN GAME BUTTON (akta open game) -->
+                <button class="game-launch-btn" id="openGameBtn">
+                    🎮 OPEN GAME · PLAY NOW
+                </button>
+                <div style="font-size:11px;color:#4a5a7a;text-align:center;margin-top:6px;">⚡ one‑tap access · auto‑login</div>
+
+                <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.04);padding-top:16px;">
+                    <button class="btn btn-outline btn-full" id="logoutBtn" style="margin-top:4px;">🚪 Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">BHau Lotto Premium • <span>by Sanju</span></div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── STATE ──────────────────────────────────────────
+            const state = {
+                token: null,
+                phone: null,
+                userData: null,
+                balance: null,
+                isLoggedIn: false,
+                lastUpdate: null
+            };
+
+            // ─── DOM Refs ──────────────────────────────────────
+            const $ = id => document.getElementById(id);
+            const loginSection = $('loginSection');
+            const userInfoSection = $('userInfoSection');
+            const phoneInput = $('phoneInput');
+            const loginBtn = $('loginBtn');
+            const logoutBtn = $('logoutBtn');
+            const userPhoneDisplay = $('userPhoneDisplay');
+            const balanceDisplay = $('balanceDisplay');
+            const lastUpdated = $('lastUpdated');
+            const refreshBalanceBtn = $('refreshBalanceBtn');
+            const openGameBtn = $('openGameBtn');
+            const toastContainer = $('toastContainer');
+
+            // ─── TOAST ──────────────────────────────────────────
+            function showCustomToast(title, message, type, duration) {
+                const types = {
+                    error: { icon: '❌', className: 'error' },
+                    success: { icon: '✅', className: 'success' },
+                    warning: { icon: '⚠️', className: 'warning' },
+                    info: { icon: 'ℹ️', className: 'info' }
+                };
+                const config = types[type] || types.info;
+                const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+                const toast = document.createElement('div');
+                toast.className = `toast-item ${config.className}`;
+                toast.id = toastId;
+                const time = new Date().toLocaleTimeString();
+                toast.innerHTML = `
+                    <div class="toast-icon">${config.icon}</div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-msg">${message}</div>
+                        <div class="toast-time" style="font-size:10px;color:#4a5a7a;margin-top:4px;">${time}</div>
+                    </div>
+                    <button class="toast-close" onclick="document.getElementById('${toastId}').classList.add('hiding'); setTimeout(() => document.getElementById('${toastId}').remove(), 300)">✕</button>
+                `;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    const el = document.getElementById(toastId);
+                    if (el) { el.classList.add('hiding'); setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }
+                }, duration || 8000);
+                return toastId;
+            }
+
+            // ─── CONFIG ─────────────────────────────────────────
+            function getConfig() {
+                return {
+                    base: 'https://api.bh2255.xyz',
+                    pay: 'https://api.bh556677ww.com',
+                    card: 'https://api.bh2266.xyz',
+                    packageId: 2,
+                    packageInfo: 'com.resulta.checka',
+                    channelId: 'Samsung',
+                    origin: 'https://playbhau.com',
+                    referer: 'https://playbhau.com/'
+                };
+            }
+
+            function getDeviceId() {
+                let id = localStorage.getItem('bhau_device_id');
+                if (!id) {
+                    id = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
+                    localStorage.setItem('bhau_device_id', id);
+                }
+                return id;
+            }
+
+            function getVisitor() {
+                return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
+            }
+
+            function getReqDate() { return Date.now(); }
+
+            // ─── API LOGIN ──────────────────────────────────────
+            async function apiLogin(phone, password) {
+                password = password || 'Sanju2005';
+                const cfg = getConfig();
+                const deviceId = getDeviceId();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const payload = {
+                    userPhone: phone,
+                    password: password,
+                    deviceCode: deviceId,
+                    distinctId: deviceId,
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    platform: 'h5',
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    versionCode: '999',
+                    deviceBrand: 'Android',
+                    deviceModel: 'Unknown',
+                    visitor: visitor,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+                };
+
+                try {
+                    const resp = await fetch(cfg.base + '/app/password/login', {
+                        method: 'POST',
+                        headers: {
+                            'accept': 'application/json, text/plain, */*',
+                            'content-type': 'application/json',
+                            'origin': cfg.origin,
+                            'referer': cfg.referer,
+                            'x-device-id': deviceId,
+                            'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await resp.json();
+                    console.log('Login Response:', data);
+
+                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
+                        let token = null;
+                        let userData = null;
+
+                        if (typeof data.data === 'string' && data.data.startsWith('eyJ')) {
+                            token = data.data;
+                        } else if (typeof data.data === 'object' && data.data !== null) {
+                            userData = data.data;
+                            if (data.data.accessToken) token = data.data.accessToken;
+                            else if (data.data.token) token = data.data.token;
+                        } else if (data.accessToken) token = data.accessToken;
+                        else if (data.token) token = data.token;
+
+                        if (token) {
+                            state.token = token;
+                            state.phone = phone;
+                            state.isLoggedIn = true;
+                            if (userData) state.userData = userData;
+                            else if (typeof data.data === 'string') {
+                                try {
+                                    const parts = token.split('.');
+                                    if (parts.length === 3) {
+                                        const payload = JSON.parse(atob(parts[1]));
+                                        state.userData = payload;
+                                    }
+                                } catch (e) {}
+                            }
+                            localStorage.setItem('bhau_token', token);
+                            localStorage.setItem('bhau_phone', phone);
+                            localStorage.setItem('bhau_logged_in', 'true');
+                            return { success: true, token: token };
+                        } else {
+                            return { success: false, msg: 'Token not found' };
+                        }
+                    } else {
+                        const errorMsg = data.msg || data.message || 'Login failed';
+                        return { success: false, msg: errorMsg };
+                    }
+                } catch (e) {
+                    console.error('Login error:', e);
+                    return { success: false, msg: e.message || 'Network error' };
+                }
+            }
+
+            // ─── API USER INFO ──────────────────────────────────
+            async function apiGetUserInfo() {
+                if (!state.token) return null;
+                const cfg = getConfig();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const payload = {
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    visitor: visitor,
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+                    versionCode: '999'
+                };
+
+                try {
+                    const resp = await fetch(cfg.base + '/app/user/info', {
+                        method: 'POST',
+                        headers: {
+                            'accept': 'application/json',
+                            'content-type': 'application/json',
+                            'token': state.token,
+                            'origin': cfg.origin,
+                            'referer': cfg.referer
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (resp.status === 200) {
+                        const data = await resp.json();
+                        if (data.code === 0 && data.data) {
+                            const ud = data.data;
+                            state.userData = ud;
+                            if (ud.userBalance !== undefined && ud.userBalance !== null) {
+                                state.balance = parseFloat(ud.userBalance);
+                            } else if (ud.totalBalance !== undefined && ud.totalBalance !== null) {
+                                state.balance = parseFloat(ud.totalBalance);
+                            }
+                            state.lastUpdate = new Date();
+                            return data.data;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error fetching user info:', e);
+                }
+                return null;
+            }
+
+            // ─── UI UPDATE ──────────────────────────────────────
+            function formatNumber(num) {
+                if (num === null || num === undefined) return '—';
+                return parseFloat(num).toFixed(2);
+            }
+
+            function updateUI() {
+                if (!state.isLoggedIn || !state.token) {
+                    loginSection.classList.remove('hidden');
+                    userInfoSection.classList.add('hidden');
+                    return;
+                }
+
+                loginSection.classList.add('hidden');
+                userInfoSection.classList.remove('hidden');
+
+                userPhoneDisplay.textContent = '📱 +91 ' + state.phone;
+
+                if (state.balance !== null && state.balance !== undefined) {
+                    balanceDisplay.innerHTML = `<span class="currency">₹</span> ${formatNumber(state.balance)}`;
+                } else {
+                    balanceDisplay.innerHTML = '<span class="loading-spinner"></span>';
+                }
+
+                if (state.lastUpdate) {
+                    lastUpdated.textContent = 'Last updated: ' + state.lastUpdate.toLocaleTimeString();
+                } else {
+                    lastUpdated.textContent = 'Last updated: —';
+                }
+            }
+
+            async function loadAllData() {
+                if (!state.isLoggedIn || !state.token) return;
+                await apiGetUserInfo();
+                updateUI();
+            }
+
+            async function refreshBalance() {
+                if (!state.isLoggedIn || !state.token) return;
+                await apiGetUserInfo();
+                updateUI();
+                showCustomToast('💰 Balance Updated', `Current balance: <span class="highlight">₹${formatNumber(state.balance)}</span>`, 'success');
+            }
+
+            // ─── HANDLERS ──────────────────────────────────────
+
+            // LOGIN
+            async function handleLogin() {
+                const phone = phoneInput.value.trim().replace(/\D/g, '');
+                if (phone.length !== 10) {
+                    showCustomToast('❌ Invalid Phone', 'Please enter a valid 10-digit phone number!', 'error');
+                    return;
+                }
+                loginBtn.textContent = '⏳ Logging in...';
+                loginBtn.disabled = true;
+                const result = await apiLogin(phone);
+                loginBtn.textContent = '🔑 Login to Dashboard';
+                loginBtn.disabled = false;
+                if (result.success) {
+                    await loadAllData();
+                    showCustomToast('🎉 Login Successful', `Welcome back, <span class="highlight">${phone}</span>!`, 'success');
+                } else {
+                    showCustomToast('❌ Login Failed', result.msg || 'Invalid credentials', 'error');
+                }
+            }
+
+            // LOGOUT
+            function handleLogout() {
+                state.token = null;
+                state.phone = null;
+                state.userData = null;
+                state.balance = null;
+                state.isLoggedIn = false;
+                state.lastUpdate = null;
+                localStorage.removeItem('bhau_token');
+                localStorage.removeItem('bhau_phone');
+                localStorage.removeItem('bhau_logged_in');
+                updateUI();
+                phoneInput.value = '';
+                showCustomToast('👋 Logged Out', 'You have been successfully logged out.', 'info');
+            }
+
+            // ─── OPEN GAME (akta open game) ─────────────────────
+            function openGame() {
+                // if not logged in, auto-login with the phone from input (or saved)
+                const phone = phoneInput.value.trim().replace(/\D/g, '');
+                if (phone.length === 10) {
+                    // auto login first, then open game
+                    loginBtn.textContent = '⏳ Auto-login...';
+                    loginBtn.disabled = true;
+                    apiLogin(phone).then(result => {
+                        loginBtn.textContent = '🔑 Login to Dashboard';
+                        loginBtn.disabled = false;
+                        if (result.success) {
+                            loadAllData().then(() => {
+                                // open game website (playbhau.com) fast
+                                window.open('https://playbhau.com/index/home', '_blank');
+                            });
+                        } else {
+                            showCustomToast('❌ Auto-login failed', result.msg || 'Please login manually', 'error');
+                        }
+                    });
+                } else {
+                    // if no phone, try to use saved session
+                    const savedPhone = localStorage.getItem('bhau_phone');
+                    if (savedPhone && savedPhone.length === 10) {
+                        phoneInput.value = savedPhone;
+                        loginBtn.textContent = '⏳ Auto-login...';
+                        loginBtn.disabled = true;
+                        apiLogin(savedPhone).then(result => {
+                            loginBtn.textContent = '🔑 Login to Dashboard';
+                            loginBtn.disabled = false;
+                            if (result.success) {
+                                loadAllData().then(() => {
+                                    window.open('https://playbhau.com/index/home', '_blank');
+                                });
+                            } else {
+                                showCustomToast('❌ Auto-login failed', 'Please login manually', 'error');
+                            }
+                        });
+                    } else {
+                        showCustomToast('📱 Phone Required', 'Enter a 10-digit phone number first', 'warning');
+                        phoneInput.focus();
+                    }
+                }
+            }
+
+            // ─── RESTORE SESSION ──────────────────────────────
+            function restoreSession() {
+                const savedToken = localStorage.getItem('bhau_token');
+                const savedPhone = localStorage.getItem('bhau_phone');
+                const savedLoggedIn = localStorage.getItem('bhau_logged_in');
+
+                if (savedToken && savedPhone && savedLoggedIn === 'true') {
+                    state.token = savedToken;
+                    state.phone = savedPhone;
+                    state.isLoggedIn = true;
+                    phoneInput.value = savedPhone;
+                    loadAllData().then(() => {
+                        showCustomToast('🔄 Session Restored', `Welcome back, <span class="highlight">${savedPhone}</span>!`, 'info');
+                    });
+                    return true;
+                }
+                return false;
+            }
+
+            // ─── INIT ──────────────────────────────────────────
+            function init() {
+                loginBtn.addEventListener('click', handleLogin);
+                logoutBtn.addEventListener('click', handleLogout);
+                refreshBalanceBtn.addEventListener('click', refreshBalance);
+                openGameBtn.addEventListener('click', openGame);
+
+                phoneInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') handleLogin();
+                });
+
+                restoreSession();
+                updateUI();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+</html>
