@@ -311,6 +311,26 @@
       font-weight: 500;
     }
     
+    .session-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(125,255,179,0.05);
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #7dffb3;
+    }
+    .session-status .dot-green {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #2ed573;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    
     @media (max-width: 480px) {
       .container { padding: 20px 16px 24px; }
       .header h1 { font-size: 28px; }
@@ -364,11 +384,18 @@
           </div>
         </div>
 
+        <!-- Session Status -->
+        <div class="session-status" id="sessionStatus">
+          <span class="dot-green"></span>
+          <span>Session Active · Token: <span id="tokenPreview" style="font-family:monospace;font-size:11px;">—</span></span>
+        </div>
+
         <!-- Game Info Display -->
         <div id="gameInfoSection" class="game-info hidden">
           <div style="color:#ffd200;font-weight:700;font-size:14px;margin-bottom:6px;">🎮 Game Session Ready</div>
           <div class="row"><span>Game</span><span class="val" id="gameNameDisplay">—</span></div>
-          <div class="row"><span>Status</span><span class="val" style="color:#7dffb3;">● Ready</span></div>
+          <div class="row"><span>iframe</span><span class="val" id="iframeDisplay">—</span></div>
+          <div class="row"><span>Status</span><span class="val" style="color:#7dffb3;">● Ready to Play</span></div>
         </div>
 
         <!-- OPEN GAME BUTTON -->
@@ -415,11 +442,14 @@
       const balanceDisplay = $('balanceDisplay');
       const playerIdDisplay = $('playerIdDisplay');
       const gameNameDisplay = $('gameNameDisplay');
+      const iframeDisplay = $('iframeDisplay');
       const gameInfoSection = $('gameInfoSection');
       const lastUpdated = $('lastUpdated');
       const refreshBalanceBtn = $('refreshBalanceBtn');
       const openGameBtn = $('openGameBtn');
       const toastContainer = $('toastContainer');
+      const tokenPreview = $('tokenPreview');
+      const sessionStatus = $('sessionStatus');
 
       // ─── TOAST ──────────────────────────────────────────
       function showCustomToast(title, message, type, duration) {
@@ -548,7 +578,7 @@
               
               if (userData) {
                 state.userId = userData.userId || userData.id || userData.uid || userData.imUserId || null;
-                state.playerId = userData.playerId || userData.player_id || null;
+                state.playerId = userData.playerId || userData.player_id || userData.imUserId || null;
                 state.balance = userData.userBalance || userData.totalBalance || userData.balance || null;
                 if (state.balance) state.balance = parseFloat(state.balance);
               }
@@ -558,6 +588,9 @@
               localStorage.setItem('bhau_logged_in', 'true');
               if (state.userId) localStorage.setItem('bhau_user_id', state.userId);
               if (state.playerId) localStorage.setItem('bhau_player_id', state.playerId);
+              
+              // Show token preview
+              tokenPreview.textContent = token.substring(0, 20) + '...';
               
               return { success: true, token, userData };
             }
@@ -662,6 +695,14 @@
           if (data.code === 0 && data.data) {
             state.gameData = data.data;
             state.gameUrl = data.data.gameUrl ? data.data.gameUrl.replace(/\\/g, '') : null;
+            
+            // Show game info
+            gameInfoSection.classList.remove('hidden');
+            if (data.data.gameName) {
+              gameNameDisplay.textContent = data.data.gameName;
+            }
+            iframeDisplay.textContent = data.data.iframe !== undefined ? String(data.data.iframe) : '—';
+            
             return data.data;
           } else {
             return { error: data.msg || 'Failed to get game' };
@@ -686,58 +727,66 @@
           return;
         }
         
-        // STEP 1: Login if needed
-        if (!state.isLoggedIn || !state.token) {
-          loginBtn.textContent = '⏳ Logging in...';
-          loginBtn.disabled = true;
-          showCustomToast('🔐 Logging in', 'Please wait...', 'info', 3000);
-          const result = await apiLogin(phone);
-          loginBtn.textContent = '🔑 Login to Dashboard';
-          loginBtn.disabled = false;
-          if (!result.success) {
-            showCustomToast('❌ Login failed', result.msg || 'Please login manually', 'error');
+        try {
+          // STEP 1: Login if needed
+          if (!state.isLoggedIn || !state.token) {
+            loginBtn.textContent = '⏳ Logging in...';
+            loginBtn.disabled = true;
+            showCustomToast('🔐 Step 1/3', 'Logging in...', 'info', 3000);
+            const result = await apiLogin(phone);
+            loginBtn.textContent = '🔑 Login to Dashboard';
+            loginBtn.disabled = false;
+            if (!result.success) {
+              showCustomToast('❌ Login failed', result.msg || 'Please login manually', 'error');
+              return;
+            }
+            showCustomToast('✅ Login Successful', `Token & User ID received`, 'success');
+          }
+          
+          // STEP 2: Get Balance
+          showCustomToast('💰 Step 2/3', 'Fetching wallet balance...', 'info', 3000);
+          await apiGetBalance();
+          updateUI();
+          const balText = state.balance !== null ? `₹${state.balance.toFixed(2)}` : '—';
+          showCustomToast('💰 Balance Loaded', `Wallet: ${balText}`, 'success', 3000);
+          
+          // STEP 3: Get Game URL
+          showCustomToast('🎮 Step 3/3', 'Fetching Fan Tan game session...', 'info', 5000);
+          const gameResult = await apiGetGame();
+          
+          if (gameResult && gameResult.error) {
+            showCustomToast('❌ Game Error', gameResult.error, 'error');
             return;
           }
-          showCustomToast('✅ Login Successful', `Logged in as ${phone}`, 'success');
-        }
-        
-        // STEP 2: Get Balance
-        showCustomToast('💰 Getting Balance', 'Fetching your wallet...', 'info', 3000);
-        await apiGetBalance();
-        updateUI();
-        
-        // STEP 3: Get Game URL
-        showCustomToast('🎮 Loading Game', 'Fetching Fan Tan session...', 'info', 5000);
-        const gameResult = await apiGetGame();
-        
-        if (gameResult && gameResult.error) {
-          showCustomToast('❌ Game Error', gameResult.error, 'error');
-          return;
-        }
-        
-        if (state.gameUrl) {
-          // Show game info
-          gameInfoSection.classList.remove('hidden');
-          if (gameResult.gameName) {
-            gameNameDisplay.textContent = gameResult.gameName;
+          
+          if (state.gameUrl) {
+            const playerText = state.playerId || state.userId || '—';
+            
+            showCustomToast(
+              '🎮 Fan Tan Ready', 
+              `Player: ${playerText} | Balance: ${balText}`,
+              'success',
+              6000
+            );
+            
+            // STEP 4: Open Game in new tab
+            console.log('🚀 Opening game URL:', state.gameUrl);
+            console.log('📋 Session Data:', {
+              token: state.token.substring(0, 30) + '...',
+              playerId: state.playerId,
+              userId: state.userId,
+              balance: state.balance
+            });
+            
+            // Open the game
+            window.open(state.gameUrl, '_blank');
+            
+          } else {
+            showCustomToast('❌ Game Error', 'No game URL received from server', 'error');
           }
-          
-          const balanceText = state.balance !== null ? `₹${state.balance.toFixed(2)}` : '—';
-          const playerText = state.playerId || state.userId || '—';
-          
-          showCustomToast(
-            '🎮 Fan Tan Ready', 
-            `Player: ${playerText} | Balance: ${balanceText}`,
-            'success',
-            6000
-          );
-          
-          // STEP 4: Open Game in new tab
-          console.log('🚀 Opening game URL:', state.gameUrl);
-          window.open(state.gameUrl, '_blank');
-          
-        } else {
-          showCustomToast('❌ Game Error', 'No game URL received', 'error');
+        } catch (e) {
+          console.error('Launch error:', e);
+          showCustomToast('❌ Error', e.message || 'Something went wrong', 'error');
         }
       }
 
@@ -768,6 +817,11 @@
         // Show Player ID
         const displayId = state.playerId || state.userId || '—';
         playerIdDisplay.textContent = displayId;
+        
+        // Show token preview
+        if (state.token) {
+          tokenPreview.textContent = state.token.substring(0, 20) + '...';
+        }
         
         if (state.lastUpdate) {
           lastUpdated.textContent = 'Last updated: ' + state.lastUpdate.toLocaleTimeString();
@@ -800,7 +854,8 @@
           await apiGetBalance();
           updateUI();
           const balText = state.balance !== null ? ` Balance: ₹${formatNumber(state.balance)}` : '';
-          showCustomToast('🎉 Login Successful', `Welcome, <span class="highlight">${phone}</span>!${balText}`, 'success');
+          const idText = state.playerId ? ` Player: ${state.playerId}` : '';
+          showCustomToast('🎉 Login Successful', `Welcome, <span class="highlight">${phone}</span>!${balText}${idText}`, 'success');
         } else {
           showCustomToast('❌ Login Failed', result.msg || 'Invalid credentials', 'error');
         }
@@ -842,6 +897,9 @@
           if (savedUserId) state.userId = savedUserId;
           if (savedPlayerId) state.playerId = savedPlayerId;
           phoneInput.value = savedPhone;
+          
+          // Show token preview
+          tokenPreview.textContent = savedToken.substring(0, 20) + '...';
           
           apiGetBalance().then(() => {
             updateUI();
