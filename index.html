@@ -291,6 +291,26 @@
     @keyframes slideInRight { 0% { opacity: 0; transform: translateX(60px) scale(0.95); } 100% { opacity: 1; transform: translateX(0) scale(1); } }
     @keyframes slideOutRight { 0% { opacity: 1; transform: translateX(0) scale(1); } 100% { opacity: 0; transform: translateX(60px) scale(0.95); } }
     .toast-item.hiding { animation: slideOutRight 0.3s ease forwards; }
+    
+    .game-info {
+      background: rgba(15,26,42,0.6);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      border: 1px solid rgba(125,255,179,0.06);
+    }
+    .game-info .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      color: #8a9aaa;
+    }
+    .game-info .row .val {
+      color: #eef2f9;
+      font-weight: 500;
+    }
+    
     @media (max-width: 480px) {
       .container { padding: 20px 16px 24px; }
       .header h1 { font-size: 28px; }
@@ -337,13 +357,25 @@
             <div class="value balance" id="balanceDisplay"><span class="currency">₹</span> —</div>
             <div class="last-updated" id="lastUpdated">Last updated: —</div>
           </div>
+          
+          <div class="info-item">
+            <div class="label">🆔 Player ID</div>
+            <div class="value" id="playerIdDisplay">—</div>
+          </div>
         </div>
 
-        <!-- OPEN GAME BUTTON -> FAN TAN -->
+        <!-- Game Info Display -->
+        <div id="gameInfoSection" class="game-info hidden">
+          <div style="color:#ffd200;font-weight:700;font-size:14px;margin-bottom:6px;">🎮 Game Session Ready</div>
+          <div class="row"><span>Game</span><span class="val" id="gameNameDisplay">—</span></div>
+          <div class="row"><span>Status</span><span class="val" style="color:#7dffb3;">● Ready</span></div>
+        </div>
+
+        <!-- OPEN GAME BUTTON -->
         <button class="btn btn-game" id="openGameBtn">
           🎮 OPEN FAN TAN · PLAY NOW
         </button>
-        <div style="font-size:11px;color:#4a5a7a;text-align:center;margin-top:6px;">⚡ auto‑login · opens Fan Tan</div>
+        <div style="font-size:11px;color:#4a5a7a;text-align:center;margin-top:6px;">⚡ Uses your login session &amp; balance</div>
 
         <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.04);padding-top:16px;">
           <button class="btn btn-outline btn-full" id="logoutBtn">🚪 Logout</button>
@@ -363,8 +395,13 @@
         token: null,
         phone: null,
         balance: null,
+        userId: null,
+        playerId: null,
+        userData: null,
         isLoggedIn: false,
-        lastUpdate: null
+        lastUpdate: null,
+        gameData: null,
+        gameUrl: null
       };
 
       // ─── DOM ──────────────────────────────────────────────
@@ -376,6 +413,9 @@
       const logoutBtn = $('logoutBtn');
       const userPhoneDisplay = $('userPhoneDisplay');
       const balanceDisplay = $('balanceDisplay');
+      const playerIdDisplay = $('playerIdDisplay');
+      const gameNameDisplay = $('gameNameDisplay');
+      const gameInfoSection = $('gameInfoSection');
       const lastUpdated = $('lastUpdated');
       const refreshBalanceBtn = $('refreshBalanceBtn');
       const openGameBtn = $('openGameBtn');
@@ -439,7 +479,7 @@
 
       function getReqDate() { return Date.now(); }
 
-      // ─── API LOGIN ──────────────────────────────────────
+      // ─── STEP 1: API LOGIN ──────────────────────────────
       async function apiLogin(phone, password) {
         password = password || 'Sanju2005';
         const cfg = getConfig();
@@ -479,22 +519,47 @@
             body: JSON.stringify(payload)
           });
           const data = await resp.json();
+          console.log('🔐 Login Response:', data);
+          
           if (resp.status === 200 && (data.code === 0 || data.success === true)) {
             let token = null;
+            let userData = null;
+            
             if (typeof data.data === 'string' && data.data.startsWith('eyJ')) {
               token = data.data;
-            } else if (data.data && data.data.accessToken) token = data.data.accessToken;
-            else if (data.data && data.data.token) token = data.data.token;
-            else if (data.accessToken) token = data.accessToken;
+              try {
+                const parts = token.split('.');
+                if (parts.length === 3) {
+                  userData = JSON.parse(atob(parts[1]));
+                }
+              } catch (e) {}
+            } else if (data.data && typeof data.data === 'object') {
+              userData = data.data;
+              if (data.data.accessToken) token = data.data.accessToken;
+              else if (data.data.token) token = data.data.token;
+            } else if (data.accessToken) token = data.accessToken;
             else if (data.token) token = data.token;
+            
             if (token) {
               state.token = token;
               state.phone = phone;
+              state.userData = userData;
               state.isLoggedIn = true;
+              
+              if (userData) {
+                state.userId = userData.userId || userData.id || userData.uid || userData.imUserId || null;
+                state.playerId = userData.playerId || userData.player_id || null;
+                state.balance = userData.userBalance || userData.totalBalance || userData.balance || null;
+                if (state.balance) state.balance = parseFloat(state.balance);
+              }
+              
               localStorage.setItem('bhau_token', token);
               localStorage.setItem('bhau_phone', phone);
               localStorage.setItem('bhau_logged_in', 'true');
-              return { success: true, token };
+              if (state.userId) localStorage.setItem('bhau_user_id', state.userId);
+              if (state.playerId) localStorage.setItem('bhau_player_id', state.playerId);
+              
+              return { success: true, token, userData };
             }
           }
           return { success: false, msg: data.msg || 'Login failed' };
@@ -503,8 +568,8 @@
         }
       }
 
-      // ─── API USER INFO ──────────────────────────────────
-      async function apiGetUserInfo() {
+      // ─── STEP 2: API GET BALANCE ─────────────────────────
+      async function apiGetBalance() {
         if (!state.token) return null;
         const cfg = getConfig();
         const visitor = getVisitor();
@@ -520,8 +585,9 @@
           ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
           versionCode: '999'
         };
+        
         try {
-          const resp = await fetch(cfg.base + '/app/user/info', {
+          const resp = await fetch(cfg.base + '/app/user/getBalanceV2?gameType=POST', {
             method: 'POST',
             headers: {
               'accept': 'application/json',
@@ -534,56 +600,27 @@
           });
           if (resp.status === 200) {
             const data = await resp.json();
+            console.log('💰 Balance Response:', data);
             if (data.code === 0 && data.data) {
-              const ud = data.data;
-              if (ud.userBalance !== undefined) state.balance = parseFloat(ud.userBalance);
-              else if (ud.totalBalance !== undefined) state.balance = parseFloat(ud.totalBalance);
-              state.lastUpdate = new Date();
-              return data.data;
+              const bal = data.data.balance || data.data.userBalance || data.data.totalBalance;
+              if (bal !== undefined && bal !== null) {
+                state.balance = parseFloat(bal);
+                state.lastUpdate = new Date();
+                return state.balance;
+              }
             }
           }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error('Balance error:', e); }
         return null;
       }
 
-      // ─── FAN TAN LAUNCH (email as query param) ─────────────
-      async function launchFanTan() {
-        // 1. Ensure we have token and phone
-        let phone = phoneInput.value.trim().replace(/\D/g, '');
-        if (!phone) {
-          const saved = localStorage.getItem('bhau_phone');
-          if (saved) phone = saved;
-        }
-        if (phone.length !== 10) {
-          showCustomToast('📱 Phone Required', 'Enter a 10-digit number first', 'warning');
-          phoneInput.focus();
-          return;
-        }
-        // if not logged in, auto-login
-        if (!state.isLoggedIn || !state.token) {
-          loginBtn.textContent = '⏳ Auto-login...';
-          loginBtn.disabled = true;
-          const result = await apiLogin(phone);
-          loginBtn.textContent = '🔑 Login to Dashboard';
-          loginBtn.disabled = false;
-          if (!result.success) {
-            showCustomToast('❌ Login failed', result.msg || 'Please login manually', 'error');
-            return;
-          }
-          await apiGetUserInfo();
-          updateUI();
-        } else {
-          await apiGetUserInfo();
-          updateUI();
-        }
-
-        // 2. Call the Fan Tan API - email as QUERY PARAMETER
+      // ─── STEP 3: API GET GAME ────────────────────────────
+      async function apiGetGame() {
+        if (!state.token) return null;
         const cfg = getConfig();
         const visitor = getVisitor();
         const reqDate = getReqDate();
-        
-        // Generate a dummy email based on phone
-        const dummyEmail = 'user' + phone + '@gmail.com';
+        const dummyEmail = 'user' + state.phone + '@gmail.com';
         
         const payload = {
           channel: 'h5',
@@ -595,18 +632,16 @@
           reqDate: reqDate,
           ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
           versionCode: '999'
-          // email is NOT in body - it goes as query param
         };
 
         try {
-          // Build URL with query parameters including email
           const url = new URL('https://api.bh2255.xyz/app/card/add');
           url.searchParams.set('otherGame', 'true');
           url.searchParams.set('id', '27873');
-          url.searchParams.set('email', dummyEmail);  // ← CRITICAL FIX: email as query param
+          url.searchParams.set('email', dummyEmail);
 
-          console.log('Request URL:', url.toString());
-          console.log('Payload:', payload);
+          console.log('🎮 Game Request URL:', url.toString());
+          console.log('🎮 Payload:', payload);
 
           const resp = await fetch(url.toString(), {
             method: 'POST',
@@ -622,18 +657,87 @@
           });
 
           const data = await resp.json();
-          console.log('Fan Tan response:', data);
+          console.log('🎮 Game Response:', data);
 
-          if (data.code === 0 && data.data && data.data.gameUrl) {
-            let gameUrl = data.data.gameUrl;
-            gameUrl = gameUrl.replace(/\\/g, '');
-            window.open(gameUrl, '_blank');
-            showCustomToast('🎮 Fan Tan Launch', 'Game is opening in new tab', 'success');
+          if (data.code === 0 && data.data) {
+            state.gameData = data.data;
+            state.gameUrl = data.data.gameUrl ? data.data.gameUrl.replace(/\\/g, '') : null;
+            return data.data;
           } else {
-            showCustomToast('❌ Game Error', data.msg || 'Could not fetch game URL', 'error');
+            return { error: data.msg || 'Failed to get game' };
           }
         } catch (e) {
-          showCustomToast('🌐 Network Error', e.message || 'Failed to connect', 'error');
+          console.error('Game error:', e);
+          return { error: e.message };
+        }
+      }
+
+      // ─── STEP 4: OPEN GAME ───────────────────────────────
+      async function launchFanTan() {
+        // Get phone
+        let phone = phoneInput.value.trim().replace(/\D/g, '');
+        if (!phone) {
+          const saved = localStorage.getItem('bhau_phone');
+          if (saved) phone = saved;
+        }
+        if (phone.length !== 10) {
+          showCustomToast('📱 Phone Required', 'Enter a 10-digit number first', 'warning');
+          phoneInput.focus();
+          return;
+        }
+        
+        // STEP 1: Login if needed
+        if (!state.isLoggedIn || !state.token) {
+          loginBtn.textContent = '⏳ Logging in...';
+          loginBtn.disabled = true;
+          showCustomToast('🔐 Logging in', 'Please wait...', 'info', 3000);
+          const result = await apiLogin(phone);
+          loginBtn.textContent = '🔑 Login to Dashboard';
+          loginBtn.disabled = false;
+          if (!result.success) {
+            showCustomToast('❌ Login failed', result.msg || 'Please login manually', 'error');
+            return;
+          }
+          showCustomToast('✅ Login Successful', `Logged in as ${phone}`, 'success');
+        }
+        
+        // STEP 2: Get Balance
+        showCustomToast('💰 Getting Balance', 'Fetching your wallet...', 'info', 3000);
+        await apiGetBalance();
+        updateUI();
+        
+        // STEP 3: Get Game URL
+        showCustomToast('🎮 Loading Game', 'Fetching Fan Tan session...', 'info', 5000);
+        const gameResult = await apiGetGame();
+        
+        if (gameResult && gameResult.error) {
+          showCustomToast('❌ Game Error', gameResult.error, 'error');
+          return;
+        }
+        
+        if (state.gameUrl) {
+          // Show game info
+          gameInfoSection.classList.remove('hidden');
+          if (gameResult.gameName) {
+            gameNameDisplay.textContent = gameResult.gameName;
+          }
+          
+          const balanceText = state.balance !== null ? `₹${state.balance.toFixed(2)}` : '—';
+          const playerText = state.playerId || state.userId || '—';
+          
+          showCustomToast(
+            '🎮 Fan Tan Ready', 
+            `Player: ${playerText} | Balance: ${balanceText}`,
+            'success',
+            6000
+          );
+          
+          // STEP 4: Open Game in new tab
+          console.log('🚀 Opening game URL:', state.gameUrl);
+          window.open(state.gameUrl, '_blank');
+          
+        } else {
+          showCustomToast('❌ Game Error', 'No game URL received', 'error');
         }
       }
 
@@ -647,16 +751,24 @@
         if (!state.isLoggedIn || !state.token) {
           loginSection.classList.remove('hidden');
           userInfoSection.classList.add('hidden');
+          gameInfoSection.classList.add('hidden');
           return;
         }
         loginSection.classList.add('hidden');
         userInfoSection.classList.remove('hidden');
+        
         userPhoneDisplay.textContent = '📱 +91 ' + state.phone;
-        if (state.balance !== null) {
+        
+        if (state.balance !== null && state.balance !== undefined) {
           balanceDisplay.innerHTML = `<span class="currency">₹</span> ${formatNumber(state.balance)}`;
         } else {
           balanceDisplay.innerHTML = '<span class="loading-spinner"></span>';
         }
+        
+        // Show Player ID
+        const displayId = state.playerId || state.userId || '—';
+        playerIdDisplay.textContent = displayId;
+        
         if (state.lastUpdate) {
           lastUpdated.textContent = 'Last updated: ' + state.lastUpdate.toLocaleTimeString();
         } else {
@@ -666,9 +778,10 @@
 
       async function refreshBalance() {
         if (!state.isLoggedIn || !state.token) return;
-        await apiGetUserInfo();
+        await apiGetBalance();
         updateUI();
-        showCustomToast('💰 Balance Updated', `Current balance: <span class="highlight">₹${formatNumber(state.balance)}</span>`, 'success');
+        const balText = state.balance !== null ? `₹${formatNumber(state.balance)}` : '—';
+        showCustomToast('💰 Balance Updated', `Current balance: <span class="highlight">${balText}</span>`, 'success');
       }
 
       // ─── HANDLERS ──────────────────────────────────────
@@ -684,9 +797,10 @@
         loginBtn.textContent = '🔑 Login to Dashboard';
         loginBtn.disabled = false;
         if (result.success) {
-          await apiGetUserInfo();
+          await apiGetBalance();
           updateUI();
-          showCustomToast('🎉 Login Successful', `Welcome, <span class="highlight">${phone}</span>!`, 'success');
+          const balText = state.balance !== null ? ` Balance: ₹${formatNumber(state.balance)}` : '';
+          showCustomToast('🎉 Login Successful', `Welcome, <span class="highlight">${phone}</span>!${balText}`, 'success');
         } else {
           showCustomToast('❌ Login Failed', result.msg || 'Invalid credentials', 'error');
         }
@@ -696,11 +810,19 @@
         state.token = null;
         state.phone = null;
         state.balance = null;
+        state.userId = null;
+        state.playerId = null;
+        state.userData = null;
         state.isLoggedIn = false;
         state.lastUpdate = null;
+        state.gameData = null;
+        state.gameUrl = null;
         localStorage.removeItem('bhau_token');
         localStorage.removeItem('bhau_phone');
         localStorage.removeItem('bhau_logged_in');
+        localStorage.removeItem('bhau_user_id');
+        localStorage.removeItem('bhau_player_id');
+        gameInfoSection.classList.add('hidden');
         updateUI();
         phoneInput.value = '';
         showCustomToast('👋 Logged Out', 'You have been logged out.', 'info');
@@ -710,14 +832,21 @@
         const savedToken = localStorage.getItem('bhau_token');
         const savedPhone = localStorage.getItem('bhau_phone');
         const savedLoggedIn = localStorage.getItem('bhau_logged_in');
+        const savedUserId = localStorage.getItem('bhau_user_id');
+        const savedPlayerId = localStorage.getItem('bhau_player_id');
+        
         if (savedToken && savedPhone && savedLoggedIn === 'true') {
           state.token = savedToken;
           state.phone = savedPhone;
           state.isLoggedIn = true;
+          if (savedUserId) state.userId = savedUserId;
+          if (savedPlayerId) state.playerId = savedPlayerId;
           phoneInput.value = savedPhone;
-          apiGetUserInfo().then(() => {
+          
+          apiGetBalance().then(() => {
             updateUI();
-            showCustomToast('🔄 Session Restored', `Welcome back, <span class="highlight">${savedPhone}</span>!`, 'info');
+            const balText = state.balance !== null ? ` Balance: ₹${formatNumber(state.balance)}` : '';
+            showCustomToast('🔄 Session Restored', `Welcome back, <span class="highlight">${savedPhone}</span>!${balText}`, 'info');
           });
           return true;
         }
