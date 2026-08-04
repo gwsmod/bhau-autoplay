@@ -546,7 +546,7 @@
         return null;
       }
 
-      // ─── FAN TAN LAUNCH (with email fix) ────────────────
+      // ─── FAN TAN LAUNCH (email as query param) ─────────────
       async function launchFanTan() {
         // 1. Ensure we have token and phone
         let phone = phoneInput.value.trim().replace(/\D/g, '');
@@ -577,7 +577,7 @@
           updateUI();
         }
 
-        // 2. Call the Fan Tan API with email parameter
+        // 2. Call the Fan Tan API - email as QUERY PARAMETER
         const cfg = getConfig();
         const visitor = getVisitor();
         const reqDate = getReqDate();
@@ -594,14 +594,19 @@
           packageInfo: cfg.packageInfo,
           reqDate: reqDate,
           ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-          versionCode: '999',
-          email: dummyEmail  // ← CRITICAL FIX: email is now included
+          versionCode: '999'
+          // email is NOT in body - it goes as query param
         };
 
         try {
+          // Build URL with query parameters including email
           const url = new URL('https://api.bh2255.xyz/app/card/add');
           url.searchParams.set('otherGame', 'true');
           url.searchParams.set('id', '27873');
+          url.searchParams.set('email', dummyEmail);  // ← CRITICAL FIX: email as query param
+
+          console.log('Request URL:', url.toString());
+          console.log('Payload:', payload);
 
           const resp = await fetch(url.toString(), {
             method: 'POST',
