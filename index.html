@@ -589,7 +589,6 @@
               if (state.userId) localStorage.setItem('bhau_user_id', state.userId);
               if (state.playerId) localStorage.setItem('bhau_player_id', state.playerId);
               
-              // Show token preview
               tokenPreview.textContent = token.substring(0, 20) + '...';
               
               return { success: true, token, userData };
@@ -655,6 +654,7 @@
         const reqDate = getReqDate();
         const dummyEmail = 'user' + state.phone + '@gmail.com';
         
+        // ✅ CORRECT: email INSIDE payload/body
         const payload = {
           channel: 'h5',
           channelId: cfg.channelId,
@@ -664,17 +664,17 @@
           packageInfo: cfg.packageInfo,
           reqDate: reqDate,
           ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-          versionCode: '999'
+          versionCode: '999',
+          email: dummyEmail  // ← email in payload, NOT query param
         };
 
         try {
           const url = new URL('https://api.bh2255.xyz/app/card/add');
           url.searchParams.set('otherGame', 'true');
           url.searchParams.set('id', '27873');
-          url.searchParams.set('email', dummyEmail);
 
           console.log('🎮 Game Request URL:', url.toString());
-          console.log('🎮 Payload:', payload);
+          console.log('🎮 Payload (with email):', payload);
 
           const resp = await fetch(url.toString(), {
             method: 'POST',
@@ -696,7 +696,6 @@
             state.gameData = data.data;
             state.gameUrl = data.data.gameUrl ? data.data.gameUrl.replace(/\\/g, '') : null;
             
-            // Show game info
             gameInfoSection.classList.remove('hidden');
             if (data.data.gameName) {
               gameNameDisplay.textContent = data.data.gameName;
@@ -715,7 +714,6 @@
 
       // ─── STEP 4: OPEN GAME ───────────────────────────────
       async function launchFanTan() {
-        // Get phone
         let phone = phoneInput.value.trim().replace(/\D/g, '');
         if (!phone) {
           const saved = localStorage.getItem('bhau_phone');
@@ -728,7 +726,6 @@
         }
         
         try {
-          // STEP 1: Login if needed
           if (!state.isLoggedIn || !state.token) {
             loginBtn.textContent = '⏳ Logging in...';
             loginBtn.disabled = true;
@@ -743,14 +740,12 @@
             showCustomToast('✅ Login Successful', `Token & User ID received`, 'success');
           }
           
-          // STEP 2: Get Balance
           showCustomToast('💰 Step 2/3', 'Fetching wallet balance...', 'info', 3000);
           await apiGetBalance();
           updateUI();
           const balText = state.balance !== null ? `₹${state.balance.toFixed(2)}` : '—';
           showCustomToast('💰 Balance Loaded', `Wallet: ${balText}`, 'success', 3000);
           
-          // STEP 3: Get Game URL
           showCustomToast('🎮 Step 3/3', 'Fetching Fan Tan game session...', 'info', 5000);
           const gameResult = await apiGetGame();
           
@@ -769,16 +764,15 @@
               6000
             );
             
-            // STEP 4: Open Game in new tab
             console.log('🚀 Opening game URL:', state.gameUrl);
             console.log('📋 Session Data:', {
               token: state.token.substring(0, 30) + '...',
               playerId: state.playerId,
               userId: state.userId,
-              balance: state.balance
+              balance: state.balance,
+              email: 'user' + state.phone + '@gmail.com'
             });
             
-            // Open the game
             window.open(state.gameUrl, '_blank');
             
           } else {
@@ -814,11 +808,9 @@
           balanceDisplay.innerHTML = '<span class="loading-spinner"></span>';
         }
         
-        // Show Player ID
         const displayId = state.playerId || state.userId || '—';
         playerIdDisplay.textContent = displayId;
         
-        // Show token preview
         if (state.token) {
           tokenPreview.textContent = state.token.substring(0, 20) + '...';
         }
@@ -898,7 +890,6 @@
           if (savedPlayerId) state.playerId = savedPlayerId;
           phoneInput.value = savedPhone;
           
-          // Show token preview
           tokenPreview.textContent = savedToken.substring(0, 20) + '...';
           
           apiGetBalance().then(() => {
