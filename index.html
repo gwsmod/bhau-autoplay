@@ -1,928 +1,2041 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>BHau Lotto · Fan Tan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body {
-      background: #0a0e1a;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-      background-image: radial-gradient(ellipse at 10% 20%, rgba(61,90,160,0.15) 0%, transparent 50%),
-                        radial-gradient(ellipse at 90% 80%, rgba(125,255,179,0.08) 0%, transparent 50%);
-    }
-    .container {
-      max-width: 500px;
-      width: 100%;
-      background: linear-gradient(145deg, #111827, #0d1528);
-      border-radius: 40px;
-      padding: 28px 22px 32px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(125,255,179,0.05), inset 0 1px 0 rgba(255,255,255,0.03);
-      border: 1px solid rgba(125,255,179,0.06);
-      position: relative;
-      overflow: hidden;
-    }
-    .container::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at 30% 20%, rgba(61,90,160,0.03) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .header { text-align: center; margin-bottom: 24px; }
-    .header-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, rgba(61,90,160,0.2), rgba(125,255,179,0.1));
-      border: 1px solid rgba(125,255,179,0.15);
-      padding: 4px 16px;
-      border-radius: 40px;
-      font-size: 10px;
-      color: #7dffb3;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .header h1 {
-      font-size: 34px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #7dffb3 0%, #3d5aa0 50%, #7dffb3 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer 4s ease-in-out infinite;
-      letter-spacing: -1px;
-    }
-    @keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-    .header .sub {
-      color: #6a7a9a;
-      font-size: 13px;
-      margin-top: 4px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .header .sub .dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      background: #3d5aa0;
-      border-radius: 50%;
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-    @keyframes pulse-dot { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
-    .card {
-      background: linear-gradient(145deg, rgba(16,24,43,0.8), rgba(10,16,30,0.9));
-      border-radius: 24px;
-      padding: 18px 20px;
-      margin-bottom: 14px;
-      border: 1px solid rgba(255,255,255,0.04);
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-    .card::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(125,255,179,0.1), transparent);
-    }
-    .input-group { margin-bottom: 12px; }
-    .input-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #7a8aaa;
-      margin-bottom: 5px;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-    }
-    .input-group input {
-      width: 100%;
-      padding: 14px 18px;
-      background: rgba(15,22,41,0.8);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      color: #eef2f9;
-      font-size: 15px;
-      outline: none;
-      transition: all 0.3s ease;
-    }
-    .input-group input:focus {
-      border-color: rgba(125,255,179,0.3);
-      box-shadow: 0 0 20px rgba(125,255,179,0.05);
-      background: rgba(15,22,41,0.95);
-    }
-    .btn {
-      padding: 14px 20px;
-      border: none;
-      border-radius: 16px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      text-align: center;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-      transition: left 0.5s ease;
-    }
-    .btn:hover::before { left: 100%; }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary {
-      background: linear-gradient(135deg, #3d5aa0, #2a4a8a);
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(61,90,160,0.3);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(61,90,160,0.4); }
-    .btn-game {
-      background: linear-gradient(135deg, #f7971e, #ffd200);
-      color: #0a0e1a;
-      font-weight: 800;
-      font-size: 18px;
-      padding: 16px;
-      border-radius: 20px;
-      box-shadow: 0 8px 30px rgba(247,151,30,0.4);
-      width: 100%;
-      letter-spacing: 1px;
-    }
-    .btn-game:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(247,151,30,0.6); }
-    .btn-game:active { transform: scale(0.97); }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.06);
-      color: #8a9aaa;
-      box-shadow: none;
-    }
-    .btn-outline:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.12); }
-    .btn-full { width: 100%; }
-    .btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 12px; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-    .info-grid { display: grid; gap: 10px; }
-    .info-item {
-      background: rgba(12,20,39,0.6);
-      padding: 14px 18px;
-      border-radius: 16px;
-      border-left: 3px solid #3d5aa0;
-      transition: all 0.3s ease;
-    }
-    .info-item .label {
-      font-size: 10px;
-      color: #6a7a9a;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .info-item .value {
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 6px;
-      color: #eef2f9;
-    }
-    .info-item .value.balance {
-      color: #7dffb3;
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-    .info-item .value.balance .currency { font-size: 18px; color: #6a7a9a; font-weight: 600; }
-    .info-item.balance-item { border-left-color: #7dffb3; background: rgba(125,255,179,0.03); }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 16px;
-      border-radius: 40px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .status-badge.online {
-      background: rgba(125,255,179,0.08);
-      color: #7dffb3;
-      border: 1px solid rgba(125,255,179,0.1);
-    }
-    .status-badge .status-dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      background: #7dffb3;
-      border-radius: 50%;
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-    .phone-display { font-size: 18px; font-weight: 700; color: #eef2f9; letter-spacing: -0.3px; }
-    .last-updated { font-size: 10px; color: #4a5a7a; margin-top: 4px; }
-    .hidden { display: none !important; }
-    .footer { text-align: center; font-size: 11px; color: #2a3a5a; margin-top: 18px; font-weight: 500; letter-spacing: 0.5px; }
-    .footer span { color: #3d5aa0; }
-    .loading-spinner {
-      display: inline-block;
-      width: 22px; height: 22px;
-      border: 3px solid rgba(42,58,90,0.3);
-      border-top: 3px solid #7dffb3;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      max-width: 400px;
-      width: 90%;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
-    }
-    .toast-item {
-      background: rgba(20,28,50,0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
-      padding: 16px 20px;
-      border-left: 4px solid #5a76b0;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-      animation: slideInRight 0.4s cubic-bezier(0.16,1,0.3,1);
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      pointer-events: auto;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .toast-item.error { border-left-color: #ff4757; background: rgba(40,20,30,0.95); }
-    .toast-item.success { border-left-color: #2ed573; background: rgba(20,40,30,0.95); }
-    .toast-item .toast-content { flex: 1; }
-    .toast-item .toast-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #7a8aaa; margin-bottom: 2px; }
-    .toast-item .toast-msg { font-size: 14px; color: #eef2f9; line-height: 1.4; font-weight: 500; }
-    .toast-item .toast-msg .highlight { color: #7dffb3; font-weight: 700; }
-    .toast-item .toast-close {
-      background: rgba(255,255,255,0.03);
-      border: none;
-      color: #6a7a9a;
-      cursor: pointer;
-      font-size: 18px;
-      padding: 4px 8px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      flex-shrink: 0;
-      margin-top: -4px;
-    }
-    .toast-item .toast-close:hover { background: rgba(255,255,255,0.08); color: #eef2f9; }
-    @keyframes slideInRight { 0% { opacity: 0; transform: translateX(60px) scale(0.95); } 100% { opacity: 1; transform: translateX(0) scale(1); } }
-    @keyframes slideOutRight { 0% { opacity: 1; transform: translateX(0) scale(1); } 100% { opacity: 0; transform: translateX(60px) scale(0.95); } }
-    .toast-item.hiding { animation: slideOutRight 0.3s ease forwards; }
-    
-    .game-info {
-      background: rgba(15,26,42,0.6);
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-top: 10px;
-      border: 1px solid rgba(125,255,179,0.06);
-    }
-    .game-info .row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      font-size: 13px;
-      color: #8a9aaa;
-    }
-    .game-info .row .val {
-      color: #eef2f9;
-      font-weight: 500;
-    }
-    
-    .session-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(125,255,179,0.05);
-      border-radius: 10px;
-      margin-top: 10px;
-      font-size: 12px;
-      color: #7dffb3;
-    }
-    .session-status .dot-green {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background: #2ed573;
-      border-radius: 50%;
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-    
-    @media (max-width: 480px) {
-      .container { padding: 20px 16px 24px; }
-      .header h1 { font-size: 28px; }
-      .info-item .value.balance { font-size: 24px; }
-      .toast-container { right: 10px; left: 10px; width: auto; top: 10px; }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>BHau Lotto - Premium Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: #0a0e1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            background-image: 
+                radial-gradient(ellipse at 10% 20%, rgba(61, 90, 160, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(125, 255, 179, 0.08) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: linear-gradient(145deg, #111827, #0d1528);
+            border-radius: 40px;
+            padding: 28px 22px 32px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(125, 255, 179, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(125, 255, 179, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(61, 90, 160, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(61, 90, 160, 0.2), rgba(125, 255, 179, 0.1));
+            border: 1px solid rgba(125, 255, 179, 0.15);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 10px;
+            color: #7dffb3;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7dffb3 0%, #3d5aa0 50%, #7dffb3 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s ease-in-out infinite;
+            letter-spacing: -1px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header .sub {
+            color: #6a7a9a;
+            font-size: 13px;
+            margin-top: 4px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header .sub .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #3d5aa0;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* ─── SOUND TOGGLE ─── */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+            background: rgba(20, 28, 50, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.05);
+            border-color: rgba(125, 255, 179, 0.2);
+        }
+
+        .sound-toggle .sound-icon {
+            font-size: 20px;
+        }
+
+        .sound-toggle .sound-label {
+            font-size: 11px;
+            color: #8a9aaa;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .sound-toggle .sound-status {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .sound-toggle .sound-status.on {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+        }
+
+        .sound-toggle .sound-status.off {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+        }
+
+        /* ─── CARDS ─── */
+        .card {
+            background: linear-gradient(145deg, rgba(16, 24, 43, 0.8), rgba(10, 16, 30, 0.9));
+            border-radius: 24px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(125, 255, 179, 0.1), transparent);
+        }
+
+        .card-glow {
+            border-color: rgba(125, 255, 179, 0.08);
+            box-shadow: 0 0 30px rgba(125, 255, 179, 0.02);
+        }
+
+        /* ─── INPUTS ─── */
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #7a8aaa;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 22, 41, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            color: #eef2f9;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: rgba(125, 255, 179, 0.3);
+            box-shadow: 0 0 20px rgba(125, 255, 179, 0.05);
+            background: rgba(15, 22, 41, 0.95);
+        }
+
+        .input-group select {
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a7a9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .input-group select option {
+            background: #111827;
+            color: #eef2f9;
+        }
+
+        /* ─── BUTTONS ─── */
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3d5aa0, #2a4a8a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(61, 90, 160, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(61, 90, 160, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #1f8b4c, #167a3e);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(31, 139, 76, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(31, 139, 76, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #b13e4b, #8a2e3a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(177, 62, 75, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(177, 62, 75, 0.4);
+        }
+
+        .btn-withdraw {
+            background: linear-gradient(135deg, #d4a020, #b8841a);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(212, 160, 32, 0.3);
+        }
+
+        .btn-withdraw:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 160, 32, 0.4);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #4a2a3a, #3a1a2a);
+            color: #b08a9a;
+            border: 1px solid rgba(177, 62, 75, 0.15);
+            box-shadow: none;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #5a3a4a, #4a2a3a);
+            border-color: rgba(177, 62, 75, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #8a9aaa;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 12px;
+            width: auto;
+            border-radius: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* ─── FORM ROW ─── */
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .form-row .btn {
+            flex: 1;
+            padding: 14px 16px;
+        }
+
+        .form-row .btn-outline {
+            flex: 0.5;
+            min-width: 100px;
+        }
+
+        /* ─── QUICK AMOUNT ─── */
+        .quick-amounts {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+
+        .quick-amounts .btn-sm {
+            flex: 1;
+            min-width: 50px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #8a9aaa;
+            box-shadow: none;
+            padding: 8px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+
+        .quick-amounts .btn-sm:hover {
+            background: rgba(125, 255, 179, 0.05);
+            border-color: rgba(125, 255, 179, 0.15);
+            color: #7dffb3;
+        }
+
+        /* ─── CUSTOM TOAST / NOTIFICATION ─── */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 400px;
+            width: 90%;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: rgba(20, 28, 50, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 16px 20px;
+            border-left: 4px solid #5a76b0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toast-item:hover {
+            transform: translateX(-4px);
+        }
+
+        .toast-item.error {
+            border-left-color: #ff4757;
+            background: rgba(40, 20, 30, 0.95);
+        }
+
+        .toast-item.success {
+            border-left-color: #2ed573;
+            background: rgba(20, 40, 30, 0.95);
+        }
+
+        .toast-item.warning {
+            border-left-color: #ffa502;
+            background: rgba(40, 35, 20, 0.95);
+        }
+
+        .toast-item.info {
+            border-left-color: #5a76b0;
+            background: rgba(20, 30, 50, 0.95);
+        }
+
+        .toast-item .toast-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .toast-item .toast-content {
+            flex: 1;
+        }
+
+        .toast-item .toast-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7a8aaa;
+            margin-bottom: 2px;
+        }
+
+        .toast-item .toast-msg {
+            font-size: 14px;
+            color: #eef2f9;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .toast-item .toast-msg .highlight {
+            color: #7dffb3;
+            font-weight: 700;
+        }
+
+        .toast-item .toast-time {
+            font-size: 10px;
+            color: #4a5a7a;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .toast-item .toast-close {
+            background: rgba(255, 255, 255, 0.03);
+            border: none;
+            color: #6a7a9a;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-top: -4px;
+        }
+
+        .toast-item .toast-close:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #eef2f9;
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(60px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes slideOutRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(60px) scale(0.95);
+            }
+        }
+
+        .toast-item.hiding {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        /* ─── INFO GRID ─── */
+        .info-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-item {
+            background: rgba(12, 20, 39, 0.6);
+            padding: 14px 18px;
+            border-radius: 16px;
+            border-left: 3px solid #3d5aa0;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(12, 20, 39, 0.9);
+        }
+
+        .info-item .label {
+            font-size: 10px;
+            color: #6a7a9a;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-item .label .toggle-form-btn {
+            background: rgba(42, 58, 90, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: #8a9aaa;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item .label .toggle-form-btn:hover {
+            background: rgba(42, 58, 90, 0.8);
+            color: #c6d2f0;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 6px;
+            color: #eef2f9;
+        }
+
+        .info-item .value.balance {
+            color: #7dffb3;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .info-item .value.balance .currency {
+            font-size: 18px;
+            color: #6a7a9a;
+            font-weight: 600;
+        }
+
+        .info-item.balance-item {
+            border-left-color: #7dffb3;
+            background: rgba(125, 255, 179, 0.03);
+        }
+
+        /* ─── BANK CARD ─── */
+        .bank-card {
+            background: linear-gradient(135deg, rgba(12, 20, 39, 0.8), rgba(8, 14, 28, 0.9));
+            padding: 14px 18px;
+            border-radius: 16px;
+            border-left: 3px solid #ffd700;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .bank-card:hover {
+            transform: translateX(4px);
+            border-left-color: #ffed4a;
+        }
+
+        .bank-card .bank-name {
+            font-weight: 700;
+            color: #ffd700;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bank-card .bank-name .card-id {
+            font-size: 10px;
+            color: #4a5a7a;
+            font-weight: 400;
+        }
+
+        .bank-card .details {
+            font-size: 14px;
+            color: #b0c0da;
+            margin-top: 4px;
+        }
+
+        .bank-card .ifsc {
+            font-size: 11px;
+            color: #6a7a9a;
+            margin-top: 2px;
+        }
+
+        .bank-card .card-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ─── WITHDRAW SECTION ─── */
+        .withdraw-section {
+            background: rgba(15, 26, 42, 0.6);
+            border-radius: 16px;
+            padding: 14px;
+            margin-top: 8px;
+            border: 1px solid rgba(212, 160, 32, 0.08);
+        }
+
+        .withdraw-section .withdraw-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .withdraw-section .withdraw-header .title {
+            font-weight: 700;
+            color: #d4a020;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .withdraw-section .withdraw-header .toggle-btn {
+            background: rgba(42, 58, 90, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: #8a9aaa;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .withdraw-section .withdraw-header .toggle-btn:hover {
+            background: rgba(42, 58, 90, 0.6);
+            color: #c6d2f0;
+        }
+
+        .selected-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #8a9aaa;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .selected-card strong {
+            color: #ffd700;
+        }
+
+        /* ─── STATUS ─── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.online {
+            background: rgba(125, 255, 179, 0.08);
+            color: #7dffb3;
+            border: 1px solid rgba(125, 255, 179, 0.1);
+        }
+
+        .status-badge .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #7dffb3;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        /* ─── PHONE DISPLAY ─── */
+        .phone-display {
+            font-size: 18px;
+            font-weight: 700;
+            color: #eef2f9;
+            letter-spacing: -0.3px;
+        }
+
+        .last-updated {
+            font-size: 10px;
+            color: #4a5a7a;
+            margin-top: 4px;
+        }
+
+        /* ─── HIDDEN ─── */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ─── DEBUG ─── */
+        .debug-box {
+            background: rgba(10, 15, 26, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #4a6a8a;
+            max-height: 100px;
+            overflow: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .debug-box .success { color: #7dffb3; }
+        .debug-box .error { color: #ff6b6b; }
+        .debug-box .info { color: #5a8aba; }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #2a3a5a;
+            margin-top: 18px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .footer span {
+            color: #3d5aa0;
+        }
+
+        /* ─── LOADING ─── */
+        .loading-spinner {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(42, 58, 90, 0.3);
+            border-top: 3px solid #7dffb3;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 480px) {
+            .container { padding: 20px 16px 24px; }
+            .header h1 { font-size: 28px; }
+            .info-item .value.balance { font-size: 24px; }
+            .form-row { flex-direction: column; }
+            .form-row .btn-outline { flex: 1; min-width: auto; }
+            .toast-container { right: 10px; left: 10px; width: auto; top: 10px; }
+            .toast-item { padding: 12px 16px; }
+            .sound-toggle { bottom: 10px; left: 10px; padding: 8px 12px; }
+            .sound-toggle .sound-label { display: none; }
+        }
+
+        /* ─── HIDE AUDIO ELEMENTS ─── */
+        audio.custom-sound {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <div id="toastContainer" class="toast-container"></div>
-
-  <div class="container" id="app">
-    <div class="header">
-      <div class="header-badge">✦ Fan Tan · Open</div>
-      <h1>🎯 BHAU LOTTO</h1>
-      <div class="sub"><span class="dot"></span><span>Secure · Instant</span><span class="dot"></span></div>
+    <!-- ─── SOUND TOGGLE ─── -->
+    <div class="sound-toggle" id="soundToggle">
+        <span class="sound-icon" id="soundIcon">🔊</span>
+        <span class="sound-label">Sound</span>
+        <span class="sound-status on" id="soundStatus">ON</span>
     </div>
 
-    <!-- LOGIN -->
-    <div id="loginSection">
-      <div class="card">
-        <div class="input-group">
-          <label>📱 Phone Number</label>
-          <input type="tel" id="phoneInput" placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric" />
-        </div>
-        <button class="btn btn-primary btn-full" id="loginBtn">🔑 Login to Dashboard</button>
-      </div>
-    </div>
+    <!-- ─── CUSTOM SOUND FILES ─── -->
+    <audio id="soundSuccess" class="custom-sound" preload="auto">
+        <source src="sounds/success.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundError" class="custom-sound" preload="auto">
+        <source src="sounds/error.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundDelete" class="custom-sound" preload="auto">
+        <source src="sounds/delete.mp3" type="audio/mpeg">
+    </audio>
 
-    <!-- USER DASHBOARD -->
-    <div id="userInfoSection" class="hidden">
-      <div class="card card-glow">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <span class="status-badge online"><span class="status-dot"></span> Online</span>
-          <span class="phone-display" id="userPhoneDisplay">📱 +91</span>
-        </div>
+    <!-- ─── TOAST CONTAINER ─── -->
+    <div id="toastContainer" class="toast-container"></div>
 
-        <div class="info-grid">
-          <div class="info-item balance-item">
-            <div class="label">
-              <span>💰 Wallet Balance</span>
-              <button class="btn-sm" id="refreshBalanceBtn" style="background:rgba(42,58,90,0.3);border:1px solid rgba(255,255,255,0.04);color:#8a9aaa;padding:4px 14px;border-radius:40px;font-size:10px;font-weight:600;cursor:pointer;">⟳ Refresh</button>
+    <div class="container" id="app">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-badge">✦ Premium Dashboard</div>
+            <h1>🎯 BHAU LOTTO</h1>
+            <div class="sub">
+                <span class="dot"></span>
+                <span>Secure Login</span>
+                <span class="dot"></span>
             </div>
-            <div class="value balance" id="balanceDisplay"><span class="currency">₹</span> —</div>
-            <div class="last-updated" id="lastUpdated">Last updated: —</div>
-          </div>
-          
-          <div class="info-item">
-            <div class="label">🆔 Player ID</div>
-            <div class="value" id="playerIdDisplay">—</div>
-          </div>
         </div>
 
-        <!-- Session Status -->
-        <div class="session-status" id="sessionStatus">
-          <span class="dot-green"></span>
-          <span>Session Active · Token: <span id="tokenPreview" style="font-family:monospace;font-size:11px;">—</span></span>
+        <!-- LOGIN SECTION -->
+        <div id="loginSection">
+            <div class="card">
+                <div class="input-group">
+                    <label>📱 Phone Number</label>
+                    <input type="tel" id="phoneInput" placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric" />
+                </div>
+                <button class="btn btn-primary btn-full" id="loginBtn">🔑 Login to Dashboard</button>
+                <div id="loginStatus" class="toast hidden"></div>
+                <div id="debugBox" class="debug-box hidden"></div>
+            </div>
         </div>
 
-        <!-- Game Info Display -->
-        <div id="gameInfoSection" class="game-info hidden">
-          <div style="color:#ffd200;font-weight:700;font-size:14px;margin-bottom:6px;">🎮 Game Session Ready</div>
-          <div class="row"><span>Game</span><span class="val" id="gameNameDisplay">—</span></div>
-          <div class="row"><span>iframe</span><span class="val" id="iframeDisplay">—</span></div>
-          <div class="row"><span>Status</span><span class="val" style="color:#7dffb3;">● Ready to Play</span></div>
+        <!-- USER INFO SECTION -->
+        <div id="userInfoSection" class="hidden">
+            <div class="card card-glow">
+                <!-- Status Bar -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <span class="status-badge online">
+                        <span class="status-dot"></span> Online
+                    </span>
+                    <span class="phone-display" id="userPhoneDisplay">📱 +91</span>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="info-grid">
+                    <div class="info-item balance-item">
+                        <div class="label">
+                            <span>💰 Wallet Balance</span>
+                            <button class="toggle-form-btn" id="refreshBalanceBtn">⟳ Refresh</button>
+                        </div>
+                        <div class="value balance" id="balanceDisplay">
+                            <span class="currency">₹</span> —
+                        </div>
+                        <div class="last-updated" id="lastUpdated">Last updated: —</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label">🆔 User ID</div>
+                        <div class="value" id="userIdDisplay">—</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label">📊 Total Withdrawn</div>
+                        <div class="value" id="withdrawDisplay">—</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label">💰 Total Recharged</div>
+                        <div class="value" id="rechargeDisplay">—</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="label">
+                            <span>🏦 Bank Cards</span>
+                            <button class="toggle-form-btn" id="toggleAddCardBtn">➕ Add Card</button>
+                        </div>
+                        <div id="cardsDisplay" style="margin-top:6px;">
+                            <span style="color:#6a7a9a;font-size:13px;">No cards added</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Card Form -->
+                <div id="addCardForm" class="hidden" style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
+                    <div class="input-group"><label>👤 Account Holder Name</label><input id="cardName" placeholder="Full Name" /></div>
+                    <div class="input-group"><label>💳 Account Number</label><input id="cardNumber" placeholder="1234567890" /></div>
+                    <div class="input-group"><label>🏛️ IFSC Code</label><input id="ifscCode" placeholder="MAHB0002009" value="MAHB0002009" /></div>
+                    <div class="input-group"><label>📧 Email (optional)</label><input id="cardEmail" placeholder="email@gmail.com" /></div>
+                    <div class="form-row">
+                        <button class="btn btn-success" id="submitCardBtn">✅ Add Card</button>
+                        <button class="btn btn-outline" id="cancelAddCard">✖ Cancel</button>
+                    </div>
+                    <div id="addCardStatus" class="toast hidden mt-2"></div>
+                </div>
+
+                <!-- Withdraw Section -->
+                <div id="withdrawSection" style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
+                    <div class="withdraw-section">
+                        <div class="withdraw-header">
+                            <span class="title">💸 Withdraw Funds</span>
+                            <button class="toggle-btn" id="toggleWithdrawBtn">Open</button>
+                        </div>
+
+                        <div id="withdrawForm" class="hidden">
+                            <div class="selected-card" id="selectedCardDisplay">
+                                <span style="color:#6a7a9a;">No card selected</span>
+                            </div>
+
+                            <div class="input-group">
+                                <label>💳 Select Card</label>
+                                <select id="cardSelect">
+                                    <option value="">— Select a card —</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>💰 Amount</label>
+                                <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" />
+                            </div>
+
+                            <div class="quick-amounts">
+                                <button class="btn-sm quick-amount" data-amount="100">₹100</button>
+                                <button class="btn-sm quick-amount" data-amount="200">₹200</button>
+                                <button class="btn-sm quick-amount" data-amount="500">₹500</button>
+                                <button class="btn-sm quick-amount" data-amount="1000">₹1000</button>
+                                <button class="btn-sm quick-amount" data-amount="2000">₹2000</button>
+                                <button class="btn-sm quick-amount" data-amount="5000">₹5000</button>
+                            </div>
+
+                            <button class="btn btn-withdraw btn-full" id="submitWithdrawBtn">💸 Withdraw Now</button>
+                            <div id="withdrawStatus" class="toast hidden mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-logout btn-full" id="logoutBtn" style="margin-top:14px;">🚪 Logout</button>
+            </div>
         </div>
 
-        <!-- OPEN GAME BUTTON -->
-        <button class="btn btn-game" id="openGameBtn">
-          🎮 OPEN FAN TAN · PLAY NOW
-        </button>
-        <div style="font-size:11px;color:#4a5a7a;text-align:center;margin-top:6px;">⚡ Uses your login session &amp; balance</div>
-
-        <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.04);padding-top:16px;">
-          <button class="btn btn-outline btn-full" id="logoutBtn">🚪 Logout</button>
-        </div>
-      </div>
+        <div class="footer">BHau Lotto Premium • <span>by Sanju</span></div>
     </div>
 
-    <div class="footer">BHau Lotto Premium · <span>by Sanju</span></div>
-  </div>
+    <script>
+        (function() {
+            'use strict';
 
-  <script>
-    (function() {
-      'use strict';
+            // ─── STATE ──────────────────────────────────────────
+            const state = {
+                token: null,
+                phone: null,
+                userData: null,
+                balance: null,
+                cards: [],
+                isLoggedIn: false,
+                lastUpdate: null,
+                withdraw: null,
+                recharge: null,
+                soundEnabled: true
+            };
 
-      // ─── STATE ──────────────────────────────────────────
-      const state = {
-        token: null,
-        phone: null,
-        balance: null,
-        userId: null,
-        playerId: null,
-        userData: null,
-        isLoggedIn: false,
-        lastUpdate: null,
-        gameData: null,
-        gameUrl: null
-      };
-
-      // ─── DOM ──────────────────────────────────────────────
-      const $ = id => document.getElementById(id);
-      const loginSection = $('loginSection');
-      const userInfoSection = $('userInfoSection');
-      const phoneInput = $('phoneInput');
-      const loginBtn = $('loginBtn');
-      const logoutBtn = $('logoutBtn');
-      const userPhoneDisplay = $('userPhoneDisplay');
-      const balanceDisplay = $('balanceDisplay');
-      const playerIdDisplay = $('playerIdDisplay');
-      const gameNameDisplay = $('gameNameDisplay');
-      const iframeDisplay = $('iframeDisplay');
-      const gameInfoSection = $('gameInfoSection');
-      const lastUpdated = $('lastUpdated');
-      const refreshBalanceBtn = $('refreshBalanceBtn');
-      const openGameBtn = $('openGameBtn');
-      const toastContainer = $('toastContainer');
-      const tokenPreview = $('tokenPreview');
-      const sessionStatus = $('sessionStatus');
-
-      // ─── TOAST ──────────────────────────────────────────
-      function showCustomToast(title, message, type, duration) {
-        const types = {
-          error: { icon: '❌', className: 'error' },
-          success: { icon: '✅', className: 'success' },
-          warning: { icon: '⚠️', className: 'warning' },
-          info: { icon: 'ℹ️', className: 'info' }
-        };
-        const config = types[type] || types.info;
-        const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
-        const toast = document.createElement('div');
-        toast.className = `toast-item ${config.className}`;
-        toast.id = toastId;
-        const time = new Date().toLocaleTimeString();
-        toast.innerHTML = `
-          <div class="toast-icon">${config.icon}</div>
-          <div class="toast-content">
-            <div class="toast-title">${title}</div>
-            <div class="toast-msg">${message}</div>
-            <div class="toast-time" style="font-size:10px;color:#4a5a7a;margin-top:4px;">${time}</div>
-          </div>
-          <button class="toast-close" onclick="document.getElementById('${toastId}').classList.add('hiding'); setTimeout(() => document.getElementById('${toastId}').remove(), 300)">✕</button>
-        `;
-        toastContainer.appendChild(toast);
-        setTimeout(() => {
-          const el = document.getElementById(toastId);
-          if (el) { el.classList.add('hiding'); setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }
-        }, duration || 8000);
-        return toastId;
-      }
-
-      // ─── CONFIG ──────────────────────────────────────────
-      function getConfig() {
-        return {
-          base: 'https://api.bh2255.xyz',
-          packageId: 2,
-          packageInfo: 'com.resulta.checka',
-          channelId: 'Samsung',
-          origin: 'https://playbhau.com',
-          referer: 'https://playbhau.com/'
-        };
-      }
-
-      function getDeviceId() {
-        let id = localStorage.getItem('bhau_device_id');
-        if (!id) {
-          id = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
-          localStorage.setItem('bhau_device_id', id);
-        }
-        return id;
-      }
-
-      function getVisitor() {
-        return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
-      }
-
-      function getReqDate() { return Date.now(); }
-
-      // ─── STEP 1: API LOGIN ──────────────────────────────
-      async function apiLogin(phone, password) {
-        password = password || 'Sanju2005';
-        const cfg = getConfig();
-        const deviceId = getDeviceId();
-        const visitor = getVisitor();
-        const reqDate = getReqDate();
-        const payload = {
-          userPhone: phone,
-          password: password,
-          deviceCode: deviceId,
-          distinctId: deviceId,
-          channel: 'h5',
-          channelId: cfg.channelId,
-          lang: 'en_US',
-          platform: 'h5',
-          packageId: cfg.packageId,
-          packageInfo: cfg.packageInfo,
-          versionCode: '999',
-          deviceBrand: 'Android',
-          deviceModel: 'Unknown',
-          visitor: visitor,
-          reqDate: reqDate,
-          ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
-        };
-
-        try {
-          const resp = await fetch(cfg.base + '/app/password/login', {
-            method: 'POST',
-            headers: {
-              'accept': 'application/json, text/plain, */*',
-              'content-type': 'application/json',
-              'origin': cfg.origin,
-              'referer': cfg.referer,
-              'x-device-id': deviceId,
-              'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
-            },
-            body: JSON.stringify(payload)
-          });
-          const data = await resp.json();
-          console.log('🔐 Login Response:', data);
-          
-          if (resp.status === 200 && (data.code === 0 || data.success === true)) {
-            let token = null;
-            let userData = null;
-            
-            if (typeof data.data === 'string' && data.data.startsWith('eyJ')) {
-              token = data.data;
-              try {
-                const parts = token.split('.');
-                if (parts.length === 3) {
-                  userData = JSON.parse(atob(parts[1]));
+            // ─── SOUND SYSTEM ──────────────────────────────────
+            function playSound(type) {
+                if (!state.soundEnabled) return;
+                
+                const soundMap = {
+                    'success': 'soundSuccess',
+                    'error': 'soundError',
+                    'delete': 'soundDelete'
+                };
+                
+                const audioId = soundMap[type];
+                if (audioId) {
+                    const audio = document.getElementById(audioId);
+                    if (audio) {
+                        audio.currentTime = 0;
+                        audio.play().catch(function(e) {
+                            console.log('Audio play error:', e);
+                        });
+                    }
                 }
-              } catch (e) {}
-            } else if (data.data && typeof data.data === 'object') {
-              userData = data.data;
-              if (data.data.accessToken) token = data.data.accessToken;
-              else if (data.data.token) token = data.data.token;
-            } else if (data.accessToken) token = data.accessToken;
-            else if (data.token) token = data.token;
-            
-            if (token) {
-              state.token = token;
-              state.phone = phone;
-              state.userData = userData;
-              state.isLoggedIn = true;
-              
-              if (userData) {
-                state.userId = userData.userId || userData.id || userData.uid || userData.imUserId || null;
-                state.playerId = userData.playerId || userData.player_id || userData.imUserId || null;
-                state.balance = userData.userBalance || userData.totalBalance || userData.balance || null;
-                if (state.balance) state.balance = parseFloat(state.balance);
-              }
-              
-              localStorage.setItem('bhau_token', token);
-              localStorage.setItem('bhau_phone', phone);
-              localStorage.setItem('bhau_logged_in', 'true');
-              if (state.userId) localStorage.setItem('bhau_user_id', state.userId);
-              if (state.playerId) localStorage.setItem('bhau_player_id', state.playerId);
-              
-              tokenPreview.textContent = token.substring(0, 20) + '...';
-              
-              return { success: true, token, userData };
             }
-          }
-          return { success: false, msg: data.msg || 'Login failed' };
-        } catch (e) {
-          return { success: false, msg: e.message || 'Network error' };
-        }
-      }
 
-      // ─── STEP 2: API GET BALANCE ─────────────────────────
-      async function apiGetBalance() {
-        if (!state.token) return null;
-        const cfg = getConfig();
-        const visitor = getVisitor();
-        const reqDate = getReqDate();
-        const payload = {
-          channel: 'h5',
-          channelId: cfg.channelId,
-          lang: 'en_US',
-          visitor: visitor,
-          packageId: cfg.packageId,
-          packageInfo: cfg.packageInfo,
-          reqDate: reqDate,
-          ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-          versionCode: '999'
-        };
-        
-        try {
-          const resp = await fetch(cfg.base + '/app/user/getBalanceV2?gameType=POST', {
-            method: 'POST',
-            headers: {
-              'accept': 'application/json',
-              'content-type': 'application/json',
-              'token': state.token,
-              'origin': cfg.origin,
-              'referer': cfg.referer
-            },
-            body: JSON.stringify(payload)
-          });
-          if (resp.status === 200) {
-            const data = await resp.json();
-            console.log('💰 Balance Response:', data);
-            if (data.code === 0 && data.data) {
-              const bal = data.data.balance || data.data.userBalance || data.data.totalBalance;
-              if (bal !== undefined && bal !== null) {
-                state.balance = parseFloat(bal);
-                state.lastUpdate = new Date();
-                return state.balance;
-              }
-            }
-          }
-        } catch (e) { console.error('Balance error:', e); }
-        return null;
-      }
+            // ─── DOM Refs ──────────────────────────────────────
+            const $ = id => document.getElementById(id);
+            const loginSection = $('loginSection');
+            const userInfoSection = $('userInfoSection');
+            const phoneInput = $('phoneInput');
+            const loginBtn = $('loginBtn');
+            const loginStatus = $('loginStatus');
+            const logoutBtn = $('logoutBtn');
+            const userPhoneDisplay = $('userPhoneDisplay');
+            const balanceDisplay = $('balanceDisplay');
+            const userIdDisplay = $('userIdDisplay');
+            const withdrawDisplay = $('withdrawDisplay');
+            const rechargeDisplay = $('rechargeDisplay');
+            const cardsDisplay = $('cardsDisplay');
+            const debugBox = $('debugBox');
+            const lastUpdated = $('lastUpdated');
+            const refreshBalanceBtn = $('refreshBalanceBtn');
+            const toastContainer = $('toastContainer');
+            const soundToggle = $('soundToggle');
+            const soundIcon = $('soundIcon');
+            const soundStatus = $('soundStatus');
 
-      // ─── STEP 3: API GET GAME ────────────────────────────
-      async function apiGetGame() {
-        if (!state.token) return null;
-        const cfg = getConfig();
-        const visitor = getVisitor();
-        const reqDate = getReqDate();
-        const dummyEmail = 'user' + state.phone + '@gmail.com';
-        
-        // ✅ CORRECT: email INSIDE payload/body
-        const payload = {
-          channel: 'h5',
-          channelId: cfg.channelId,
-          lang: 'en_US',
-          visitor: visitor,
-          packageId: cfg.packageId,
-          packageInfo: cfg.packageInfo,
-          reqDate: reqDate,
-          ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-          versionCode: '999',
-          email: dummyEmail  // ← email in payload, NOT query param
-        };
+            // Add Card
+            const addCardForm = $('addCardForm');
+            const toggleAddCardBtn = $('toggleAddCardBtn');
+            const cardName = $('cardName');
+            const cardNumber = $('cardNumber');
+            const ifscCode = $('ifscCode');
+            const cardEmail = $('cardEmail');
+            const submitCardBtn = $('submitCardBtn');
+            const cancelAddCard = $('cancelAddCard');
+            const addCardStatus = $('addCardStatus');
 
-        try {
-          const url = new URL('https://api.bh2255.xyz/app/card/add');
-          url.searchParams.set('otherGame', 'true');
-          url.searchParams.set('id', '27873');
+            // Withdraw
+            const toggleWithdrawBtn = $('toggleWithdrawBtn');
+            const withdrawForm = $('withdrawForm');
+            const cardSelect = $('cardSelect');
+            const withdrawAmount = $('withdrawAmount');
+            const submitWithdrawBtn = $('submitWithdrawBtn');
+            const withdrawStatus = $('withdrawStatus');
+            const selectedCardDisplay = $('selectedCardDisplay');
 
-          console.log('🎮 Game Request URL:', url.toString());
-          console.log('🎮 Payload (with email):', payload);
-
-          const resp = await fetch(url.toString(), {
-            method: 'POST',
-            headers: {
-              'accept': 'application/json',
-              'content-type': 'application/json',
-              'token': state.token,
-              'packageid': String(cfg.packageId),
-              'origin': cfg.origin,
-              'referer': cfg.referer
-            },
-            body: JSON.stringify(payload)
-          });
-
-          const data = await resp.json();
-          console.log('🎮 Game Response:', data);
-
-          if (data.code === 0 && data.data) {
-            state.gameData = data.data;
-            state.gameUrl = data.data.gameUrl ? data.data.gameUrl.replace(/\\/g, '') : null;
-            
-            gameInfoSection.classList.remove('hidden');
-            if (data.data.gameName) {
-              gameNameDisplay.textContent = data.data.gameName;
-            }
-            iframeDisplay.textContent = data.data.iframe !== undefined ? String(data.data.iframe) : '—';
-            
-            return data.data;
-          } else {
-            return { error: data.msg || 'Failed to get game' };
-          }
-        } catch (e) {
-          console.error('Game error:', e);
-          return { error: e.message };
-        }
-      }
-
-      // ─── STEP 4: OPEN GAME ───────────────────────────────
-      async function launchFanTan() {
-        let phone = phoneInput.value.trim().replace(/\D/g, '');
-        if (!phone) {
-          const saved = localStorage.getItem('bhau_phone');
-          if (saved) phone = saved;
-        }
-        if (phone.length !== 10) {
-          showCustomToast('📱 Phone Required', 'Enter a 10-digit number first', 'warning');
-          phoneInput.focus();
-          return;
-        }
-        
-        try {
-          if (!state.isLoggedIn || !state.token) {
-            loginBtn.textContent = '⏳ Logging in...';
-            loginBtn.disabled = true;
-            showCustomToast('🔐 Step 1/3', 'Logging in...', 'info', 3000);
-            const result = await apiLogin(phone);
-            loginBtn.textContent = '🔑 Login to Dashboard';
-            loginBtn.disabled = false;
-            if (!result.success) {
-              showCustomToast('❌ Login failed', result.msg || 'Please login manually', 'error');
-              return;
-            }
-            showCustomToast('✅ Login Successful', `Token & User ID received`, 'success');
-          }
-          
-          showCustomToast('💰 Step 2/3', 'Fetching wallet balance...', 'info', 3000);
-          await apiGetBalance();
-          updateUI();
-          const balText = state.balance !== null ? `₹${state.balance.toFixed(2)}` : '—';
-          showCustomToast('💰 Balance Loaded', `Wallet: ${balText}`, 'success', 3000);
-          
-          showCustomToast('🎮 Step 3/3', 'Fetching Fan Tan game session...', 'info', 5000);
-          const gameResult = await apiGetGame();
-          
-          if (gameResult && gameResult.error) {
-            showCustomToast('❌ Game Error', gameResult.error, 'error');
-            return;
-          }
-          
-          if (state.gameUrl) {
-            const playerText = state.playerId || state.userId || '—';
-            
-            showCustomToast(
-              '🎮 Fan Tan Ready', 
-              `Player: ${playerText} | Balance: ${balText}`,
-              'success',
-              6000
-            );
-            
-            console.log('🚀 Opening game URL:', state.gameUrl);
-            console.log('📋 Session Data:', {
-              token: state.token.substring(0, 30) + '...',
-              playerId: state.playerId,
-              userId: state.userId,
-              balance: state.balance,
-              email: 'user' + state.phone + '@gmail.com'
+            // ─── SOUND TOGGLE ──────────────────────────────────
+            soundToggle.addEventListener('click', function() {
+                state.soundEnabled = !state.soundEnabled;
+                if (state.soundEnabled) {
+                    soundIcon.textContent = '🔊';
+                    soundStatus.textContent = 'ON';
+                    soundStatus.className = 'sound-status on';
+                    playSound('success');
+                } else {
+                    soundIcon.textContent = '🔇';
+                    soundStatus.textContent = 'OFF';
+                    soundStatus.className = 'sound-status off';
+                }
             });
-            
-            window.open(state.gameUrl, '_blank');
-            
-          } else {
-            showCustomToast('❌ Game Error', 'No game URL received from server', 'error');
-          }
-        } catch (e) {
-          console.error('Launch error:', e);
-          showCustomToast('❌ Error', e.message || 'Something went wrong', 'error');
-        }
-      }
 
-      // ─── UI ──────────────────────────────────────────────
-      function formatNumber(num) {
-        if (num === null || num === undefined) return '—';
-        return parseFloat(num).toFixed(2);
-      }
+            // ─── CUSTOM TOAST SYSTEM ───────────────────────────
+            function showCustomToast(title, message, type, duration, soundType) {
+                const types = {
+                    error: { icon: '❌', className: 'error' },
+                    success: { icon: '✅', className: 'success' },
+                    warning: { icon: '⚠️', className: 'warning' },
+                    info: { icon: 'ℹ️', className: 'info' }
+                };
 
-      function updateUI() {
-        if (!state.isLoggedIn || !state.token) {
-          loginSection.classList.remove('hidden');
-          userInfoSection.classList.add('hidden');
-          gameInfoSection.classList.add('hidden');
-          return;
-        }
-        loginSection.classList.add('hidden');
-        userInfoSection.classList.remove('hidden');
-        
-        userPhoneDisplay.textContent = '📱 +91 ' + state.phone;
-        
-        if (state.balance !== null && state.balance !== undefined) {
-          balanceDisplay.innerHTML = `<span class="currency">₹</span> ${formatNumber(state.balance)}`;
-        } else {
-          balanceDisplay.innerHTML = '<span class="loading-spinner"></span>';
-        }
-        
-        const displayId = state.playerId || state.userId || '—';
-        playerIdDisplay.textContent = displayId;
-        
-        if (state.token) {
-          tokenPreview.textContent = state.token.substring(0, 20) + '...';
-        }
-        
-        if (state.lastUpdate) {
-          lastUpdated.textContent = 'Last updated: ' + state.lastUpdate.toLocaleTimeString();
-        } else {
-          lastUpdated.textContent = 'Last updated: —';
-        }
-      }
+                if (soundType) {
+                    playSound(soundType);
+                }
 
-      async function refreshBalance() {
-        if (!state.isLoggedIn || !state.token) return;
-        await apiGetBalance();
-        updateUI();
-        const balText = state.balance !== null ? `₹${formatNumber(state.balance)}` : '—';
-        showCustomToast('💰 Balance Updated', `Current balance: <span class="highlight">${balText}</span>`, 'success');
-      }
+                const config = types[type] || types.info;
+                const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+                
+                const toast = document.createElement('div');
+                toast.className = `toast-item ${config.className}`;
+                toast.id = toastId;
+                
+                const time = new Date().toLocaleTimeString();
+                
+                toast.innerHTML = `
+                    <div class="toast-icon">${config.icon}</div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-msg">${message}</div>
+                        <div class="toast-time">${time}</div>
+                    </div>
+                    <button class="toast-close" onclick="document.getElementById('${toastId}').classList.add('hiding'); setTimeout(() => document.getElementById('${toastId}').remove(), 300)">✕</button>
+                `;
 
-      // ─── HANDLERS ──────────────────────────────────────
-      async function handleLogin() {
-        const phone = phoneInput.value.trim().replace(/\D/g, '');
-        if (phone.length !== 10) {
-          showCustomToast('❌ Invalid Phone', 'Enter a valid 10-digit number', 'error');
-          return;
-        }
-        loginBtn.textContent = '⏳ Logging in...';
-        loginBtn.disabled = true;
-        const result = await apiLogin(phone);
-        loginBtn.textContent = '🔑 Login to Dashboard';
-        loginBtn.disabled = false;
-        if (result.success) {
-          await apiGetBalance();
-          updateUI();
-          const balText = state.balance !== null ? ` Balance: ₹${formatNumber(state.balance)}` : '';
-          const idText = state.playerId ? ` Player: ${state.playerId}` : '';
-          showCustomToast('🎉 Login Successful', `Welcome, <span class="highlight">${phone}</span>!${balText}${idText}`, 'success');
-        } else {
-          showCustomToast('❌ Login Failed', result.msg || 'Invalid credentials', 'error');
-        }
-      }
+                toastContainer.appendChild(toast);
 
-      function handleLogout() {
-        state.token = null;
-        state.phone = null;
-        state.balance = null;
-        state.userId = null;
-        state.playerId = null;
-        state.userData = null;
-        state.isLoggedIn = false;
-        state.lastUpdate = null;
-        state.gameData = null;
-        state.gameUrl = null;
-        localStorage.removeItem('bhau_token');
-        localStorage.removeItem('bhau_phone');
-        localStorage.removeItem('bhau_logged_in');
-        localStorage.removeItem('bhau_user_id');
-        localStorage.removeItem('bhau_player_id');
-        gameInfoSection.classList.add('hidden');
-        updateUI();
-        phoneInput.value = '';
-        showCustomToast('👋 Logged Out', 'You have been logged out.', 'info');
-      }
+                const autoHide = duration || 8000;
+                setTimeout(() => {
+                    const el = document.getElementById(toastId);
+                    if (el) {
+                        el.classList.add('hiding');
+                        setTimeout(() => {
+                            if (el.parentNode) el.remove();
+                        }, 300);
+                    }
+                }, autoHide);
 
-      function restoreSession() {
-        const savedToken = localStorage.getItem('bhau_token');
-        const savedPhone = localStorage.getItem('bhau_phone');
-        const savedLoggedIn = localStorage.getItem('bhau_logged_in');
-        const savedUserId = localStorage.getItem('bhau_user_id');
-        const savedPlayerId = localStorage.getItem('bhau_player_id');
-        
-        if (savedToken && savedPhone && savedLoggedIn === 'true') {
-          state.token = savedToken;
-          state.phone = savedPhone;
-          state.isLoggedIn = true;
-          if (savedUserId) state.userId = savedUserId;
-          if (savedPlayerId) state.playerId = savedPlayerId;
-          phoneInput.value = savedPhone;
-          
-          tokenPreview.textContent = savedToken.substring(0, 20) + '...';
-          
-          apiGetBalance().then(() => {
-            updateUI();
-            const balText = state.balance !== null ? ` Balance: ₹${formatNumber(state.balance)}` : '';
-            showCustomToast('🔄 Session Restored', `Welcome back, <span class="highlight">${savedPhone}</span>!${balText}`, 'info');
-          });
-          return true;
-        }
-        return false;
-      }
+                return toastId;
+            }
 
-      // ─── INIT ──────────────────────────────────────────
-      function init() {
-        loginBtn.addEventListener('click', handleLogin);
-        logoutBtn.addEventListener('click', handleLogout);
-        refreshBalanceBtn.addEventListener('click', refreshBalance);
-        openGameBtn.addEventListener('click', launchFanTan);
+            // ─── Config ─────────────────────────────────────────
+            function getConfig() {
+                return {
+                    base: 'https://api.bh2255.xyz',
+                    pay: 'https://api.bh556677ww.com',
+                    card: 'https://api.bh2266.xyz',
+                    packageId: 2,
+                    packageInfo: 'com.resulta.checka',
+                    channelId: 'Samsung',
+                    origin: 'https://playbhau.com',
+                    referer: 'https://playbhau.com/'
+                };
+            }
 
-        phoneInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') handleLogin();
-        });
+            function getDeviceId() {
+                let id = localStorage.getItem('bhau_device_id');
+                if (!id) {
+                    id = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
+                    localStorage.setItem('bhau_device_id', id);
+                }
+                return id;
+            }
 
-        restoreSession();
-        updateUI();
-      }
+            function getVisitor() {
+                return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
+            }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-      } else {
-        init();
-      }
-    })();
-  </script>
+            function getReqDate() { return Date.now(); }
+
+            // ─── Debug ─────────────────────────────────────────
+            function showDebug(msg, type) {
+                debugBox.classList.remove('hidden');
+                const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+                debugBox.innerHTML += `<div class="${className}">${new Date().toLocaleTimeString()}: ${msg}</div>`;
+                debugBox.scrollTop = debugBox.scrollHeight;
+            }
+
+            function clearDebug() {
+                debugBox.innerHTML = '';
+                debugBox.classList.add('hidden');
+            }
+
+            // ─── API Calls ─────────────────────────────────────
+            async function apiLogin(phone, password) {
+                password = password || 'Sanju2005';
+                const cfg = getConfig();
+                const deviceId = getDeviceId();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const payload = {
+                    userPhone: phone,
+                    password: password,
+                    deviceCode: deviceId,
+                    distinctId: deviceId,
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    platform: 'h5',
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    versionCode: '999',
+                    deviceBrand: 'Android',
+                    deviceModel: 'Unknown',
+                    visitor: visitor,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+                };
+
+                showDebug('📡 Sending login...', 'info');
+
+                try {
+                    const resp = await fetch(cfg.base + '/app/password/login', {
+                        method: 'POST',
+                        headers: {
+                            'accept': 'application/json, text/plain, */*',
+                            'content-type': 'application/json',
+                            'origin': cfg.origin,
+                            'referer': cfg.referer,
+                            'x-device-id': deviceId,
+                            'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await resp.json();
+                    showDebug(`📊 Status: ${resp.status}`, 'info');
+                    console.log('Login Response:', data);
+
+                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
+                        let token = null;
+                        let userData = null;
+
+                        if (typeof data.data === 'string' && data.data.startsWith('eyJ')) {
+                            token = data.data;
+                            showDebug('✅ Token found', 'success');
+                        } else if (typeof data.data === 'object' && data.data !== null) {
+                            userData = data.data;
+                            if (data.data.accessToken) token = data.data.accessToken;
+                            else if (data.data.token) token = data.data.token;
+                        } else if (data.accessToken) token = data.accessToken;
+                        else if (data.token) token = data.token;
+
+                        if (token) {
+                            state.token = token;
+                            state.phone = phone;
+                            state.isLoggedIn = true;
+
+                            if (userData) {
+                                state.userData = userData;
+                            } else if (typeof data.data === 'string') {
+                                try {
+                                    const parts = token.split('.');
+                                    if (parts.length === 3) {
+                                        const payload = JSON.parse(atob(parts[1]));
+                                        state.userData = payload;
+                                    }
+                                } catch (e) {}
+                            }
+
+                            localStorage.setItem('bhau_token', token);
+                            localStorage.setItem('bhau_phone', phone);
+                            localStorage.setItem('bhau_logged_in', 'true');
+
+                            showDebug('✅ Login successful!', 'success');
+                            
+                            showCustomToast(
+                                '🎉 Login Successful',
+                                `Welcome back! <span class="highlight">${phone}</span> is now connected.`,
+                                'success',
+                                5000,
+                                'success'
+                            );
+                            
+                            return { success: true, token: token };
+                        } else {
+                            showDebug('❌ Token not found', 'error');
+                            
+                            showCustomToast(
+                                '❌ Login Failed',
+                                'Token not found in response. Please try again.',
+                                'error',
+                                5000,
+                                'error'
+                            );
+                            
+                            return { success: false, msg: 'Token not found in response' };
+                        }
+                    } else {
+                        const errorMsg = data.msg || data.message || 'Login failed';
+                        showDebug(`❌ ${errorMsg}`, 'error');
+                        
+                        showCustomToast(
+                            '❌ Login Failed',
+                            `${errorMsg}. Please check your credentials.`,
+                            'error',
+                            5000,
+                            'error'
+                        );
+                        
+                        return { success: false, msg: errorMsg };
+                    }
+                } catch (e) {
+                    console.error('Login error:', e);
+                    showDebug(`❌ Error: ${e.message}`, 'error');
+                    
+                    showCustomToast(
+                        '🌐 Network Error',
+                        `Unable to connect: ${e.message}. Please check your internet.`,
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    
+                    return { success: false, msg: e.message || 'Network error' };
+                }
+            }
+
+            async function apiGetUserInfo() {
+                if (!state.token) return null;
+                const cfg = getConfig();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const payload = {
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    visitor: visitor,
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+                    versionCode: '999'
+                };
+
+                try {
+                    const resp = await fetch(cfg.base + '/app/user/info', {
+                        method: 'POST',
+                        headers: {
+                            'accept': 'application/json',
+                            'content-type': 'application/json',
+                            'token': state.token,
+                            'origin': cfg.origin,
+                            'referer': cfg.referer
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (resp.status === 200) {
+                        const data = await resp.json();
+                        console.log('User Info:', data);
+
+                        if (data.code === 0 && data.data) {
+                            const ud = data.data;
+                            state.userData = ud;
+
+                            if (ud.userBalance !== undefined && ud.userBalance !== null) {
+                                state.balance = parseFloat(ud.userBalance);
+                            } else if (ud.totalBalance !== undefined && ud.totalBalance !== null) {
+                                state.balance = parseFloat(ud.totalBalance);
+                            }
+
+                            if (ud.withdraw !== undefined && ud.withdraw !== null) {
+                                state.withdraw = parseFloat(ud.withdraw);
+                            }
+
+                            if (ud.recharge !== undefined && ud.recharge !== null) {
+                                state.recharge = parseFloat(ud.recharge);
+                            }
+
+                            state.lastUpdate = new Date();
+                            return data.data;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error fetching user info:', e);
+                }
+                return null;
+            }
+
+            async function apiGetCards() {
+                if (!state.token) return [];
+                const cfg = getConfig();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const payload = {
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    versionCode: '999',
+                    visitor: visitor
+                };
+                const endpoints = [
+                    'https://api.bh556677wplus.com/app/card/info',
+                    cfg.card + '/app/card/list',
+                    cfg.pay + '/app/card/info'
+                ];
+                for (const url of endpoints) {
+                    try {
+                        const resp = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'accept': 'application/json',
+                                'content-type': 'application/json',
+                                'token': state.token,
+                                'packageid': String(cfg.packageId),
+                                'origin': cfg.origin,
+                                'referer': cfg.referer
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        if (resp.status === 200) {
+                            const data = await resp.json();
+                            console.log('Cards:', data);
+                            if (data.code === 0) {
+                                let cards = data.data;
+                                if (Array.isArray(cards) && cards.length > 0) {
+                                    state.cards = cards;
+                                    return cards;
+                                } else if (typeof cards === 'object' && cards !== null) {
+                                    for (const key of ['list', 'cards', 'cardList']) {
+                                        if (Array.isArray(cards[key]) && cards[key].length > 0) {
+                                            state.cards = cards[key];
+                                            return cards[key];
+                                        }
+                                    }
+                                    if (cards.id || cards.cardId) {
+                                        state.cards = [cards];
+                                        return [cards];
+                                    }
+                                }
+                            }
+                        }
+                    } catch (_) { /* ignore */ }
+                }
+                return [];
+            }
+
+            async function apiAddCard(name, number, ifsc, email) {
+                if (!state.token) return { success: false, msg: 'Not logged in' };
+                const cfg = getConfig();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const url = cfg.base + '/app/card/add';
+                const payload = {
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    visitor: visitor,
+                    cardName: name,
+                    cardNumber: number,
+                    email: email || '',
+                    ifsCode: ifsc,
+                    smsCode: '',
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+                    versionCode: '999'
+                };
+                const headers = {
+                    'accept': 'application/json',
+                    'content-type': 'application/json',
+                    'token': state.token,
+                    'packageid': String(cfg.packageId),
+                    'origin': cfg.origin,
+                    'referer': cfg.referer
+                };
+                try {
+                    const resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
+                    const data = await resp.json();
+                    console.log('Add Card:', data);
+                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
+                        return { success: true };
+                    } else {
+                        return { success: false, msg: data.msg || 'Add card failed' };
+                    }
+                } catch (e) {
+                    return { success: false, msg: e.message };
+                }
+            }
+
+            async function apiDeleteCard(cardId) {
+                if (!state.token) return { success: false, msg: 'Not logged in' };
+                const cfg = getConfig();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const url = cfg.base + '/app/card/del';
+                const payload = {
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    visitor: visitor,
+                    id: parseInt(cardId),
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+                    versionCode: '999'
+                };
+                const headers = {
+                    'accept': 'application/json',
+                    'content-type': 'application/json',
+                    'token': state.token,
+                    'packageid': String(cfg.packageId),
+                    'origin': cfg.origin,
+                    'referer': cfg.referer
+                };
+                try {
+                    const resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
+                    const data = await resp.json();
+                    console.log('Delete Card:', data);
+                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
+                        return { success: true };
+                    } else {
+                        return { success: false, msg: data.msg || 'Delete failed' };
+                    }
+                } catch (e) {
+                    return { success: false, msg: e.message };
+                }
+            }
+
+            async function apiWithdraw(amount) {
+                if (!state.token) return { success: false, msg: 'Not logged in' };
+                const cfg = getConfig();
+                const visitor = getVisitor();
+                const reqDate = getReqDate();
+                const url = cfg.base + '/app/pay/paid';
+                const payload = {
+                    channel: 'h5',
+                    channelId: cfg.channelId,
+                    lang: 'en_US',
+                    visitor: visitor,
+                    price: parseFloat(amount),
+                    packageId: cfg.packageId,
+                    packageInfo: cfg.packageInfo,
+                    reqDate: reqDate,
+                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+                    versionCode: '999'
+                };
+                const headers = {
+                    'accept': 'application/json',
+                    'content-type': 'application/json',
+                    'token': state.token,
+                    'packageid': String(cfg.packageId),
+                    'origin': cfg.origin,
+                    'referer': cfg.referer
+                };
+                try {
+                    const resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
+                    const data = await resp.json();
+                    console.log('Withdraw:', data);
+                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
+                        return { success: true };
+                    } else {
+                        return { success: false, msg: data.msg || 'Withdraw failed' };
+                    }
+                } catch (e) {
+                    return { success: false, msg: e.message };
+                }
+            }
+
+            // ─── UI Functions ──────────────────────────────────
+            function formatNumber(num) {
+                if (num === null || num === undefined) return '—';
+                return parseFloat(num).toFixed(2);
+            }
+
+            function updateCardSelect() {
+                const select = cardSelect;
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">— Select a card —</option>';
+
+                if (state.cards && state.cards.length > 0) {
+                    state.cards.forEach(function(c) {
+                        const id = c.id || c.cardId || c.card_id || '?';
+                        const holder = c.accountName || c.holderName || c.name || 'Unknown';
+                        const bank = c.bankName || c.bank || 'Bank';
+                        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
+                        const masked = acc && acc.length > 6 ? acc.slice(0, 4) + '****' + acc.slice(-4) : acc;
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = `${bank} - ${holder} (${masked})`;
+                        select.appendChild(option);
+                    });
+                }
+
+                if (currentVal && select.querySelector(`option[value="${currentVal}"]`)) {
+                    select.value = currentVal;
+                }
+                updateSelectedCardDisplay();
+            }
+
+            function updateSelectedCardDisplay() {
+                const cardId = cardSelect.value;
+                if (!cardId) {
+                    selectedCardDisplay.innerHTML = '<span style="color:#6a7a9a;">No card selected</span>';
+                    return;
+                }
+
+                const card = state.cards.find(c => {
+                    const id = c.id || c.cardId || c.card_id || '?';
+                    return String(id) === String(cardId);
+                });
+
+                if (card) {
+                    const holder = card.accountName || card.holderName || card.name || 'Unknown';
+                    const bank = card.bankName || card.bank || 'Bank';
+                    const acc = card.accountNumber || card.cardNumber || card.cardNo || '';
+                    selectedCardDisplay.innerHTML = `<strong>${bank}</strong> - ${holder} (${acc})`;
+                } else {
+                    selectedCardDisplay.innerHTML = '<span style="color:#6a7a9a;">Card not found</span>';
+                }
+            }
+
+            function updateUI() {
+                if (!state.isLoggedIn || !state.token) {
+                    loginSection.classList.remove('hidden');
+                    userInfoSection.classList.add('hidden');
+                    return;
+                }
+
+                loginSection.classList.add('hidden');
+                userInfoSection.classList.remove('hidden');
+
+                userPhoneDisplay.textContent = '📱 +91 ' + state.phone;
+
+                if (state.balance !== null && state.balance !== undefined) {
+                    balanceDisplay.innerHTML = `<span class="currency">₹</span> ${formatNumber(state.balance)}`;
+                } else {
+                    balanceDisplay.innerHTML = '<span class="loading-spinner"></span>';
+                }
+
+                if (state.lastUpdate) {
+                    lastUpdated.textContent = 'Last updated: ' + state.lastUpdate.toLocaleTimeString();
+                } else {
+                    lastUpdated.textContent = 'Last updated: —';
+                }
+
+                let userId = '—';
+                if (state.userData) {
+                    if (state.userData.userId) userId = state.userData.userId;
+                    else if (state.userData.id) userId = state.userData.id;
+                    else if (state.userData.uid) userId = state.userData.uid;
+                    else if (state.userData.imUserId) userId = state.userData.imUserId;
+                }
+                userIdDisplay.textContent = userId;
+
+                if (state.withdraw !== null && state.withdraw !== undefined) {
+                    withdrawDisplay.textContent = '₹ ' + formatNumber(state.withdraw);
+                } else {
+                    withdrawDisplay.textContent = '—';
+                }
+
+                if (state.recharge !== null && state.recharge !== undefined) {
+                    rechargeDisplay.textContent = '₹ ' + formatNumber(state.recharge);
+                } else {
+                    rechargeDisplay.textContent = '—';
+                }
+
+                // Cards
+                if (state.cards && state.cards.length > 0) {
+                    let html = '';
+                    state.cards.forEach(function(c) {
+                        const id = c.id || c.cardId || c.card_id || '?';
+                        const holder = c.accountName || c.holderName || c.name || 'Unknown';
+                        const bank = c.bankName || c.bank || 'Bank';
+                        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
+                        const ifsc = c.ifscCode || c.ifsCode || '—';
+                        html += `<div class="bank-card">
+                            <div class="bank-name">
+                                <span>🏦 ${bank}</span>
+                                <span class="card-id">ID: ${id}</span>
+                            </div>
+                            <div class="details">👤 ${holder}</div>
+                            <div class="details">💳 ${acc || 'N/A'}</div>
+                            <div class="ifsc">🔑 IFSC: ${ifsc}</div>
+                            <div class="card-actions">
+                                <button class="btn btn-danger btn-sm delete-card-btn" data-card-id="${id}">🗑️ Delete</button>
+                            </div>
+                        </div>`;
+                    });
+                    cardsDisplay.innerHTML = html;
+
+                    document.querySelectorAll('.delete-card-btn').forEach(function(btn) {
+                        btn.addEventListener('click', function() {
+                            const cardId = this.getAttribute('data-card-id');
+                            handleDeleteCard(cardId);
+                        });
+                    });
+                } else {
+                    cardsDisplay.innerHTML = '<span style="color:#6a7a9a;font-size:13px;">No bank cards added</span>';
+                }
+
+                updateCardSelect();
+            }
+
+            async function loadAllData() {
+                if (!state.isLoggedIn || !state.token) return;
+                showDebug('🔄 Loading data...', 'info');
+                await apiGetUserInfo();
+                await apiGetCards();
+                updateUI();
+                showDebug('✅ Data loaded', 'success');
+            }
+
+            async function refreshBalance() {
+                if (!state.isLoggedIn || !state.token) return;
+                showDebug('🔄 Refreshing balance...', 'info');
+                await apiGetUserInfo();
+                updateUI();
+                
+                showCustomToast(
+                    '💰 Balance Updated',
+                    `Your current balance is <span class="highlight">₹${formatNumber(state.balance)}</span>`,
+                    'success',
+                    4000,
+                    'success'
+                );
+            }
+
+            // ─── Handlers ──────────────────────────────────────
+            async function handleAddCard() {
+                const name = cardName.value.trim();
+                const number = cardNumber.value.trim().replace(/\s/g, '');
+                const ifsc = ifscCode.value.trim().toUpperCase();
+                const email = cardEmail.value.trim();
+
+                if (!name || !number || !ifsc) {
+                    showCustomToast(
+                        '❌ Validation Error',
+                        'Name, Account Number and IFSC are required!',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    return;
+                }
+
+                submitCardBtn.textContent = '⏳ Adding...';
+                submitCardBtn.disabled = true;
+
+                const result = await apiAddCard(name, number, ifsc, email);
+
+                submitCardBtn.textContent = '✅ Add Card';
+                submitCardBtn.disabled = false;
+
+                if (result.success) {
+                    showCustomToast(
+                        '✅ Card Added',
+                        `Bank card for <span class="highlight">${name}</span> added successfully!`,
+                        'success',
+                        5000,
+                        'success'
+                    );
+                    addCardForm.classList.add('hidden');
+                    toggleAddCardBtn.textContent = '➕ Add Card';
+                    await loadAllData();
+                } else {
+                    showCustomToast(
+                        '❌ Add Card Failed',
+                        result.msg || 'Failed to add bank card',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                }
+            }
+
+            async function handleDeleteCard(cardId) {
+                if (!confirm(`⚠️ Are you sure you want to delete card ID: ${cardId}?`)) return;
+                showDebug(`🗑️ Deleting ${cardId}...`, 'info');
+                const result = await apiDeleteCard(cardId);
+
+                if (result.success) {
+                    showCustomToast(
+                        '✅ Card Deleted',
+                        `Bank card ID <span class="highlight">${cardId}</span> deleted successfully!`,
+                        'success',
+                        5000,
+                        'delete'
+                    );
+                    await loadAllData();
+                } else {
+                    showCustomToast(
+                        '❌ Delete Failed',
+                        result.msg || 'Failed to delete card',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                }
+            }
+
+            async function handleWithdraw() {
+                // First check if cards exist
+                if (!state.cards || state.cards.length === 0) {
+                    showCustomToast(
+                        '❌ No Bank Card',
+                        'Please add a bank card first before withdrawing!',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    return;
+                }
+
+                const cardId = cardSelect.value;
+                const amount = parseFloat(withdrawAmount.value.trim());
+
+                if (!cardId) {
+                    showCustomToast(
+                        '❌ Selection Error',
+                        'Please select a bank card first!',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    return;
+                }
+
+                if (!amount || amount <= 0) {
+                    showCustomToast(
+                        '❌ Amount Error',
+                        'Please enter a valid amount!',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    return;
+                }
+
+                // Check balance
+                if (state.balance !== null && amount > state.balance) {
+                    showCustomToast(
+                        '❌ Insufficient Balance',
+                        `Available balance: <span class="highlight">₹${formatNumber(state.balance)}</span>. Please enter a lower amount.`,
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    return;
+                }
+
+                submitWithdrawBtn.textContent = '⏳ Processing...';
+                submitWithdrawBtn.disabled = true;
+
+                const result = await apiWithdraw(amount);
+
+                submitWithdrawBtn.textContent = '💸 Withdraw Now';
+                submitWithdrawBtn.disabled = false;
+
+                if (result.success) {
+                    showCustomToast(
+                        '💸 Withdrawal Successful',
+                        `₹<span class="highlight">${amount}</span> has been withdrawn to your bank account!`,
+                        'success',
+                        5000,
+                        'success'
+                    );
+                    await loadAllData();
+                    withdrawAmount.value = '';
+                } else {
+                    showCustomToast(
+                        '❌ Withdrawal Failed',
+                        result.msg || 'Failed to process withdrawal',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                }
+            }
+
+            async function handleLogin() {
+                const phone = phoneInput.value.trim().replace(/\D/g, '');
+                if (phone.length !== 10) {
+                    showCustomToast(
+                        '❌ Invalid Phone',
+                        'Please enter a valid 10-digit phone number!',
+                        'error',
+                        5000,
+                        'error'
+                    );
+                    return;
+                }
+                
+                loginBtn.textContent = '⏳ Logging in...';
+                loginBtn.disabled = true;
+
+                const result = await apiLogin(phone);
+
+                loginBtn.textContent = '🔑 Login to Dashboard';
+                loginBtn.disabled = false;
+
+                if (result.success) {
+                    await loadAllData();
+                }
+            }
+
+            function handleLogout() {
+                state.token = null;
+                state.phone = null;
+                state.userData = null;
+                state.balance = null;
+                state.cards = [];
+                state.isLoggedIn = false;
+                state.lastUpdate = null;
+                state.withdraw = null;
+                state.recharge = null;
+
+                localStorage.removeItem('bhau_token');
+                localStorage.removeItem('bhau_phone');
+                localStorage.removeItem('bhau_logged_in');
+
+                updateUI();
+                phoneInput.value = '';
+                clearDebug();
+                addCardForm.classList.add('hidden');
+                toggleAddCardBtn.textContent = '➕ Add Card';
+                withdrawForm.classList.add('hidden');
+                toggleWithdrawBtn.textContent = 'Open';
+                
+                showCustomToast(
+                    '👋 Logged Out',
+                    'You have been successfully logged out.',
+                    'info',
+                    4000
+                );
+            }
+
+            function toggleAddCardForm() {
+                if (addCardForm.classList.contains('hidden')) {
+                    addCardForm.classList.remove('hidden');
+                    toggleAddCardBtn.textContent = '✖️ Close';
+                    const names = ['Ananya', 'Aadhya', 'Ishita', 'Aanya', 'Advika', 'Charvi', 'Diya', 'Anvi', 'Aarohi', 'Sara',
+                        'Riya', 'Naira', 'Pari', 'Tara', 'Ira', 'Vanya', 'Myra', 'Kavya', 'Priya', 'Neha'];
+                    const last = ['Sharma', 'Verma', 'Patel', 'Kumar', 'Singh', 'Gupta', 'Yadav', 'Joshi', 'Malhotra', 'Mehta'];
+                    const f = names[Math.floor(Math.random() * names.length)];
+                    const l = last[Math.floor(Math.random() * last.length)];
+                    cardName.value = f + ' ' + l;
+                    cardEmail.value = f.toLowerCase() + l.toLowerCase() + '@gmail.com';
+                    cardNumber.value = '';
+                    ifscCode.value = 'MAHB0002009';
+                } else {
+                    addCardForm.classList.add('hidden');
+                    toggleAddCardBtn.textContent = '➕ Add Card';
+                }
+            }
+
+            function toggleWithdrawForm() {
+                if (withdrawForm.classList.contains('hidden')) {
+                    // Check if cards exist before opening
+                    if (!state.cards || state.cards.length === 0) {
+                        showCustomToast(
+                            '⚠️ No Bank Card',
+                            'Please add a bank card first before withdrawing!',
+                            'warning',
+                            4000,
+                            'error'
+                        );
+                        return;
+                    }
+                    withdrawForm.classList.remove('hidden');
+                    toggleWithdrawBtn.textContent = '✖️ Close';
+                    updateCardSelect();
+                } else {
+                    withdrawForm.classList.add('hidden');
+                    toggleWithdrawBtn.textContent = 'Open';
+                }
+            }
+
+            // ─── Auto-restore ──────────────────────────────────
+            function restoreSession() {
+                const savedToken = localStorage.getItem('bhau_token');
+                const savedPhone = localStorage.getItem('bhau_phone');
+                const savedLoggedIn = localStorage.getItem('bhau_logged_in');
+
+                if (savedToken && savedPhone && savedLoggedIn === 'true') {
+                    state.token = savedToken;
+                    state.phone = savedPhone;
+                    state.isLoggedIn = true;
+                    phoneInput.value = savedPhone;
+                    showDebug('🔄 Session restored', 'success');
+                    loadAllData();
+                    
+                    showCustomToast(
+                        '🔄 Session Restored',
+                        `Welcome back, <span class="highlight">${savedPhone}</span>!`,
+                        'info',
+                        4000
+                    );
+                    
+                    return true;
+                }
+                return false;
+            }
+
+            // ─── Init ──────────────────────────────────────────
+            function init() {
+                loginBtn.addEventListener('click', handleLogin);
+                logoutBtn.addEventListener('click', handleLogout);
+                refreshBalanceBtn.addEventListener('click', refreshBalance);
+
+                toggleAddCardBtn.addEventListener('click', toggleAddCardForm);
+                cancelAddCard.addEventListener('click', function() {
+                    addCardForm.classList.add('hidden');
+                    toggleAddCardBtn.textContent = '➕ Add Card';
+                });
+                submitCardBtn.addEventListener('click', handleAddCard);
+
+                toggleWithdrawBtn.addEventListener('click', toggleWithdrawForm);
+                submitWithdrawBtn.addEventListener('click', handleWithdraw);
+                cardSelect.addEventListener('change', updateSelectedCardDisplay);
+
+                document.querySelectorAll('.quick-amount').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        withdrawAmount.value = this.getAttribute('data-amount');
+                    });
+                });
+
+                phoneInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') handleLogin();
+                });
+
+                restoreSession();
+                updateUI();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
 </body>
 </html>
