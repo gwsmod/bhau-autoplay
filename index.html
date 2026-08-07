@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bhau Lottery - Fan Tan & Deposit</title>
+    <title>Fan Tan - Direct Launch</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 700px;
             width: 100%;
             background: linear-gradient(145deg, #111827, #0d1528);
             border-radius: 30px;
@@ -60,44 +60,6 @@
             margin-top: 5px;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            padding: 10px 24px;
-            background: transparent;
-            border: none;
-            color: #6a7a9a;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn:hover {
-            color: #eef2f9;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .tab-btn.active {
-            color: #7dffb3;
-            background: rgba(125, 255, 179, 0.08);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
         .card {
             background: rgba(16, 24, 43, 0.8);
             border-radius: 20px;
@@ -117,16 +79,17 @@
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
         }
 
         .btn-primary {
@@ -156,6 +119,10 @@
             box-shadow: 0 6px 20px rgba(212, 160, 32, 0.3);
         }
 
+        .btn-warning:hover {
+            transform: translateY(-2px);
+        }
+
         .btn-danger {
             background: linear-gradient(135deg, #b13e4b, #8a2e3a);
             color: #fff;
@@ -173,7 +140,6 @@
 
         .btn-full {
             width: 100%;
-            justify-content: center;
         }
 
         .btn:disabled {
@@ -217,7 +183,7 @@
             background: rgba(10, 15, 26, 0.9);
             border-radius: 14px;
             padding: 15px;
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
             font-family: 'Courier New', monospace;
             font-size: 12px;
@@ -247,117 +213,6 @@
         .flex-row .btn {
             flex: 1;
             min-width: 120px;
-            justify-content: center;
-        }
-
-        .amount-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        .amount-btn {
-            padding: 12px;
-            background: rgba(15, 22, 41, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            color: #eef2f9;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .amount-btn:hover {
-            border-color: rgba(125, 255, 179, 0.3);
-            background: rgba(125, 255, 179, 0.05);
-        }
-
-        .amount-btn.active {
-            border-color: #7dffb3;
-            background: rgba(125, 255, 179, 0.1);
-            color: #7dffb3;
-        }
-
-        .bonus-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            border-left: 3px solid #3d5aa0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .bonus-item:hover {
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .bonus-item .bonus-name {
-            color: #eef2f9;
-            font-weight: 600;
-        }
-
-        .bonus-item .bonus-desc {
-            color: #6a7a9a;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        .payment-method {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-
-        .payment-method:hover {
-            border-color: rgba(125, 255, 179, 0.2);
-        }
-
-        .payment-method.selected {
-            border-color: #7dffb3;
-            background: rgba(125, 255, 179, 0.05);
-        }
-
-        .payment-method .pm-icon {
-            font-size: 24px;
-        }
-        .payment-method .pm-name {
-            color: #eef2f9;
-            font-weight: 500;
-        }
-        .payment-method .pm-desc {
-            color: #6a7a9a;
-            font-size: 12px;
-        }
-
-        .qr-container {
-            text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
-            margin: 10px 0;
-        }
-
-        .qr-container .qr-placeholder {
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            margin: 10px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            border: 2px dashed rgba(255, 255, 255, 0.1);
         }
 
         .game-details {
@@ -430,14 +285,18 @@
             100% { transform: rotate(360deg); }
         }
 
+        .launch-btn-big {
+            padding: 20px;
+            font-size: 20px;
+            border-radius: 16px;
+        }
+
         @media (max-width: 600px) {
             .container { padding: 20px; }
             .header h1 { font-size: 24px; }
             .flex-row { flex-direction: column; }
             .flex-row .btn { min-width: auto; }
-            .amount-grid { grid-template-columns: repeat(3, 1fr); }
-            .tabs { flex-wrap: wrap; }
-            .tab-btn { flex: 1; text-align: center; padding: 8px 12px; font-size: 12px; }
+            .launch-btn-big { font-size: 16px; padding: 16px; }
         }
 
         .log-box::-webkit-scrollbar {
@@ -460,10 +319,10 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🎰 BHAU LOTTERY</h1>
+            <h1>🎰 FAN TAN GAME</h1>
             <div class="sub">
                 <span class="status-badge online">
-                    <span class="dot"></span> System Ready
+                    <span class="dot"></span> Ready to Launch
                 </span>
             </div>
         </div>
@@ -479,111 +338,51 @@
                 <input type="password" id="passwordInput" value="Sanju2005" readonly />
             </div>
             <button class="btn btn-primary btn-full" id="loginBtn">
-                🔑 Login
+                🔑 Login & Load Game
             </button>
-            <div id="loginStatus" class="mt-10"></div>
         </div>
 
-        <!-- Main Content -->
-        <div id="mainContent" class="hidden">
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="fantan">🎮 Fan Tan Game</button>
-                <button class="tab-btn" data-tab="deposit">💰 Deposit</button>
-            </div>
+        <!-- Game Section -->
+        <div id="gameSection" class="hidden">
+            <div class="card">
+                <div class="card-title">🎮 Fan Tan Game</div>
+                
+                <!-- Game Details -->
+                <div class="game-details">
+                    <div class="label">Game Name</div>
+                    <div class="value" id="gameName">Fan Tan</div>
+                </div>
+                <div class="game-details">
+                    <div class="label">Game ID</div>
+                    <div class="value" id="gameId">27873</div>
+                </div>
+                <div class="game-details">
+                    <div class="label">Status</div>
+                    <div class="value" id="gameStatus" style="color:#7dffb3;">✅ Ready</div>
+                </div>
 
-            <!-- Fan Tan Tab -->
-            <div class="tab-content active" id="tab-fantan">
-                <div class="card">
-                    <div class="card-title">🎮 Fan Tan Game</div>
-                    <div id="gameDetails">
-                        <div class="game-details">
-                            <div class="label">Game Name</div>
-                            <div class="value" id="gameName">Loading...</div>
-                        </div>
-                        <div class="game-details">
-                            <div class="label">Game ID</div>
-                            <div class="value" id="gameId">27873</div>
-                        </div>
-                        <div class="game-details">
-                            <div class="label">Game URL</div>
-                            <div class="value" id="gameUrl" style="font-size:11px;word-break:break-all;">Loading...</div>
-                        </div>
-                        <div class="game-details">
-                            <div class="label">Iframe</div>
-                            <div class="value" id="gameIframe">—</div>
-                        </div>
-                    </div>
-                    <div class="flex-row mt-20">
-                        <button class="btn btn-success" id="launchBtn">🎮 Launch Game</button>
-                        <button class="btn btn-warning" id="showUrlBtn">🔗 Show URL</button>
-                        <button class="btn btn-outline" id="refreshGameBtn">🔄 Refresh</button>
-                    </div>
+                <!-- Launch Button -->
+                <button class="btn btn-success btn-full launch-btn-big mt-20" id="launchBtn">
+                    🚀 LAUNCH FAN TAN GAME
+                </button>
+
+                <div class="flex-row mt-10">
+                    <button class="btn btn-warning" id="showUrlBtn">🔗 Show URL</button>
+                    <button class="btn btn-outline" id="refreshBtn">🔄 Refresh</button>
                 </div>
             </div>
 
-            <!-- Deposit Tab -->
-            <div class="tab-content" id="tab-deposit">
-                <!-- Amount Selection -->
-                <div class="card">
-                    <div class="card-title">💵 Select Amount</div>
-                    <div class="amount-grid" id="amountGrid">
-                        <!-- Amount buttons will be inserted here -->
-                    </div>
-                    <div class="input-group mt-10">
-                        <label>💰 Custom Amount</label>
-                        <input type="number" id="customAmount" placeholder="Enter amount (min: ₹100)" min="100" />
-                    </div>
-                    <button class="btn btn-success btn-full mt-10" id="applyAmountBtn">
-                        ✅ Apply Amount
-                    </button>
-                </div>
-
-                <!-- Bonuses -->
-                <div class="card">
-                    <div class="card-title">🎁 Available Bonuses</div>
-                    <div id="bonusList">
-                        <div style="color:#6a7a9a;font-size:13px;">Select an amount to see bonuses</div>
-                    </div>
-                </div>
-
-                <!-- Payment Methods -->
-                <div class="card">
-                    <div class="card-title">💳 Payment Methods</div>
-                    <div id="paymentMethods">
-                        <div style="color:#6a7a9a;font-size:13px;">Loading payment methods...</div>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="card">
-                    <div class="flex-row">
-                        <button class="btn btn-warning" id="depositBtn">💰 Deposit Now</button>
-                        <button class="btn btn-primary" id="refreshDepositBtn">🔄 Refresh</button>
-                    </div>
-                </div>
-
-                <!-- Payment Info -->
-                <div class="card" id="paymentInfoCard" style="display:none;">
-                    <div class="card-title">📱 Payment Information</div>
-                    <div class="qr-container">
-                        <div class="qr-placeholder" id="qrDisplay">📱</div>
-                        <p id="paymentDetails" style="color:#8a9aaa;font-size:13px;">Scan QR or use UPI</p>
-                    </div>
-                    <div class="input-group">
-                        <label>📝 UTR Number</label>
-                        <input type="text" id="utrInput" placeholder="Enter UTR number after payment" />
-                    </div>
-                    <button class="btn btn-success btn-full mt-10" id="submitUtrBtn">
-                        ✅ Submit UTR
-                    </button>
-                </div>
+            <!-- URL Display -->
+            <div class="card" id="urlCard" style="display:none;">
+                <div class="card-title" style="color:#ffd700;">🔗 Game URL</div>
+                <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;word-break:break-all;font-size:12px;color:#8a9aaa;" id="urlDisplay"></div>
+                <button class="btn btn-primary btn-full mt-10" id="copyUrlBtn">📋 Copy URL</button>
             </div>
         </div>
 
         <!-- Log -->
         <div class="card">
-            <div class="card-title" style="color:#5a8aba;">📄 Log Output</div>
+            <div class="card-title" style="color:#5a8aba;">📄 Log</div>
             <div class="log-box" id="logBox">⏳ System ready. Please login...</div>
         </div>
     </div>
@@ -599,51 +398,27 @@
                 password: 'Sanju2005',
                 visitor: 'f48b0eb8dabc1d4971d30e0dae3a7ed95e3e',
                 isLoggedIn: false,
-                selectedAmount: null,
-                selectedBonus: null,
-                selectedPaymentMethod: null,
-                bonuses: [],
-                paymentMethods: [],
-                amounts: [200, 300, 500, 1000, 2000, 5000, 10000, 20000, 50000],
-                depositOrder: null,
-                gameInfo: null
+                gameUrl: null,
+                gameName: 'Fan Tan'
             };
 
             // ─── DOM REFS ──────────────────────────────────────
             const $ = (id) => document.getElementById(id);
             const loginSection = $('loginSection');
-            const mainContent = $('mainContent');
+            const gameSection = $('gameSection');
             const loginBtn = $('loginBtn');
             const phoneInput = $('phoneInput');
             const passwordInput = $('passwordInput');
             const logBox = $('logBox');
-            
-            // Fan Tan
             const gameName = $('gameName');
             const gameId = $('gameId');
-            const gameUrl = $('gameUrl');
-            const gameIframe = $('gameIframe');
+            const gameStatus = $('gameStatus');
             const launchBtn = $('launchBtn');
             const showUrlBtn = $('showUrlBtn');
-            const refreshGameBtn = $('refreshGameBtn');
-            
-            // Deposit
-            const amountGrid = $('amountGrid');
-            const customAmount = $('customAmount');
-            const applyAmountBtn = $('applyAmountBtn');
-            const bonusList = $('bonusList');
-            const paymentMethods = $('paymentMethods');
-            const depositBtn = $('depositBtn');
-            const refreshDepositBtn = $('refreshDepositBtn');
-            const paymentInfoCard = $('paymentInfoCard');
-            const qrDisplay = $('qrDisplay');
-            const paymentDetails = $('paymentDetails');
-            const utrInput = $('utrInput');
-            const submitUtrBtn = $('submitUtrBtn');
-
-            // Tabs
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
+            const refreshBtn = $('refreshBtn');
+            const urlCard = $('urlCard');
+            const urlDisplay = $('urlDisplay');
+            const copyUrlBtn = $('copyUrlBtn');
 
             // ─── LOGGING ──────────────────────────────────────
             function log(message, type = 'info') {
@@ -657,15 +432,11 @@
                 logBox.innerHTML = '';
             }
 
-            // ─── TABS ──────────────────────────────────────────
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
-                });
-            });
+            // ─── DIRECT FAN TAN URL ──────────────────────────
+            function getDirectFanTanUrl() {
+                // Direct Evolution URL for Fan Tan
+                return 'https://skylinedja.evo-games.com/entry?params=eyJjYXNpbm9faWQiOiJzay1saW5lZGphMDAwMSIsImdhbWVfaWQiOiJGYW5UYW4iLCJ0YWJsZV9pZCI6Ijc4NzMiLCJjdXJyZW5jeSI6IklOUiIsImxhbmciOiJlbiJ9';
+            }
 
             // ─── API CALLS ──────────────────────────────────
             async function login(phone, password) {
@@ -692,7 +463,7 @@
                     ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
                 };
 
-                log('📡 Sending login request...', 'info');
+                log('📡 Logging in...', 'info');
 
                 try {
                     const response = await fetch('https://api.bh2255.xyz/app/password/login', {
@@ -749,7 +520,7 @@
                     return null;
                 }
 
-                log(`🎯 Fetching Fan Tan game URL...`, 'info');
+                log('🎯 Fetching Fan Tan game URL...', 'info');
 
                 const payload = {
                     gameId: gameId,
@@ -771,392 +542,69 @@
                     'Content-Type': 'application/json',
                     'Origin': 'https://playbhau.com',
                     'Referer': 'https://playbhau.com/',
-                    'PackageId': '2',
-                    'User-Agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+                    'PackageId': '2'
                 };
 
-                const endpoints = [
-                    'https://api.gaming2255.net/iGaming/common/getGameStart',
-                    'https://api.gaming2255.net/iGaming/game/start',
-                    'https://api.gaming2255.net/app/game/start',
-                    'https://api.bh2255.xyz/app/game/start'
-                ];
+                try {
+                    // Try primary endpoint
+                    const response = await fetch('https://api.gaming2255.net/iGaming/common/getGameStart', {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(payload)
+                    });
 
-                for (const url of endpoints) {
-                    try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify(payload)
-                        });
-
-                        if (response.status === 200) {
-                            const data = await response.json();
-
-                            if (data.code === 0 && data.success) {
-                                const gameData = data.data || {};
-                                const name = gameData.gameName || gameData.name || 'Fan Tan';
-                                let urlGame = gameData.gameUrl || gameData.url || gameData.launchUrl;
-
-                                if (urlGame) {
-                                    urlGame = urlGame.replace(/\\/g, '');
-                                    log(`✅ Found game: ${name}`, 'success');
-
-                                    return {
-                                        success: true,
-                                        game_name: name,
-                                        game_url: urlGame,
-                                        iframe: gameData.iframe || false,
-                                        raw_data: gameData
-                                    };
-                                }
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        if (data.code === 0 && data.success) {
+                            const gameData = data.data || {};
+                            let url = gameData.gameUrl || gameData.url || gameData.launchUrl;
+                            if (url) {
+                                url = url.replace(/\\/g, '');
+                                log('✅ Game URL fetched!', 'success');
+                                return {
+                                    success: true,
+                                    game_name: gameData.gameName || 'Fan Tan',
+                                    game_url: url,
+                                    raw: gameData
+                                };
                             }
                         }
-                    } catch (e) {
-                        // Continue to next endpoint
                     }
+                } catch (e) {
+                    log('⚠️ API error, using direct URL', 'warning');
                 }
 
-                // Fallback - Direct Evolution URL
-                log('  Using direct Evolution URL...', 'warning');
-                const directUrl = 'https://skylinedja.evo-games.com/entry?params=eyJjYXNpbm9faWQiOiJzay1saW5lZGphMDAwMSIsImdhbWVfaWQiOiJGYW5UYW4iLCJ0YWJsZV9pZCI6Ijc4NzMiLCJjdXJyZW5jeSI6IklOUiIsImxhbmciOiJlbiJ9';
-
+                // Use direct URL as fallback
+                const directUrl = getDirectFanTanUrl();
+                log('✅ Using direct Fan Tan URL', 'success');
                 return {
                     success: true,
                     game_name: 'Fan Tan',
                     game_url: directUrl,
-                    iframe: false,
-                    raw_data: { gameName: 'Fan Tan', gameUrl: directUrl }
+                    raw: { gameName: 'Fan Tan', gameUrl: directUrl }
                 };
-            }
-
-            async function getDepositAmounts() {
-                if (!state.token) return null;
-
-                const req_date = Date.now();
-                const payload = {
-                    channel: 'h5',
-                    channelId: 'Samsung',
-                    lang: 'en_US',
-                    visitor: state.visitor,
-                    packageId: 2,
-                    packageInfo: 'com.resulta.checka',
-                    reqDate: req_date,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-                    versionCode: '999'
-                };
-
-                try {
-                    const response = await fetch('https://api.bh556677ww.com/app/pay/balance/list', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'token': state.token,
-                            'packageid': '2',
-                            'Origin': 'https://playbhau.com',
-                            'Referer': 'https://playbhau.com/'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        if (data.code === 0 && data.data) {
-                            log('✅ Deposit amounts loaded', 'success');
-                            return data.data;
-                        }
-                    }
-                    return null;
-                } catch (error) {
-                    log(`❌ Error loading amounts: ${error.message}`, 'error');
-                    return null;
-                }
-            }
-
-            async function getBonuses() {
-                if (!state.token) return null;
-
-                const req_date = Date.now();
-                const payload = {
-                    channel: 'h5',
-                    channelId: 'Samsung',
-                    lang: 'en_US',
-                    visitor: state.visitor,
-                    packageId: 2,
-                    packageInfo: 'com.resulta.checka',
-                    reqDate: req_date,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-                    useType: 1,
-                    versionCode: '999'
-                };
-
-                try {
-                    const response = await fetch('https://api.bh556677ww.com/app/promotion/activity/pay/list', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'token': state.token,
-                            'packageid': '2',
-                            'Origin': 'https://playbhau.com',
-                            'Referer': 'https://playbhau.com/'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        if (data.code === 0 && data.data) {
-                            log('✅ Bonuses loaded', 'success');
-                            return data.data;
-                        }
-                    }
-                    return null;
-                } catch (error) {
-                    log(`❌ Error loading bonuses: ${error.message}`, 'error');
-                    return null;
-                }
-            }
-
-            async function getPaymentMethods() {
-                if (!state.token) return null;
-
-                const req_date = Date.now();
-                const payload = {
-                    channel: 'h5',
-                    channelId: 'Samsung',
-                    lang: 'en_US',
-                    visitor: state.visitor,
-                    packageId: 2,
-                    packageInfo: 'com.resulta.checka',
-                    reqDate: req_date,
-                    channelUser: 0,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-                    versionCode: '999'
-                };
-
-                try {
-                    const response = await fetch('https://api.bh556677ww.com/app/pay/type/active/list', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'token': state.token,
-                            'packageid': '2',
-                            'Origin': 'https://playbhau.com',
-                            'Referer': 'https://playbhau.com/'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        if (data.code === 0 && data.data) {
-                            log('✅ Payment methods loaded', 'success');
-                            return data.data;
-                        }
-                    }
-                    return null;
-                } catch (error) {
-                    log(`❌ Error loading payment methods: ${error.message}`, 'error');
-                    return null;
-                }
             }
 
             // ─── UI UPDATE ──────────────────────────────────
             function updateGameUI(gameInfo) {
                 if (!gameInfo || !gameInfo.success) {
                     gameName.textContent = 'Not Found';
-                    gameUrl.textContent = 'N/A';
-                    gameIframe.textContent = '❌';
+                    gameStatus.textContent = '❌ Error';
+                    gameStatus.style.color = '#ff6b6b';
+                    log('❌ Game not found', 'error');
                     return;
                 }
 
-                state.gameInfo = gameInfo;
-                gameName.textContent = gameInfo.game_name || 'Fan Tan';
+                state.gameUrl = gameInfo.game_url;
+                state.gameName = gameInfo.game_name || 'Fan Tan';
+
+                gameName.textContent = state.gameName;
                 gameId.textContent = '27873';
-                gameUrl.textContent = gameInfo.game_url || 'N/A';
-                gameIframe.textContent = gameInfo.iframe ? '✅ Yes' : '❌ No';
-                log(`📛 Game: ${gameInfo.game_name} loaded`, 'success');
-            }
+                gameStatus.textContent = '✅ Ready to Launch';
+                gameStatus.style.color = '#7dffb3';
 
-            function renderAmounts(amounts) {
-                amountGrid.innerHTML = '';
-                const amountList = amounts || state.amounts;
-
-                amountList.forEach(amt => {
-                    const btn = document.createElement('button');
-                    btn.className = 'amount-btn';
-                    btn.textContent = `₹${amt}`;
-                    btn.dataset.amount = amt;
-                    btn.addEventListener('click', function() {
-                        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        state.selectedAmount = parseInt(this.dataset.amount);
-                        customAmount.value = this.dataset.amount;
-                        log(`💰 Amount selected: ₹${state.selectedAmount}`, 'info');
-                    });
-                    amountGrid.appendChild(btn);
-                });
-            }
-
-            function renderBonuses(bonuses) {
-                bonusList.innerHTML = '';
-                if (!bonuses || bonuses.length === 0) {
-                    bonusList.innerHTML = '<div style="color:#6a7a9a;font-size:13px;">No bonuses available</div>';
-                    return;
-                }
-
-                bonuses.forEach((bonus, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'bonus-item';
-                    const name = bonus.name || bonus.title || `Bonus #${index + 1}`;
-                    const desc = bonus.desc || bonus.description || bonus.remark || 'No description';
-                    div.innerHTML = `
-                        <div class="bonus-name">🎁 ${name}</div>
-                        <div class="bonus-desc">${desc}</div>
-                        ${bonus.amount ? `<div class="bonus-desc" style="color:#7dffb3;">Amount: ₹${bonus.amount}</div>` : ''}
-                    `;
-                    div.addEventListener('click', function() {
-                        document.querySelectorAll('.bonus-item').forEach(b => b.style.borderLeftColor = '#3d5aa0');
-                        this.style.borderLeftColor = '#7dffb3';
-                        state.selectedBonus = bonus;
-                        log(`🎁 Bonus selected: ${name}`, 'success');
-                    });
-                    bonusList.appendChild(div);
-                });
-            }
-
-            function renderPaymentMethods(methods) {
-                paymentMethods.innerHTML = '';
-                if (!methods || methods.length === 0) {
-                    paymentMethods.innerHTML = '<div style="color:#6a7a9a;font-size:13px;">No payment methods available</div>';
-                    return;
-                }
-
-                const filtered = methods.filter(m => 
-                    m.payType === 'PAYMENT_CENTER_PAY' || 
-                    m.payType === 'PAYMENT_CENTER' ||
-                    m.type === 'PAYMENT_CENTER_PAY'
-                );
-
-                const displayMethods = filtered.length > 0 ? filtered : methods;
-
-                displayMethods.forEach((method, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'payment-method';
-                    const name = method.name || method.payType || method.type || `Method #${index + 1}`;
-                    const desc = method.desc || method.description || method.remark || '';
-                    div.innerHTML = `
-                        <span class="pm-icon">💳</span>
-                        <div>
-                            <div class="pm-name">${name}</div>
-                            ${desc ? `<div class="pm-desc">${desc}</div>` : ''}
-                        </div>
-                    `;
-                    div.addEventListener('click', function() {
-                        document.querySelectorAll('.payment-method').forEach(p => p.classList.remove('selected'));
-                        this.classList.add('selected');
-                        state.selectedPaymentMethod = method;
-                        log(`💳 Payment method selected: ${name}`, 'success');
-                    });
-                    paymentMethods.appendChild(div);
-                });
-            }
-
-            // ─── DEPOSIT ──────────────────────────────────
-            async function createDeposit() {
-                if (!state.selectedAmount) {
-                    log('❌ Please select an amount first!', 'error');
-                    return;
-                }
-
-                if (!state.selectedPaymentMethod) {
-                    log('❌ Please select a payment method!', 'error');
-                    return;
-                }
-
-                const amount = state.selectedAmount;
-                const method = state.selectedPaymentMethod;
-
-                log(`💰 Creating deposit order for ₹${amount}...`, 'info');
-
-                const req_date = Date.now();
-                const payload = {
-                    channel: 'h5',
-                    channelId: 'Samsung',
-                    lang: 'en_US',
-                    visitor: state.visitor,
-                    packageId: 2,
-                    packageInfo: 'com.resulta.checka',
-                    reqDate: req_date,
-                    amount: amount,
-                    payTypeId: method.id || method.payTypeId || method.typeId || 1,
-                    balanceId: method.balanceId || 1,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-                    versionCode: '999'
-                };
-
-                try {
-                    const response = await fetch('https://api.bh556677ww.com/app/pay/income', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'token': state.token,
-                            'packageid': '2',
-                            'Origin': 'https://playbhau.com',
-                            'Referer': 'https://playbhau.com/'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        if (data.code === 0 && data.data) {
-                            state.depositOrder = data.data;
-                            log('✅ Deposit order created!', 'success');
-                            showPaymentInfo(data.data);
-                            return data.data;
-                        } else {
-                            log(`❌ Deposit failed: ${data.msg || 'Unknown error'}`, 'error');
-                        }
-                    }
-                    return null;
-                } catch (error) {
-                    log(`❌ Error creating deposit: ${error.message}`, 'error');
-                    return null;
-                }
-            }
-
-            function showPaymentInfo(order) {
-                paymentInfoCard.style.display = 'block';
-                qrDisplay.innerHTML = '📱';
-                
-                let details = '';
-                if (order.qrPayUrl) {
-                    details += `📱 QR URL: ${order.qrPayUrl}\n`;
-                }
-                if (order.phonepeUrl) {
-                    details += `📱 PhonePe: ${order.phonepeUrl}\n`;
-                }
-                if (order.paytmUrl) {
-                    details += `📱 Paytm: ${order.paytmUrl}\n`;
-                }
-                if (order.upiUrl) {
-                    details += `💳 UPI: ${order.upiUrl}\n`;
-                }
-                if (order.orderId) {
-                    details += `🆔 Order ID: ${order.orderId}\n`;
-                }
-                if (order.amount) {
-                    details += `💰 Amount: ₹${order.amount}\n`;
-                }
-
-                paymentDetails.textContent = details || 'Payment details loaded. Complete payment and submit UTR.';
-                paymentDetails.style.whiteSpace = 'pre-wrap';
-                log('📱 Payment information displayed', 'info');
+                log(`✅ ${state.gameName} loaded!`, 'success');
+                log('🚀 Click "LAUNCH" to start the game', 'info');
             }
 
             // ─── HANDLERS ────────────────────────────────────
@@ -1164,162 +612,127 @@
                 loginBtn.disabled = true;
                 loginBtn.innerHTML = '⏳ Logging in...';
                 clearLog();
-                log('🚀 Starting login...', 'info');
+                log('🚀 Starting...', 'info');
 
                 const success = await login(state.phone, state.password);
 
                 if (success) {
                     loginSection.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
-                    log('📊 Loading data...', 'info');
-
-                    // Load Fan Tan game
+                    gameSection.classList.remove('hidden');
+                    
+                    // Load game
                     const gameInfo = await getGameUrl(27873);
                     if (gameInfo && gameInfo.success) {
                         updateGameUI(gameInfo);
                     }
-
-                    // Load deposit data
-                    const amounts = await getDepositAmounts();
-                    if (amounts && amounts.list) {
-                        renderAmounts(amounts.list);
-                    } else {
-                        renderAmounts(state.amounts);
-                    }
-
-                    const bonuses = await getBonuses();
-                    if (bonuses) {
-                        renderBonuses(bonuses);
-                        state.bonuses = bonuses;
-                    }
-
-                    const methods = await getPaymentMethods();
-                    if (methods) {
-                        renderPaymentMethods(methods);
-                        state.paymentMethods = methods;
-                    }
-
-                    log('✅ System ready!', 'success');
+                    
+                    log('✅ Ready to launch Fan Tan!', 'success');
                 } else {
                     log('❌ Login failed. Please try again.', 'error');
                 }
 
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = '🔑 Login';
+                loginBtn.innerHTML = '🔑 Login & Load Game';
             }
 
             function handleLaunch() {
-                if (!state.gameInfo || !state.gameInfo.game_url) {
-                    log('❌ No game URL available', 'error');
+                if (!state.gameUrl) {
+                    log('❌ No game URL available. Please refresh.', 'error');
                     return;
                 }
-                const url = state.gameInfo.game_url;
-                log('🌐 Opening Fan Tan game...', 'info');
-                window.open(url, '_blank');
-                log('✅ Game opened!', 'success');
+
+                log('🚀 Launching Fan Tan game...', 'info');
+                
+                // Try to open in new window
+                try {
+                    const win = window.open(state.gameUrl, '_blank');
+                    if (win) {
+                        log('✅ Game opened in new tab!', 'success');
+                    } else {
+                        // If popup blocked, use current window
+                        window.location.href = state.gameUrl;
+                        log('✅ Redirecting to game...', 'success');
+                    }
+                } catch (e) {
+                    // Fallback - direct navigation
+                    window.location.href = state.gameUrl;
+                    log('✅ Opening game...', 'success');
+                }
             }
 
             function handleShowUrl() {
-                if (!state.gameInfo || !state.gameInfo.game_url) {
+                if (!state.gameUrl) {
                     log('❌ No game URL available', 'error');
                     return;
                 }
-                const url = state.gameInfo.game_url;
-                log(`🔗 Game URL:`, 'info');
-                log(`${url}`, 'highlight');
-                
+
+                urlCard.style.display = 'block';
+                urlDisplay.textContent = state.gameUrl;
+                log('🔗 Game URL displayed', 'info');
+            }
+
+            function handleCopyUrl() {
+                if (!state.gameUrl) {
+                    log('❌ No URL to copy', 'error');
+                    return;
+                }
+
                 if (navigator.clipboard) {
-                    navigator.clipboard.writeText(url).then(() => {
+                    navigator.clipboard.writeText(state.gameUrl).then(() => {
                         log('📋 URL copied to clipboard!', 'success');
+                    }).catch(() => {
+                        // Fallback
+                        const textArea = document.createElement('textarea');
+                        textArea.value = state.gameUrl;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        log('📋 URL copied!', 'success');
                     });
+                } else {
+                    // Fallback
+                    const textArea = document.createElement('textarea');
+                    textArea.value = state.gameUrl;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    log('📋 URL copied!', 'success');
                 }
             }
 
-            async function handleRefreshGame() {
-                log('🔄 Refreshing Fan Tan game...', 'info');
+            async function handleRefresh() {
+                log('🔄 Refreshing game...', 'info');
                 const gameInfo = await getGameUrl(27873);
                 if (gameInfo && gameInfo.success) {
                     updateGameUI(gameInfo);
+                    urlCard.style.display = 'none';
                     log('✅ Game refreshed!', 'success');
                 }
-            }
-
-            function handleApplyAmount() {
-                const amount = parseInt(customAmount.value);
-                if (!amount || amount < 100) {
-                    log('❌ Please enter a valid amount (min: ₹100)', 'error');
-                    return;
-                }
-                state.selectedAmount = amount;
-                document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-                log(`💰 Custom amount set: ₹${amount}`, 'success');
-            }
-
-            async function handleDeposit() {
-                if (!state.selectedAmount) {
-                    log('❌ Please select an amount first!', 'error');
-                    return;
-                }
-                await createDeposit();
-            }
-
-            async function handleRefreshDeposit() {
-                log('🔄 Refreshing deposit data...', 'info');
-                const amounts = await getDepositAmounts();
-                if (amounts && amounts.list) {
-                    renderAmounts(amounts.list);
-                }
-                const bonuses = await getBonuses();
-                if (bonuses) {
-                    renderBonuses(bonuses);
-                }
-                const methods = await getPaymentMethods();
-                if (methods) {
-                    renderPaymentMethods(methods);
-                }
-                log('✅ Deposit data refreshed!', 'success');
-            }
-
-            function handleSubmitUtr() {
-                const utr = utrInput.value.trim();
-                if (!utr) {
-                    log('❌ Please enter UTR number', 'error');
-                    return;
-                }
-                log(`✅ UTR submitted: ${utr}`, 'success');
-                log('📊 Payment verification in progress...', 'info');
-                log('✅ Deposit successful! Amount will be credited soon.', 'success');
-                utrInput.value = '';
-                paymentInfoCard.style.display = 'none';
             }
 
             // ─── EVENT LISTENERS ────────────────────────────
             loginBtn.addEventListener('click', handleLogin);
             launchBtn.addEventListener('click', handleLaunch);
             showUrlBtn.addEventListener('click', handleShowUrl);
-            refreshGameBtn.addEventListener('click', handleRefreshGame);
-            applyAmountBtn.addEventListener('click', handleApplyAmount);
-            depositBtn.addEventListener('click', handleDeposit);
-            refreshDepositBtn.addEventListener('click', handleRefreshDeposit);
-            submitUtrBtn.addEventListener('click', handleSubmitUtr);
+            refreshBtn.addEventListener('click', handleRefresh);
+            copyUrlBtn.addEventListener('click', handleCopyUrl);
 
-            // Enter key support
+            // Enter key for login
             document.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    if (!loginSection.classList.contains('hidden')) {
-                        handleLogin();
-                    } else if (customAmount === document.activeElement) {
-                        handleApplyAmount();
-                    } else if (utrInput === document.activeElement) {
-                        handleSubmitUtr();
-                    }
+                if (e.key === 'Enter' && !loginSection.classList.contains('hidden')) {
+                    handleLogin();
                 }
             });
 
             // ─── AUTO LOGIN ────────────────────────────────────
             window.addEventListener('DOMContentLoaded', function() {
-                log('🚀 System Ready - Fan Tan & Deposit', 'info');
-                log('💡 Phone: 8597630383, Password: Sanju2005', 'info');
+                log('🎯 Fan Tan Game Launcher Ready', 'info');
+                log('📱 Phone: 8597630383', 'info');
+                log('🔐 Password: Sanju2005', 'info');
+                log('⏳ Auto-login in 1 second...', 'info');
+                
                 setTimeout(() => {
                     handleLogin();
                 }, 1000);
