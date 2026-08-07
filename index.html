@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fan Tan - Direct Launch</title>
+    <title>Fan Tan - Game Launcher</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
         }
 
         .container {
-            max-width: 700px;
+            max-width: 900px;
             width: 100%;
             background: linear-gradient(145deg, #111827, #0d1528);
             border-radius: 30px;
@@ -36,11 +36,11 @@
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 900;
             background: linear-gradient(135deg, #7dffb3 0%, #3d5aa0 50%, #7dffb3 100%);
             background-size: 200% 200%;
@@ -56,7 +56,7 @@
 
         .header .sub {
             color: #6a7a9a;
-            font-size: 13px;
+            font-size: 14px;
             margin-top: 5px;
         }
 
@@ -68,28 +68,17 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .card-title {
-            color: #7dffb3;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .btn {
-            padding: 14px 28px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -113,18 +102,13 @@
             transform: translateY(-2px);
         }
 
-        .btn-warning {
-            background: linear-gradient(135deg, #d4a020, #b8841a);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(212, 160, 32, 0.3);
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px);
-        }
-
         .btn-danger {
             background: linear-gradient(135deg, #b13e4b, #8a2e3a);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #d4a020, #b8841a);
             color: #fff;
         }
 
@@ -140,6 +124,7 @@
 
         .btn-full {
             width: 100%;
+            justify-content: center;
         }
 
         .btn:disabled {
@@ -183,7 +168,7 @@
             background: rgba(10, 15, 26, 0.9);
             border-radius: 14px;
             padding: 15px;
-            max-height: 200px;
+            max-height: 400px;
             overflow-y: auto;
             font-family: 'Courier New', monospace;
             font-size: 12px;
@@ -199,42 +184,6 @@
         .log-box .info { color: #5a8aba; }
         .log-box .warning { color: #ffa502; }
         .log-box .highlight { color: #ffd700; }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .flex-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .flex-row .btn {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .game-details {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 10px;
-        }
-
-        .game-details .label {
-            color: #6a7a9a;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .game-details .value {
-            color: #eef2f9;
-            font-size: 14px;
-            margin-top: 3px;
-            word-break: break-all;
-        }
 
         .status-badge {
             display: inline-flex;
@@ -266,6 +215,43 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .flex-row .btn {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .game-details {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .game-details .label {
+            color: #6a7a9a;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .game-details .value {
+            color: #eef2f9;
+            font-size: 14px;
+            margin-top: 3px;
+            word-break: break-all;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         .mt-10 { margin-top: 10px; }
         .mt-20 { margin-top: 20px; }
         .mb-10 { margin-bottom: 10px; }
@@ -285,20 +271,14 @@
             100% { transform: rotate(360deg); }
         }
 
-        .launch-btn-big {
-            padding: 20px;
-            font-size: 20px;
-            border-radius: 16px;
-        }
-
         @media (max-width: 600px) {
             .container { padding: 20px; }
-            .header h1 { font-size: 24px; }
+            .header h1 { font-size: 28px; }
             .flex-row { flex-direction: column; }
             .flex-row .btn { min-width: auto; }
-            .launch-btn-big { font-size: 16px; padding: 16px; }
         }
 
+        /* Scrollbar */
         .log-box::-webkit-scrollbar {
             width: 6px;
         }
@@ -316,13 +296,13 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="app">
         <!-- Header -->
         <div class="header">
-            <h1>🎰 FAN TAN GAME</h1>
+            <h1>🎰 FAN TAN GAME LAUNCHER</h1>
             <div class="sub">
                 <span class="status-badge online">
-                    <span class="dot"></span> Ready to Launch
+                    <span class="dot"></span> System Ready
                 </span>
             </div>
         </div>
@@ -338,52 +318,47 @@
                 <input type="password" id="passwordInput" value="Sanju2005" readonly />
             </div>
             <button class="btn btn-primary btn-full" id="loginBtn">
-                🔑 Login & Load Game
+                🔑 Login & Get Fan Tan
             </button>
+            <div id="loginStatus" class="mt-10"></div>
         </div>
 
-        <!-- Game Section -->
+        <!-- Game Info Section -->
         <div id="gameSection" class="hidden">
             <div class="card">
-                <div class="card-title">🎮 Fan Tan Game</div>
-                
-                <!-- Game Details -->
-                <div class="game-details">
-                    <div class="label">Game Name</div>
-                    <div class="value" id="gameName">Fan Tan</div>
-                </div>
-                <div class="game-details">
-                    <div class="label">Game ID</div>
-                    <div class="value" id="gameId">27873</div>
-                </div>
-                <div class="game-details">
-                    <div class="label">Status</div>
-                    <div class="value" id="gameStatus" style="color:#7dffb3;">✅ Ready</div>
-                </div>
-
-                <!-- Launch Button -->
-                <button class="btn btn-success btn-full launch-btn-big mt-20" id="launchBtn">
-                    🚀 LAUNCH FAN TAN GAME
-                </button>
-
-                <div class="flex-row mt-10">
+                <div class="flex-row">
+                    <button class="btn btn-success" id="launchBtn">🎮 Launch Game</button>
                     <button class="btn btn-warning" id="showUrlBtn">🔗 Show URL</button>
-                    <button class="btn btn-outline" id="refreshBtn">🔄 Refresh</button>
+                    <button class="btn btn-danger" id="resetBtn">🔄 Reset</button>
                 </div>
             </div>
 
-            <!-- URL Display -->
-            <div class="card" id="urlCard" style="display:none;">
-                <div class="card-title" style="color:#ffd700;">🔗 Game URL</div>
-                <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;word-break:break-all;font-size:12px;color:#8a9aaa;" id="urlDisplay"></div>
-                <button class="btn btn-primary btn-full mt-10" id="copyUrlBtn">📋 Copy URL</button>
+            <div class="card">
+                <h3 style="color:#7dffb3;margin-bottom:10px;">📋 Game Details</h3>
+                <div id="gameDetails">
+                    <div class="game-details">
+                        <div class="label">Game Name</div>
+                        <div class="value" id="gameName">—</div>
+                    </div>
+                    <div class="game-details">
+                        <div class="label">Game ID</div>
+                        <div class="value" id="gameId">27873</div>
+                    </div>
+                    <div class="game-details">
+                        <div class="label">Game URL</div>
+                        <div class="value" id="gameUrl" style="font-size:11px;word-break:break-all;">—</div>
+                    </div>
+                    <div class="game-details">
+                        <div class="label">Iframe</div>
+                        <div class="value" id="gameIframe">—</div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Log -->
-        <div class="card">
-            <div class="card-title" style="color:#5a8aba;">📄 Log</div>
-            <div class="log-box" id="logBox">⏳ System ready. Please login...</div>
+            <div class="card">
+                <h3 style="color:#5a8aba;margin-bottom:10px;">📄 Log Output</h3>
+                <div class="log-box" id="logBox">⏳ Waiting for action...</div>
+            </div>
         </div>
     </div>
 
@@ -397,9 +372,8 @@
                 phone: '8597630383',
                 password: 'Sanju2005',
                 visitor: 'f48b0eb8dabc1d4971d30e0dae3a7ed95e3e',
-                isLoggedIn: false,
-                gameUrl: null,
-                gameName: 'Fan Tan'
+                gameInfo: null,
+                isLoggedIn: false
             };
 
             // ─── DOM REFS ──────────────────────────────────────
@@ -412,13 +386,11 @@
             const logBox = $('logBox');
             const gameName = $('gameName');
             const gameId = $('gameId');
-            const gameStatus = $('gameStatus');
+            const gameUrl = $('gameUrl');
+            const gameIframe = $('gameIframe');
             const launchBtn = $('launchBtn');
             const showUrlBtn = $('showUrlBtn');
-            const refreshBtn = $('refreshBtn');
-            const urlCard = $('urlCard');
-            const urlDisplay = $('urlDisplay');
-            const copyUrlBtn = $('copyUrlBtn');
+            const resetBtn = $('resetBtn');
 
             // ─── LOGGING ──────────────────────────────────────
             function log(message, type = 'info') {
@@ -430,12 +402,6 @@
 
             function clearLog() {
                 logBox.innerHTML = '';
-            }
-
-            // ─── DIRECT FAN TAN URL ──────────────────────────
-            function getDirectFanTanUrl() {
-                // Direct Evolution URL for Fan Tan
-                return 'https://skylinedja.evo-games.com/entry?params=eyJjYXNpbm9faWQiOiJzay1saW5lZGphMDAwMSIsImdhbWVfaWQiOiJGYW5UYW4iLCJ0YWJsZV9pZCI6Ijc4NzMiLCJjdXJyZW5jeSI6IklOUiIsImxhbmciOiJlbiJ9';
             }
 
             // ─── API CALLS ──────────────────────────────────
@@ -463,7 +429,7 @@
                     ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
                 };
 
-                log('📡 Logging in...', 'info');
+                log('📡 Sending login request...', 'info');
 
                 try {
                     const response = await fetch('https://api.bh2255.xyz/app/password/login', {
@@ -478,12 +444,16 @@
                         body: JSON.stringify(payload)
                     });
 
+                    log(`📊 Status: ${response.status}`, 'info');
+
                     if (response.status !== 200) {
                         log(`❌ HTTP Error: ${response.status}`, 'error');
                         return false;
                     }
 
                     const data = await response.json();
+                    log(`📊 Response Code: ${data.code}`, 'info');
+                    log(`💬 Message: ${data.msg}`, 'info');
 
                     if (data.success && data.code === 0) {
                         let token = null;
@@ -502,12 +472,14 @@
                             state.isLoggedIn = true;
                             log('✅ Login successful!', 'success');
                             return true;
+                        } else {
+                            log('❌ No token found', 'error');
+                            return false;
                         }
+                    } else {
+                        log(`❌ Login failed: ${data.msg || 'Unknown error'}`, 'error');
+                        return false;
                     }
-
-                    log(`❌ Login failed: ${data.msg || 'Unknown error'}`, 'error');
-                    return false;
-
                 } catch (error) {
                     log(`❌ Network Error: ${error.message}`, 'error');
                     return false;
@@ -520,7 +492,7 @@
                     return null;
                 }
 
-                log('🎯 Fetching Fan Tan game URL...', 'info');
+                log(`🎯 Fetching game URL for ID: ${gameId}...`, 'info');
 
                 const payload = {
                     gameId: gameId,
@@ -542,173 +514,169 @@
                     'Content-Type': 'application/json',
                     'Origin': 'https://playbhau.com',
                     'Referer': 'https://playbhau.com/',
-                    'PackageId': '2'
+                    'PackageId': '2',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
                 };
 
-                try {
-                    // Try primary endpoint
-                    const response = await fetch('https://api.gaming2255.net/iGaming/common/getGameStart', {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify(payload)
-                    });
+                const endpoints = [
+                    'https://api.gaming2255.net/iGaming/common/getGameStart',
+                    'https://api.gaming2255.net/iGaming/game/start',
+                    'https://api.gaming2255.net/app/game/start',
+                    'https://api.bh2255.xyz/app/game/start'
+                ];
 
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        if (data.code === 0 && data.success) {
-                            const gameData = data.data || {};
-                            let url = gameData.gameUrl || gameData.url || gameData.launchUrl;
-                            if (url) {
-                                url = url.replace(/\\/g, '');
-                                log('✅ Game URL fetched!', 'success');
-                                return {
-                                    success: true,
-                                    game_name: gameData.gameName || 'Fan Tan',
-                                    game_url: url,
-                                    raw: gameData
-                                };
+                for (const url of endpoints) {
+                    try {
+                        log(`  Trying: ${url}`, 'info');
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.status === 200) {
+                            const data = await response.json();
+
+                            if (data.code === 0 && data.success) {
+                                const gameData = data.data || {};
+                                const name = gameData.gameName || gameData.name || 'Fan Tan';
+                                let urlGame = gameData.gameUrl || gameData.url || gameData.launchUrl;
+
+                                if (urlGame) {
+                                    urlGame = urlGame.replace(/\\/g, '');
+                                    log(`✅ Found game: ${name}`, 'success');
+
+                                    return {
+                                        success: true,
+                                        game_name: name,
+                                        game_url: urlGame,
+                                        iframe: gameData.iframe || false,
+                                        raw_data: gameData
+                                    };
+                                }
                             }
                         }
+                    } catch (e) {
+                        log(`  ❌ Error: ${e.message}`, 'error');
                     }
-                } catch (e) {
-                    log('⚠️ API error, using direct URL', 'warning');
                 }
 
-                // Use direct URL as fallback
-                const directUrl = getDirectFanTanUrl();
-                log('✅ Using direct Fan Tan URL', 'success');
+                // Fallback - Direct Evolution URL
+                log('  Using direct Evolution URL...', 'warning');
+                const directUrl = 'https://skylinedja.evo-games.com/entry?params=eyJjYXNpbm9faWQiOiJzay1saW5lZGphMDAwMSIsImdhbWVfaWQiOiJGYW5UYW4iLCJ0YWJsZV9pZCI6Ijc4NzMiLCJjdXJyZW5jeSI6IklOUiIsImxhbmciOiJlbiJ9';
+
                 return {
                     success: true,
                     game_name: 'Fan Tan',
                     game_url: directUrl,
-                    raw: { gameName: 'Fan Tan', gameUrl: directUrl }
+                    iframe: false,
+                    raw_data: { gameName: 'Fan Tan', gameUrl: directUrl }
                 };
             }
 
             // ─── UI UPDATE ──────────────────────────────────
             function updateGameUI(gameInfo) {
                 if (!gameInfo || !gameInfo.success) {
-                    gameName.textContent = 'Not Found';
-                    gameStatus.textContent = '❌ Error';
-                    gameStatus.style.color = '#ff6b6b';
-                    log('❌ Game not found', 'error');
+                    log('❌ No game info available', 'error');
                     return;
                 }
 
-                state.gameUrl = gameInfo.game_url;
-                state.gameName = gameInfo.game_name || 'Fan Tan';
+                state.gameInfo = gameInfo;
 
-                gameName.textContent = state.gameName;
+                gameName.textContent = gameInfo.game_name || 'Fan Tan';
                 gameId.textContent = '27873';
-                gameStatus.textContent = '✅ Ready to Launch';
-                gameStatus.style.color = '#7dffb3';
+                gameUrl.textContent = gameInfo.game_url || 'N/A';
+                gameIframe.textContent = gameInfo.iframe ? '✅ Yes' : '❌ No';
 
-                log(`✅ ${state.gameName} loaded!`, 'success');
-                log('🚀 Click "LAUNCH" to start the game', 'info');
+                log(`📛 Game: ${gameInfo.game_name}`, 'success');
+                log(`🔗 URL: ${gameInfo.game_url.substring(0, 80)}...`, 'info');
+            }
+
+            function showGameSection() {
+                loginSection.classList.add('hidden');
+                gameSection.classList.remove('hidden');
+            }
+
+            function resetApp() {
+                state.token = null;
+                state.isLoggedIn = false;
+                state.gameInfo = null;
+                loginSection.classList.remove('hidden');
+                gameSection.classList.add('hidden');
+                clearLog();
+                log('🔄 Reset complete. Ready to login.', 'info');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '🔑 Login & Get Fan Tan';
             }
 
             // ─── HANDLERS ────────────────────────────────────
             async function handleLogin() {
-                loginBtn.disabled = true;
-                loginBtn.innerHTML = '⏳ Logging in...';
-                clearLog();
-                log('🚀 Starting...', 'info');
+                const phone = phoneInput.value.trim();
+                const password = passwordInput.value.trim();
 
-                const success = await login(state.phone, state.password);
-
-                if (success) {
-                    loginSection.classList.add('hidden');
-                    gameSection.classList.remove('hidden');
-                    
-                    // Load game
-                    const gameInfo = await getGameUrl(27873);
-                    if (gameInfo && gameInfo.success) {
-                        updateGameUI(gameInfo);
-                    }
-                    
-                    log('✅ Ready to launch Fan Tan!', 'success');
-                } else {
-                    log('❌ Login failed. Please try again.', 'error');
-                }
-
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '🔑 Login & Load Game';
-            }
-
-            function handleLaunch() {
-                if (!state.gameUrl) {
-                    log('❌ No game URL available. Please refresh.', 'error');
+                if (!phone || !password) {
+                    log('❌ Phone and password required!', 'error');
                     return;
                 }
 
-                log('🚀 Launching Fan Tan game...', 'info');
-                
-                // Try to open in new window
-                try {
-                    const win = window.open(state.gameUrl, '_blank');
-                    if (win) {
-                        log('✅ Game opened in new tab!', 'success');
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '⏳ Logging in...';
+                clearLog();
+                log('🚀 Starting login process...', 'info');
+
+                const success = await login(phone, password);
+
+                if (success) {
+                    log('🔍 Fetching game details...', 'info');
+                    const gameInfo = await getGameUrl(27873);
+
+                    if (gameInfo && gameInfo.success) {
+                        showGameSection();
+                        updateGameUI(gameInfo);
+                        log('✅ Ready to launch!', 'success');
                     } else {
-                        // If popup blocked, use current window
-                        window.location.href = state.gameUrl;
-                        log('✅ Redirecting to game...', 'success');
+                        log('❌ Could not get game details', 'error');
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '🔑 Login & Get Fan Tan';
                     }
-                } catch (e) {
-                    // Fallback - direct navigation
-                    window.location.href = state.gameUrl;
-                    log('✅ Opening game...', 'success');
+                } else {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '🔑 Login & Get Fan Tan';
                 }
             }
 
-            function handleShowUrl() {
-                if (!state.gameUrl) {
+            function handleLaunch() {
+                if (!state.gameInfo || !state.gameInfo.game_url) {
                     log('❌ No game URL available', 'error');
                     return;
                 }
 
-                urlCard.style.display = 'block';
-                urlDisplay.textContent = state.gameUrl;
-                log('🔗 Game URL displayed', 'info');
+                const url = state.gameInfo.game_url;
+                log(`🌐 Opening game in new tab...`, 'info');
+                window.open(url, '_blank');
+                log('✅ Browser tab opened!', 'success');
             }
 
-            function handleCopyUrl() {
-                if (!state.gameUrl) {
-                    log('❌ No URL to copy', 'error');
+            function handleShowUrl() {
+                if (!state.gameInfo || !state.gameInfo.game_url) {
+                    log('❌ No game URL available', 'error');
                     return;
                 }
 
+                const url = state.gameInfo.game_url;
+                log(`🔗 Game URL:`, 'info');
+                log(`${url}`, 'highlight');
+
+                // Copy to clipboard
                 if (navigator.clipboard) {
-                    navigator.clipboard.writeText(state.gameUrl).then(() => {
+                    navigator.clipboard.writeText(url).then(() => {
                         log('📋 URL copied to clipboard!', 'success');
                     }).catch(() => {
-                        // Fallback
-                        const textArea = document.createElement('textarea');
-                        textArea.value = state.gameUrl;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        log('📋 URL copied!', 'success');
+                        log('💡 Copy the URL manually', 'warning');
                     });
                 } else {
-                    // Fallback
-                    const textArea = document.createElement('textarea');
-                    textArea.value = state.gameUrl;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    log('📋 URL copied!', 'success');
-                }
-            }
-
-            async function handleRefresh() {
-                log('🔄 Refreshing game...', 'info');
-                const gameInfo = await getGameUrl(27873);
-                if (gameInfo && gameInfo.success) {
-                    updateGameUI(gameInfo);
-                    urlCard.style.display = 'none';
-                    log('✅ Game refreshed!', 'success');
+                    log('💡 Select and copy the URL manually', 'warning');
                 }
             }
 
@@ -716,23 +684,21 @@
             loginBtn.addEventListener('click', handleLogin);
             launchBtn.addEventListener('click', handleLaunch);
             showUrlBtn.addEventListener('click', handleShowUrl);
-            refreshBtn.addEventListener('click', handleRefresh);
-            copyUrlBtn.addEventListener('click', handleCopyUrl);
+            resetBtn.addEventListener('click', resetApp);
 
-            // Enter key for login
+            // Enter key support
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && !loginSection.classList.contains('hidden')) {
                     handleLogin();
                 }
             });
 
-            // ─── AUTO LOGIN ────────────────────────────────────
+            // ─── AUTO LOGIN ON LOAD ────────────────────────────
             window.addEventListener('DOMContentLoaded', function() {
-                log('🎯 Fan Tan Game Launcher Ready', 'info');
-                log('📱 Phone: 8597630383', 'info');
-                log('🔐 Password: Sanju2005', 'info');
-                log('⏳ Auto-login in 1 second...', 'info');
+                log('🚀 System ready. Click "Login & Get Fan Tan" to start.', 'info');
+                log('💡 Phone: 8597630383, Password: Sanju2005 (auto-filled)', 'info');
                 
+                // Auto login after 1 second
                 setTimeout(() => {
                     handleLogin();
                 }, 1000);
