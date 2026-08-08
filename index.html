@@ -1392,10 +1392,15 @@
       this.disabled = false; this.textContent = '💳 Deposit Now';
       const div = document.getElementById('depositResult');
       if (result && result.code === 0) {
-        const url = result.data ? result.data.replace(/\\/g, '') : '';
+        let url = result.data ? result.data.replace(/\\/g, '') : '';
+        // If URL exists, open it in new tab
+        if (url) {
+          window.open(url, '_blank');
+          log('🌐 Deposit page opened in new tab', 'info');
+        }
         div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
-          <div style="color:#5df0ae;font-weight:600;">✅ Deposit created!</div>
-          ${url ? `<div style="font-size:9px;word-break:break-all;">🔗 ${url}</div>` : ''}
+          <div style="color:#5df0ae;font-weight:600;">✅ Deposit created! Opening payment page...</div>
+          ${url ? `<div style="font-size:9px;word-break:break-all;margin-top:4px;">🔗 ${url}</div>` : ''}
           <div style="margin-top:4px;display:flex;gap:4px;">
             <button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')">🌐 Open</button>
             <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')">📋 Copy</button>
@@ -1507,14 +1512,40 @@
         <button class="quick-amount" data-amount="1000">₹1000</button>
       </div>
       <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn">💸 Withdraw Now</button>
-      <div id="withdrawResult" class="mt-10"></div>`;
+      <div id="withdrawResult" class="mt-10"></div>
+      <!-- Withdrawal logs -->
+      <div id="withdrawLogs" style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
+        <div style="color:#68a9ff;font-size:12px;font-weight:600;margin-bottom:6px;">📋 Withdrawal Logs</div>
+        <div id="withdrawLogList" style="font-size:11px;color:#8a9aaa;max-height:100px;overflow-y:auto;"></div>
+      </div>
+    `;
     wc.innerHTML = html;
+
+    // Load withdrawal logs from localStorage
+    function loadWithdrawLogs() {
+      const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
+      const list = document.getElementById('withdrawLogList');
+      if (!list) return;
+      if (logs.length === 0) {
+        list.innerHTML = '<div style="color:#6a7a9a;">No withdrawal history</div>';
+        return;
+      }
+      list.innerHTML = logs.slice(-10).reverse().map(log => 
+        `<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+          <span style="color:#ffd700;">₹${log.amount}</span> 
+          <span style="color:${log.status === 'success' ? '#5df0ae' : '#ff6b6b'};">${log.status}</span>
+          <span style="color:#6a7a9a;font-size:9px;">${log.time}</span>
+          ${log.card ? `<span style="color:#6a7a9a;font-size:9px;">→ ${log.card}</span>` : ''}
+        </div>`
+      ).join('');
+    }
 
     document.querySelectorAll('.card-item').forEach(el => {
       el.addEventListener('click', function() {
         document.querySelectorAll('.card-item').forEach(x => x.classList.remove('selected'));
         this.classList.add('selected');
         state.selectedCard = parseInt(this.dataset.id);
+        log(`💳 Card selected: ${this.querySelector('.pm-name').textContent}`, 'info');
       });
     });
     document.querySelectorAll('.quick-amount').forEach(b => {
@@ -1527,20 +1558,52 @@
       const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
       if (!amount || amount <= 0) { log('❌ Enter valid amount', 'error'); return; }
       if (state.balance !== null && amount > state.balance) { log(`❌ Insufficient balance`, 'error'); return; }
+      
+      // Get card name for log
+      let cardName = '';
+      document.querySelectorAll('.card-item').forEach(el => {
+        if (el.classList.contains('selected')) {
+          cardName = el.querySelector('.pm-name')?.textContent || 'Unknown';
+        }
+      });
+      
       this.disabled = true; this.textContent = '⏳ Processing...';
+      log(`💸 Processing withdrawal of ₹${amount}...`, 'info');
+      
       const result = await apiWithdraw(amount, state.selectedCard);
       this.disabled = false; this.textContent = '💸 Withdraw Now';
       const div = document.getElementById('withdrawResult');
+      
+      // Save log
+      const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
+      const logEntry = {
+        amount: amount,
+        card: cardName,
+        status: result?.success ? 'success' : 'failed',
+        time: new Date().toLocaleString()
+      };
+      logs.push(logEntry);
+      localStorage.setItem('withdrawLogs', JSON.stringify(logs));
+      
       if (result && result.success) {
-        div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;"><div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div><div style="color:#8a9aaa;">₹${amount} withdrawn</div></div>`;
-        log(`✅ Withdrawal ₹${amount}`, 'ok');
+        div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+          <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
+          <div style="color:#8a9aaa;">₹${amount} withdrawn successfully</div>
+          <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${result.data?.orderId || 'N/A'}</div>
+        </div>`;
+        log(`✅ Withdrawal of ₹${amount} completed!`, 'ok');
         await getBalance();
         balanceDisplay.textContent = state.balance.toFixed(2);
+        loadWithdrawLogs();
       } else {
-        div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result?.msg || 'Failed'}</div>`;
-        log(`❌ Withdraw failed`, 'error');
+        div.innerHTML = `<div style="color:#ff6b6b;">❌ Failed: ${result?.msg || 'Unknown error'}</div>`;
+        log(`❌ Withdrawal failed: ${result?.msg || 'Unknown error'}`, 'error');
+        loadWithdrawLogs();
       }
     });
+    
+    // Load logs on render
+    setTimeout(loadWithdrawLogs, 100);
   }
 
   async function renderBalance() {
