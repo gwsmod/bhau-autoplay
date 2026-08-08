@@ -1,652 +1,549 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>BHAU LOTTERY — Sanju</title>
-
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#050713;
-  --panel:rgba(11,17,38,.72);
-  --line:rgba(151,119,255,.25);
-  --purple:#9b35ff;
-  --blue:#1977ff;
-  --gold:#ffbd28;
-  --text:#f7f8ff;
-  --muted:#9299b8;
-}
-html,body{min-height:100%;background:var(--bg)}
-body{
-  min-height:100vh;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:var(--text);
-  overflow-x:hidden;
-  background:
-    radial-gradient(circle at 50% 8%,rgba(126,39,255,.26),transparent 25%),
-    radial-gradient(circle at 8% 70%,rgba(24,102,255,.16),transparent 25%),
-    radial-gradient(circle at 92% 55%,rgba(181,38,255,.13),transparent 25%),
-    linear-gradient(180deg,#050611 0%,#080a18 55%,#03050d 100%);
-}
-body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;
-  background-image:
-    radial-gradient(circle at 20% 20%,#fff 0 1px,transparent 1.5px),
-    radial-gradient(circle at 70% 15%,#fff 0 1px,transparent 1.5px),
-    radial-gradient(circle at 85% 65%,#fff 0 1px,transparent 1.5px),
-    radial-gradient(circle at 30% 80%,#fff 0 1px,transparent 1.5px);
-  background-size:180px 180px,230px 230px,270px 270px,310px 310px;
-}
-
-.page{
-  width:min(620px,100%);
-  min-height:100vh;
-  margin:auto;
-  padding:20px 14px 28px;
-  position:relative;
-}
-
-.glass{
-  background:linear-gradient(145deg,rgba(22,27,55,.82),rgba(6,10,25,.72));
-  border:1px solid var(--line);
-  box-shadow:
-    inset 0 1px rgba(255,255,255,.08),
-    0 25px 80px rgba(0,0,0,.48),
-    0 0 50px rgba(102,36,255,.08);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-}
-
-.brand{
-  text-align:center;
-  padding:16px 12px 18px;
-}
-.crown{
-  font-size:42px;
-  filter:drop-shadow(0 0 16px rgba(255,184,37,.65));
-  animation:float 3s ease-in-out infinite;
-}
-.logo{
-  margin-top:-3px;
-  font-size:clamp(58px,15vw,92px);
-  line-height:.85;
-  font-weight:1000;
-  letter-spacing:-5px;
-  background:linear-gradient(180deg,#fff9d4 0%,#ffd84e 28%,#ff9d0a 68%,#b85b00 100%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  filter:drop-shadow(0 8px 18px rgba(255,156,0,.25));
-}
-.lottery{
-  margin-top:12px;
-  font-size:clamp(26px,7vw,43px);
-  font-weight:1000;
-  letter-spacing:5px;
-  background:linear-gradient(180deg,#fff,#b9bfff 50%,#713dff);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
-.sanju{
-  display:inline-flex;
-  margin-top:15px;
-  padding:8px 28px;
-  border:1px solid rgba(255,194,42,.65);
-  border-radius:999px;
-  color:#ffd34b;
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:5px;
-  background:rgba(118,47,255,.16);
-  box-shadow:0 0 25px rgba(149,48,255,.25),inset 0 1px rgba(255,255,255,.12);
-}
-.tag{
-  margin-top:12px;
-  color:#b9a5ff;
-  font-size:12px;
-  letter-spacing:3px;
-  font-weight:800;
-}
-
-.card{
-  margin-top:8px;
-  border-radius:32px;
-  padding:26px 18px 20px;
-}
-.welcome{text-align:center;margin-bottom:24px}
-.welcome .mini{
-  color:#c75aff;
-  font-size:12px;
-  letter-spacing:4px;
-  font-weight:900;
-  margin-bottom:7px;
-}
-.welcome h1{
-  font-size:30px;
-  line-height:1.1;
-}
-.welcome h1 span{
-  color:#bd57ff;
-  text-shadow:0 0 18px rgba(189,87,255,.35);
-}
-.welcome p{
-  margin-top:8px;
-  color:var(--muted);
-  font-size:14px;
-}
-
-.form{
-  padding:18px;
-  border-radius:24px;
-  background:rgba(3,7,20,.34);
-  border:1px solid rgba(255,255,255,.08);
-}
-.label{
-  display:block;
-  margin:4px 2px 9px;
-  color:#9db8ed;
-  font-size:13px;
-  font-weight:900;
-  letter-spacing:1.5px;
-}
-.input{
-  display:flex;
-  align-items:center;
-  height:59px;
-  border-radius:17px;
-  border:1px solid rgba(129,112,255,.28);
-  background:rgba(5,9,24,.72);
-  box-shadow:inset 0 1px rgba(255,255,255,.05);
-  margin-bottom:18px;
-  transition:.2s;
-}
-.input:focus-within{
-  border-color:#8b51ff;
-  box-shadow:0 0 0 3px rgba(139,81,255,.12),0 0 22px rgba(139,81,255,.12);
-}
-.icon{
-  width:53px;
-  text-align:center;
-  font-size:22px;
-}
-.input input{
-  width:100%;
-  height:100%;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:#fff;
-  font-size:16px;
-  padding-right:14px;
-}
-.input input::placeholder{color:#686f8e}
-.auto{
-  margin-top:-9px;
-  margin-bottom:17px;
-  color:#858cab;
-  font-size:12px;
-}
-.login{
-  width:100%;
-  height:60px;
-  border:1px solid rgba(255,255,255,.25);
-  border-radius:18px;
-  color:#fff;
-  font-size:16px;
-  font-weight:1000;
-  letter-spacing:.7px;
-  cursor:pointer;
-  background:linear-gradient(100deg,#126aff,#6124e9 65%,#b22cff);
-  box-shadow:0 13px 35px rgba(73,46,255,.32),inset 0 1px rgba(255,255,255,.25);
-  transition:.2s;
-}
-.login:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.login:active{transform:translateY(0) scale(.99)}
-
-.logs{
-  margin-top:18px;
-  padding:18px;
-  border-radius:24px;
-  background:rgba(3,7,20,.5);
-  border:1px solid rgba(255,255,255,.08);
-}
-.logs h2{
-  font-size:17px;
-  color:#68a9ff;
-  margin-bottom:12px;
-}
-.terminal{
-  border-radius:16px;
-  background:#030711;
-  border:1px solid rgba(86,106,165,.15);
-  padding:15px;
-  min-height:100px;
-  max-height:200px;
-  overflow-y:auto;
-  color:#8e9bc0;
-  font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-}
-.terminal .time{color:#4b9fff}
-.terminal .ok{color:#5df0ae}
-.terminal .warn{color:#ffd45d}
-.terminal .error{color:#ff6b6b}
-.terminal .highlight{color:#ffd700}
-.terminal .info{color:#68a9ff}
-
-.security{
-  margin-top:18px;
-  padding:17px 10px 4px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  text-align:center;
-  gap:4px;
-}
-.security .item{
-  padding:6px 4px;
-  color:#aeb5d1;
-  font-size:11px;
-  font-weight:800;
-}
-.security .big{
-  display:block;
-  color:#fff;
-  font-size:12px;
-  margin-bottom:4px;
-}
-.security .icon{
-  display:block;
-  width:auto;
-  color:#a764ff;
-  font-size:24px;
-  margin-bottom:4px;
-}
-
-/* ─── MENU SECTION ────────────────────────────────────────── */
-.menu-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.menu-item {
-  background: rgba(3,7,20,.5);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 16px;
-  padding: 16px 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.menu-item:hover {
-  border-color: rgba(151,119,255,.35);
-  background: rgba(151,119,255,.08);
-  transform: translateY(-2px);
-}
-
-.menu-item .icon {
-  font-size: 28px;
-  display: block;
-  width: auto;
-  margin-bottom: 6px;
-}
-
-.menu-item .title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #f7f8ff;
-}
-
-.menu-item .desc {
-  font-size: 10px;
-  color: #6a7a9a;
-  margin-top: 2px;
-}
-
-.menu-item.logout-item {
-  border-color: rgba(255,107,107,.15);
-}
-
-.menu-item.logout-item:hover {
-  border-color: rgba(255,107,107,.35);
-  background: rgba(255,107,107,.08);
-}
-
-.menu-item.auto-claim {
-  border-color: rgba(255,215,0,.15);
-  background: rgba(255,215,0,.03);
-}
-
-.menu-item.auto-claim:hover {
-  border-color: rgba(255,215,0,.35);
-  background: rgba(255,215,0,.08);
-}
-
-.menu-item.deposit-item {
-  border-color: rgba(46,213,115,.15);
-  background: rgba(46,213,115,.03);
-}
-
-.menu-item.deposit-item:hover {
-  border-color: rgba(46,213,115,.35);
-  background: rgba(46,213,115,.08);
-}
-
-.menu-item.withdraw-item {
-  border-color: rgba(212,160,32,.15);
-  background: rgba(212,160,32,.03);
-}
-
-.menu-item.withdraw-item:hover {
-  border-color: rgba(212,160,32,.35);
-  background: rgba(212,160,32,.08);
-}
-
-.menu-item.card-item {
-  border-color: rgba(255,215,0,.15);
-  background: rgba(255,215,0,.03);
-}
-
-.menu-item.card-item:hover {
-  border-color: rgba(255,215,0,.35);
-  background: rgba(255,215,0,.08);
-}
-
-/* ─── DYNAMIC CONTENT ────────────────────────────────────── */
-#dynamicContent {
-  margin-top: 12px;
-}
-
-.dynamic-card {
-  background: rgba(3,7,20,.5);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 16px;
-  padding: 16px;
-  margin-top: 8px;
-}
-
-.dynamic-card .title {
-  color: #68a9ff;
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-/* Amount Grid */
-.amount-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin: 8px 0;
-}
-
-.amount-btn {
-  padding: 8px;
-  background: rgba(15,22,41,0.8);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 8px;
-  color: #eef2f9;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  font-size: 12px;
-}
-
-.amount-btn:hover {
-  border-color: rgba(125,255,179,0.3);
-  background: rgba(125,255,179,0.05);
-}
-
-.amount-btn.active {
-  border-color: #7dffb3;
-  background: rgba(125,255,179,0.1);
-  color: #7dffb3;
-}
-
-.payment-method {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 8px;
-  margin-bottom: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
-  font-size: 12px;
-}
-
-.payment-method:hover {
-  border-color: rgba(125,255,179,0.2);
-}
-
-.payment-method.selected {
-  border-color: #7dffb3;
-  background: rgba(125,255,179,0.05);
-}
-
-.payment-method .pm-name {
-  color: #eef2f9;
-  font-weight: 500;
-}
-.payment-method .pm-desc {
-  color: #6a7a9a;
-  font-size: 11px;
-}
-
-.game-result {
-  background: rgba(0,0,0,0.3);
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 8px;
-  font-size: 11px;
-  word-break: break-all;
-}
-
-.game-result .success { color: #5df0ae; }
-.game-result .error { color: #ff6b6b; }
-.game-result .info { color: #68a9ff; }
-.game-result .highlight { color: #ffd700; }
-
-.btn-sm {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #1f8b4c, #167a3e);
-  color: #fff;
-}
-
-.btn-success:hover { transform: translateY(-1px); }
-
-.btn-warning {
-  background: linear-gradient(135deg, #d4a020, #b8841a);
-  color: #fff;
-}
-
-.btn-warning:hover { transform: translateY(-1px); }
-
-.btn-primary {
-  background: linear-gradient(135deg, #3d5aa0, #2a4a8a);
-  color: #fff;
-}
-
-.btn-primary:hover { transform: translateY(-1px); }
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #8a9aaa;
-}
-
-.btn-outline:hover {
-  background: rgba(255,255,255,0.05);
-}
-
-.btn-gold {
-  background: linear-gradient(135deg, #ffd700, #f0a500);
-  color: #000;
-  font-weight: 800;
-}
-
-.btn-gold:hover { transform: translateY(-1px); }
-
-.btn-deposit {
-  background: linear-gradient(135deg, #2ed573, #1b9e4a);
-  color: #fff;
-  font-weight: 700;
-}
-
-.btn-deposit:hover { transform: translateY(-1px); }
-
-.btn-withdraw-btn {
-  background: linear-gradient(135deg, #d4a020, #b8841a);
-  color: #fff;
-  font-weight: 700;
-}
-
-.btn-withdraw-btn:hover { transform: translateY(-1px); }
-
-.btn-card-add {
-  background: linear-gradient(135deg, #ff6b35, #e55a2b);
-  color: #fff;
-  font-weight: 700;
-}
-
-.btn-card-add:hover { transform: translateY(-1px); }
-
-.btn-block {
-  width: 100%;
-  padding: 10px;
-}
-
-.flex-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.flex-row .btn-sm {
-  flex: 1;
-}
-
-.hidden { display: none !important; }
-.mt-10 { margin-top: 10px; }
-.mb-10 { margin-bottom: 10px; }
-.text-center { text-align: center; }
-
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
-}
-
-@keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.2); }
-  50% { box-shadow: 0 0 40px rgba(255,215,0,0.5); }
-}
-
-@keyframes pulse-deposit {
-  0%, 100% { box-shadow: 0 0 20px rgba(46,213,115,0.2); }
-  50% { box-shadow: 0 0 40px rgba(46,213,115,0.4); }
-}
-
-@keyframes pulse-withdraw {
-  0%, 100% { box-shadow: 0 0 20px rgba(212,160,32,0.2); }
-  50% { box-shadow: 0 0 40px rgba(212,160,32,0.4); }
-}
-
-@keyframes pulse-card {
-  0%, 100% { box-shadow: 0 0 20px rgba(255,107,53,0.2); }
-  50% { box-shadow: 0 0 40px rgba(255,107,53,0.4); }
-}
-
-.menu-item.auto-claim { animation: pulse-gold 2s ease-in-out infinite; }
-.menu-item.deposit-item { animation: pulse-deposit 2s ease-in-out infinite; }
-.menu-item.withdraw-item { animation: pulse-withdraw 2s ease-in-out infinite; }
-.menu-item.card-item { animation: pulse-card 2s ease-in-out infinite; }
-
-@media(max-width:430px){
-  .page{padding:12px 9px 20px}
-  .card{padding:22px 12px 16px;border-radius:27px}
-  .form{padding:15px}
-  .welcome h1{font-size:26px}
-  .logo{letter-spacing:-4px}
-  .security .item{font-size:10px}
-  .menu-grid{grid-template-columns:1fr 1fr}
-  .amount-grid{grid-template-columns:repeat(3,1fr)}
-}
-
-.terminal::-webkit-scrollbar {
-  width: 4px;
-}
-.terminal::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.2);
-  border-radius: 2px;
-}
-.terminal::-webkit-scrollbar-thumb {
-  background: #3d5aa0;
-  border-radius: 2px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>BHAU · Sanju Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #050713;
+      color: #f7f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(126, 39, 255, 0.25) 0%, transparent 40%),
+        radial-gradient(circle at 10% 80%, rgba(24, 102, 255, 0.15) 0%, transparent 35%),
+        radial-gradient(circle at 95% 60%, rgba(181, 38, 255, 0.12) 0%, transparent 30%),
+        #050713;
+      padding: 14px 10px 30px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* ---- glass card ---- */
+    .glass {
+      background: linear-gradient(145deg, rgba(22, 27, 55, 0.8), rgba(6, 10, 25, 0.7));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(151, 119, 255, 0.2);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(102, 36, 255, 0.06);
+      border-radius: 36px;
+      padding: 24px 18px 18px;
+      transition: all 0.2s;
+    }
+
+    /* header */
+    .brand {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .crown {
+      font-size: 40px;
+      filter: drop-shadow(0 0 18px rgba(255, 185, 37, 0.6));
+      animation: floatCrown 3s ease-in-out infinite;
+    }
+    .logo {
+      font-size: clamp(48px, 14vw, 78px);
+      font-weight: 1000;
+      letter-spacing: -4px;
+      background: linear-gradient(180deg, #fff9d4 10%, #ffd84e 40%, #ff9d0a 75%, #b85b00 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 0.9;
+      margin-top: -6px;
+      filter: drop-shadow(0 6px 18px rgba(255, 156, 0, 0.25));
+    }
+    .lottery {
+      font-size: clamp(22px, 6vw, 38px);
+      font-weight: 1000;
+      letter-spacing: 4px;
+      background: linear-gradient(180deg, #fff, #b9bfff 40%, #713dff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-top: 2px;
+    }
+    .sanju-badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 28px;
+      border: 1px solid rgba(255, 194, 42, 0.6);
+      border-radius: 60px;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 5px;
+      color: #ffd34b;
+      background: rgba(118, 47, 255, 0.15);
+      box-shadow: 0 0 24px rgba(149, 48, 255, 0.2);
+      backdrop-filter: blur(4px);
+    }
+    .tagline {
+      margin-top: 10px;
+      color: #b9a5ff;
+      font-size: 11px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* login section */
+    .login-section {
+      margin-top: 8px;
+    }
+    .welcome-text {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .welcome-text .mini {
+      color: #c75aff;
+      font-size: 12px;
+      letter-spacing: 4px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .welcome-text h1 {
+      font-size: 28px;
+    }
+    .welcome-text h1 span {
+      color: #bd57ff;
+      text-shadow: 0 0 20px rgba(189, 87, 255, 0.3);
+    }
+    .welcome-text p {
+      color: #9299b8;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .label {
+      display: block;
+      color: #9db8ed;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      height: 56px;
+      border-radius: 18px;
+      border: 1px solid rgba(129, 112, 255, 0.25);
+      background: rgba(5, 9, 24, 0.7);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+      transition: 0.2s;
+    }
+    .input-wrap:focus-within {
+      border-color: #8b51ff;
+      box-shadow: 0 0 0 3px rgba(139, 81, 255, 0.12), 0 0 28px rgba(139, 81, 255, 0.08);
+    }
+    .input-icon {
+      width: 50px;
+      text-align: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .input-wrap input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 16px;
+      padding-right: 14px;
+    }
+    .input-wrap input::placeholder {
+      color: #686f8e;
+    }
+    .password-toggle {
+      background: none;
+      border: none;
+      color: #9da4c3;
+      font-size: 20px;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 58px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(100deg, #126aff, #6124e9 60%, #b22cff);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.6px;
+      box-shadow: 0 14px 35px rgba(73, 46, 255, 0.3), inset 0 1px rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 6px;
+    }
+    .login-btn:active {
+      transform: scale(0.97);
+    }
+    .login-btn:disabled {
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
+
+    /* terminal */
+    .terminal-box {
+      margin-top: 22px;
+      padding: 16px;
+      background: rgba(3, 7, 20, 0.5);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .terminal-box h3 {
+      font-size: 15px;
+      color: #68a9ff;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+    .terminal {
+      background: #030711;
+      border-radius: 16px;
+      padding: 14px 16px;
+      min-height: 90px;
+      max-height: 150px;
+      overflow-y: auto;
+      font: 12px/1.8 ui-monospace, 'SF Mono', Menlo, monospace;
+      color: #8e9bc0;
+      border: 1px solid rgba(86, 106, 165, 0.1);
+    }
+    .terminal .time { color: #4b9fff; }
+    .terminal .ok { color: #5df0ae; }
+    .terminal .warn { color: #ffd45d; }
+    .terminal .error { color: #ff6b6b; }
+    .terminal .info { color: #68a9ff; }
+    .terminal .highlight { color: #ffd700; }
+    .terminal::-webkit-scrollbar { width: 3px; }
+    .terminal::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 6px; }
+    .terminal::-webkit-scrollbar-thumb { background: #3d5aa0; border-radius: 6px; }
+
+    /* ===== DASHBOARD (hidden until login) ===== */
+    .dashboard {
+      display: none;
+      margin-top: 4px;
+    }
+
+    .user-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(3, 7, 20, 0.4);
+      border-radius: 30px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 18px;
+    }
+    .user-badge .phone {
+      font-weight: 700;
+      color: #7dffb3;
+      font-size: 15px;
+    }
+    .user-badge .balance {
+      font-weight: 800;
+      font-size: 18px;
+      color: #ffd700;
+      background: rgba(255, 215, 0, 0.08);
+      padding: 4px 14px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 215, 0, 0.15);
+    }
+
+    /* menu grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .menu-item {
+      background: rgba(3, 7, 20, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 14px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      backdrop-filter: blur(4px);
+    }
+    .menu-item:active { transform: scale(0.96); }
+    .menu-item:hover {
+      border-color: rgba(151, 119, 255, 0.3);
+      background: rgba(151, 119, 255, 0.06);
+    }
+    .menu-item .icon {
+      font-size: 28px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .menu-item .title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f0f3ff;
+    }
+    .menu-item .desc {
+      font-size: 9px;
+      color: #6a7a9a;
+      margin-top: 2px;
+    }
+
+    /* special menu variants */
+    .menu-item.deposit-item { border-color: rgba(46, 213, 115, 0.12); background: rgba(46, 213, 115, 0.04); }
+    .menu-item.withdraw-item { border-color: rgba(212, 160, 32, 0.12); background: rgba(212, 160, 32, 0.04); }
+    .menu-item.card-item { border-color: rgba(255, 215, 0, 0.12); background: rgba(255, 215, 0, 0.03); }
+    .menu-item.auto-claim { border-color: rgba(255, 215, 0, 0.15); background: rgba(255, 215, 0, 0.03); animation: pulseGold 2.4s infinite; }
+    .menu-item.logout-item { border-color: rgba(255, 107, 107, 0.1); }
+    .menu-item.logout-item:hover { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.06); }
+
+    @keyframes pulseGold {
+      0%,100% { box-shadow: 0 0 6px rgba(255,215,0,0.1); }
+      50% { box-shadow: 0 0 24px rgba(255,215,0,0.2); }
+    }
+
+    /* dynamic card */
+    .dynamic-card {
+      background: rgba(3, 7, 20, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 22px;
+      padding: 16px;
+      margin-top: 6px;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .dynamic-card .title {
+      font-weight: 700;
+      color: #68a9ff;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .amount-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .amount-btn {
+      padding: 8px 4px;
+      background: rgba(15,22,41,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      color: #eef2f9;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .amount-btn:active { transform: scale(0.95); }
+    .amount-btn.active {
+      border-color: #7dffb3;
+      background: rgba(125,255,179,0.08);
+      color: #7dffb3;
+    }
+
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      margin-bottom: 5px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 12px;
+    }
+    .payment-method.selected {
+      border-color: #7dffb3;
+      background: rgba(125,255,179,0.05);
+    }
+    .payment-method .pm-name { color: #eef2f9; font-weight: 500; }
+    .payment-method .pm-desc { color: #6a7a9a; font-size: 10px; }
+
+    .btn-sm {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-sm:active { transform: scale(0.95); }
+    .btn-block { width: 100%; }
+    .btn-success { background: #1f8b4c; color: #fff; }
+    .btn-warning { background: #d4a020; color: #000; }
+    .btn-primary { background: #3d5aa0; color: #fff; }
+    .btn-gold { background: linear-gradient(135deg, #ffd700, #f0a500); color: #000; font-weight: 800; }
+    .btn-deposit { background: linear-gradient(135deg, #2ed573, #1b9e4a); color: #fff; }
+    .btn-withdraw { background: linear-gradient(135deg, #d4a020, #b8841a); color: #fff; }
+    .btn-card-add { background: linear-gradient(135deg, #ff6b35, #e55a2b); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.08); color: #8a9aaa; }
+    .btn-danger { background: rgba(255, 70, 70, 0.15); color: #ff6b6b; border: 1px solid rgba(255,70,70,0.1); }
+
+    .mt-10 { margin-top: 10px; }
+    .mb-10 { margin-bottom: 10px; }
+    .text-center { text-align: center; }
+    .flex-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .hidden { display: none !important; }
+
+    .input-group {
+      margin-bottom: 10px;
+    }
+    .input-group label {
+      display: block;
+      color: #7a8aaa;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 3px;
+      letter-spacing: 0.3px;
+    }
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(15,22,41,0.7);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      color: #eef2f9;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .input-group input:focus {
+      border-color: rgba(125,255,179,0.3);
+    }
+
+    .quick-amount {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 30px;
+      color: #8a9aaa;
+      padding: 4px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .quick-amount:active { background: rgba(255,255,255,0.06); }
+
+    .game-result {
+      background: rgba(0,0,0,0.25);
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    /* footer security */
+    .security-footer {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 4px;
+      margin-top: 22px;
+      padding: 12px 4px 4px;
+      text-align: center;
+    }
+    .security-footer .item {
+      font-size: 10px;
+      color: #aeb5d1;
+      font-weight: 700;
+    }
+    .security-footer .item .big-icon {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .security-footer .item .big-label {
+      display: block;
+      color: #fff;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    @keyframes floatCrown {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @media (max-width: 440px) {
+      .page { padding: 0 4px; }
+      .glass { padding: 18px 12px; }
+      .menu-grid { gap: 8px; }
+      .amount-grid { grid-template-columns: repeat(3,1fr); }
+    }
+  </style>
 </head>
-
 <body>
-<main class="page">
+<div class="page">
+  <div class="glass">
 
-  <!-- BHAU LOTTERY BRAND -->
-  <header class="brand">
-    <div class="crown">♛</div>
-    <div class="logo">BHAU</div>
-    <div class="lottery">LOTTERY</div>
-    <div class="sanju">✦ SANJU ✦</div>
-    <div class="tag">BY SANJU • PLAY SMART • WIN BIG</div>
-  </header>
+    <!-- brand -->
+    <div class="brand">
+      <div class="crown">♛</div>
+      <div class="logo">BHAU</div>
+      <div class="lottery">LOTTERY</div>
+      <div class="sanju-badge">✦ SANJU ✦</div>
+      <div class="tagline">BY SANJU · PLAY SMART · WIN BIG</div>
+    </div>
 
-  <!-- MAIN CARD -->
-  <section class="glass card" id="mainCard">
-
-    <!-- ─── LOGIN SECTION ──────────────────────────────────── -->
-    <div id="loginSection">
-      <div class="welcome">
+    <!-- LOGIN SECTION -->
+    <div id="loginSection" class="login-section">
+      <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
         <h1>Hello, <span>Sanju!</span> 👑</h1>
         <p>Login to continue your journey</p>
       </div>
 
-      <form class="form" id="loginForm">
-        <label class="label">📱 PHONE NUMBER</label>
-        <div class="input">
-          <div class="icon">📞</div>
-          <input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" autocomplete="tel" required>
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="label">📱 PHONE NUMBER</label>
+          <div class="input-wrap">
+            <div class="input-icon">📞</div>
+            <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile" autocomplete="tel" required>
+          </div>
         </div>
-
-        <label class="label">🔐 PASSWORD</label>
-        <div class="input">
-          <div class="icon">🔒</div>
-          <input id="password" type="password" value="Sanju2005" placeholder="Enter your password" autocomplete="current-password" required>
-          <button type="button" id="showPassword" style="border:0;background:none;color:#9da4c3;font-size:20px;padding:0 15px;cursor:pointer">◉</button>
+        <div class="form-group">
+          <label class="label">🔐 PASSWORD</label>
+          <div class="input-wrap">
+            <div class="input-icon">🔒</div>
+            <input id="passwordInput" type="password" value="Sanju2005" placeholder="Enter password" autocomplete="current-password" required>
+            <button type="button" id="showPassBtn" class="password-toggle">◉</button>
+          </div>
         </div>
-
-        <div class="auto">● Auto-filled password</div>
-
-        <button class="login" type="submit" id="loginBtn">
-          🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →
-        </button>
+        <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →</button>
       </form>
 
-      <div class="logs">
-        <h2>📄 LOG OUTPUT</h2>
+      <div class="terminal-box">
+        <h3>📄 LOG OUTPUT</h3>
         <div class="terminal" id="terminal">
           <div><span class="time">[SYSTEM]</span> <span class="ok">✓ System ready...</span></div>
           <div><span class="time">[READY]</span> 🎯 Bhau Lottery launcher ready</div>
@@ -655,11 +552,11 @@ body:before{
       </div>
     </div>
 
-    <!-- ─── MENU SECTION ──────────────────────────────────── -->
-    <div id="menuSection" class="hidden">
-      <div style="text-align:center;margin-bottom:12px;">
-        <span style="color:#7dffb3;font-weight:700;font-size:14px;">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
-        <span style="color:#6a7a9a;font-size:12px;display:block;">💰 Balance: ₹<span id="balanceDisplay">0.00</span></span>
+    <!-- DASHBOARD (hidden until login) -->
+    <div id="dashboard" class="dashboard">
+      <div class="user-badge">
+        <span class="phone">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
+        <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
       <div class="menu-grid">
@@ -700,110 +597,76 @@ body:before{
         </div>
       </div>
 
-      <!-- Dynamic Content -->
+      <!-- dynamic content area -->
       <div id="dynamicContent"></div>
     </div>
 
-    <!-- ─── SECURITY FOOTER ────────────────────────────────── -->
-    <div class="security">
+    <!-- security footer -->
+    <div class="security-footer">
       <div class="item">
-        <span class="icon">🛡️</span>
-        <span class="big">100% SECURE</span>
+        <span class="big-icon">🛡️</span>
+        <span class="big-label">100% SECURE</span>
         Protected
       </div>
       <div class="item">
-        <span class="icon">♛</span>
-        <span class="big">SANJU STYLE</span>
+        <span class="big-icon">♛</span>
+        <span class="big-label">SANJU STYLE</span>
         Premium UI
       </div>
       <div class="item">
-        <span class="icon">⚡</span>
-        <span class="big">FAST &amp; STABLE</span>
-        Smooth Experience
+        <span class="big-icon">⚡</span>
+        <span class="big-label">FAST &amp; STABLE</span>
+        Smooth
       </div>
     </div>
-  </section>
-
-</main>
+  </div>
+</div>
 
 <script>
 (function() {
   'use strict';
 
-  // ─── BENGALI GIRLS NAMES ──────────────────────────────
-  const firstNames = [
-    'Ananya', 'Aadhya', 'Ishita', 'Aanya', 'Advika', 'Charvi', 'Diya', 'Anvi', 
-    'Aarohi', 'Sara', 'Riya', 'Naira', 'Pari', 'Tara', 'Ira', 'Vanya', 'Myra', 
-    'Kavya', 'Priya', 'Neha', 'Sneha', 'Anika', 'Aisha', 'Meera', 'Kaira', 
-    'Ishani', 'Anjali', 'Sakshi', 'Trisha', 'Ridhi', 'Sanvi', 'Shreya', 
-    'Riya', 'Pihu', 'Adviti', 'Tanvi', 'Suhani', 'Kiara', 'Arya', 'Anaya'
-  ];
-  
-  const lastNames = [
-    'Sharma', 'Verma', 'Patel', 'Kumar', 'Singh', 'Gupta', 'Yadav', 'Joshi', 
-    'Malhotra', 'Mehta', 'Agarwal', 'Bhatia', 'Chopra', 'Kaur', 'Das', 'Sen', 
-    'Mukherjee', 'Banerjee', 'Chatterjee', 'Basu', 'Dutta', 'Ganguly', 'Lahiri', 
-    'Majumdar', 'Maitra', 'Pal', 'Sarkar', 'Bose', 'Chakraborty', 'Roy'
-  ];
-
-  function getRandomName() {
-    const f = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const l = lastNames[Math.floor(Math.random() * lastNames.length)];
-    return { first: f, last: l, full: f + ' ' + l };
-  }
-
-  function getEmail(name) {
-    return name.toLowerCase().replace(/ /g, '') + '@gmail.com';
-  }
-
-  // ─── STATE ──────────────────────────────────────────
+  // ----- state -----
   const state = {
     token: null,
     phone: null,
-    password: 'Sanju2005',
-    visitor: '0bcbcd2bea0bde4737e38d0e23bbf654dfc9',
     isLoggedIn: false,
     balance: 0,
-    gameUrl: null,
+    visitor: '0bcbcd2bea0bde4737e38d0e23bbf654dfc9',
     depositAmounts: [],
     paymentMethods: [],
     selectedAmount: null,
     selectedPayment: null,
-    isAutoClaiming: false,
     withdrawCards: [],
+    cardList: [],
     selectedCard: null,
-    cardList: []
+    isAutoClaiming: false,
   };
 
-  // ─── DOM REFS ──────────────────────────────────────
-  const $ = (id) => document.getElementById(id);
-  const terminal = $('terminal');
-  const loginSection = $('loginSection');
-  const menuSection = $('menuSection');
-  const phoneInput = $('phone');
-  const passwordInput = $('password');
-  const loginBtn = $('loginBtn');
-  const userPhoneDisplay = $('userPhoneDisplay');
-  const balanceDisplay = $('balanceDisplay');
-  const showPassword = $('showPassword');
-  const dynamicContent = $('dynamicContent');
+  // ----- DOM refs -----
+  const terminal = document.getElementById('terminal');
+  const loginSection = document.getElementById('loginSection');
+  const dashboard = document.getElementById('dashboard');
+  const phoneInput = document.getElementById('phoneInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const userPhoneDisplay = document.getElementById('userPhoneDisplay');
+  const balanceDisplay = document.getElementById('balanceDisplay');
+  const showPassBtn = document.getElementById('showPassBtn');
+  const dynamicContent = document.getElementById('dynamicContent');
 
-  // ─── LOGGING ──────────────────────────────────────
-  function log(message, type = 'info') {
+  // ----- logging -----
+  function log(msg, type = 'info') {
     const now = new Date();
     const time = now.toLocaleTimeString([], { hour12: false });
     const row = document.createElement('div');
-    const className = type || '';
-    row.innerHTML = `<span class="time">[${time}]</span> <span class="${className}">${message}</span>`;
+    const cls = type || 'info';
+    row.innerHTML = `<span class="time">[${time}]</span> <span class="${cls}">${msg}</span>`;
     terminal.appendChild(row);
     terminal.scrollTop = terminal.scrollHeight;
   }
 
-  function clearLog() {
-    terminal.innerHTML = '';
-  }
-
-  // ─── API CALLS ────────────────────────────────────
+  // ----- login API (mock / real) -----
   async function login(phone, password) {
     const visitor = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const device_id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -853,7 +716,6 @@ body:before{
       if (data.success && data.code === 0) {
         let token = null;
         const tokenData = data.data;
-
         if (typeof tokenData === 'string' && tokenData.startsWith('eyJ')) {
           token = tokenData;
         } else if (typeof tokenData === 'object' && tokenData !== null) {
@@ -873,26 +735,24 @@ body:before{
 
       log(`❌ Login failed: ${data.msg || 'Unknown error'}`, 'error');
       return false;
-
     } catch (error) {
       log(`❌ Network Error: ${error.message}`, 'error');
       return false;
     }
   }
 
+  // ----- get balance -----
   async function getBalance() {
     if (!state.token) return;
-
     try {
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
         lang: 'en_US',
         visitor: state.visitor,
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI)',
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         versionCode: '999',
@@ -900,7 +760,6 @@ body:before{
         count: 1,
         betAmount: 10
       };
-
       const headers = {
         'Accept': 'application/json, text/plain, */*',
         'Token': state.token,
@@ -908,153 +767,105 @@ body:before{
         'Content-Type': 'application/json',
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
-        'PackageId': '2',
-        'x-requested-with': 'mark.via.gp'
+        'PackageId': '2'
       };
-
-      const response = await fetch('https://api.bh2255.xyz/app/user/getBalanceV2?gameType=BigTurnTable', {
+      const res = await fetch('https://api.bh2255.xyz/app/user/getBalanceV2?gameType=BigTurnTable', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0) {
-          const balanceData = data.data || {};
-          state.balance = balanceData.totalBalance || 0;
-          balanceDisplay.textContent = state.balance.toFixed(2);
-          return state.balance;
+          const bal = data.data?.totalBalance || 0;
+          state.balance = bal;
+          balanceDisplay.textContent = bal.toFixed(2);
+          return bal;
         }
       }
       return null;
-    } catch (error) {
-      log(`⚠️ Balance error: ${error.message}`, 'warn');
+    } catch (e) {
+      log(`⚠️ Balance error: ${e.message}`, 'warn');
       return null;
     }
   }
 
+  // ----- game url fetchers -----
   async function getFanTanUrl() {
     if (!state.token) return null;
-
-    log('🎯 Fetching Fan Tan...', 'info');
-
-    const headers = {
-      'Accept': 'application/json, text/plain, */*',
-      'Token': state.token,
-      'Visitor': state.visitor,
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.7871.181 Mobile Safari/537.36',
-      'Origin': 'https://playbhau.com',
-      'Referer': 'https://playbhau.com/',
-      'PackageId': '2',
-      'x-requested-with': 'mark.via.gp'
-    };
-
     try {
-      const response = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=27873&otherGame=true', {
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/',
+        'PackageId': '2'
+      };
+      const res = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=27873&otherGame=true', {
         method: 'GET',
-        headers: headers
+        headers
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0 && data.success) {
-          const gameData = data.data || {};
-          let gameUrl = gameData.gameUrl || '';
-          if (gameUrl) {
-            gameUrl = gameUrl.replace(/\\/g, '');
-            gameUrl = decodeURIComponent(gameUrl);
-            log('✅ Fan Tan URL fetched!', 'ok');
-            return {
-              success: true,
-              game_name: 'Fan Tan',
-              game_url: gameUrl,
-              iframe: gameData.iframe || false
-            };
+          let url = data.data?.gameUrl || '';
+          if (url) {
+            url = decodeURIComponent(url.replace(/\\/g, ''));
+            return { success: true, game_name: 'Fan Tan', game_url: url };
           }
         }
       }
-    } catch (error) {
-      log(`⚠️ API error: ${error.message}`, 'warn');
-    }
-
-    const evoSession = 't7hc2g2imsdb4ndjt7reclgnapiyjh5x518c0e66';
-    const directUrl = `https://skylinedja.evo-games.com/entry?params=Y2FzaW5vX2lkPXNreWxpbmVkamEwMDAwMDEKZ2FtZT1mYW50YW4Kc2lnbmF0dXJlPUZqeGZWRjZBM2x5TVpQMXF0Wkk2QXVWX1NkLTYwd1lLTWhTMTJZUEt1cXlsU0UyYWljUGNjYzI4N3NpVzlSM1VJRmlnUzhyQkw1aWRxdGZfbWF4U3R3CnVhX2xhdW5jaF9pZD0xOGM5ZTIxZWZkMTQzMDU2OWVmYzQ1MzAKdGFibGVfaWQ9RmFuVGFuMDAwMDAwMDAwMQpzaXRlPTEKandzaD1leUpyYVdRaU9pSXhOek01TkRRNE5EQXhOemsxSWl3aVlXeG5Jam9pUlZNeU5UWWlmUQpwbGF5X21vZGU9cmVhbF9tb25leQo&JSESSIONID=${evoSession}&embedded`;
-
-    log('🔄 Using fallback URL', 'info');
-    return {
-      success: true,
-      game_name: 'Fan Tan',
-      game_url: directUrl,
-      iframe: false
-    };
+    } catch (e) {}
+    // fallback
+    return { success: true, game_name: 'Fan Tan', game_url: 'https://skylinedja.evo-games.com/entry?params=Y2FzaW5vX2lkPXNreWxpbmVkamEwMDAwMDEKZ2FtZT1mYW50YW4Kc2lnbmF0dXJlPUZqeGZWRjZBM2x5TVpQMXF0Wkk2QXVWX1NkLTYwd1lLTWhTMTJZUEt1cXlsU0UyYWljUGNjYzI4N3NpVzlSM1VJRmlnUzhyQkw1aWRxdGZfbWF4U3R3CnVhX2xhdW5jaF9pZD0xOGM5ZTIxZWZkMTQzMDU2OWVmYzQ1MzAKdGFibGVfaWQ9RmFuVGFuMDAwMDAwMDAwMQpzaXRlPTEKandzaD1leUpyYVdRaU9pSXhOek01TkRRNE5EQXhOemsxSWl3aVlXeG5Jam9pUlZNeU5UWWlmUQpwbGF5X21vZGU9cmVhbF9tb25leQo&JSESSIONID=t7hc2g2imsdb4ndjt7reclgnapiyjh5x518c0e66&embedded' };
   }
 
   async function getChickenRoadUrl() {
     if (!state.token) return null;
-
-    const headers = {
-      'Accept': 'application/json, text/plain, */*',
-      'Token': state.token,
-      'Visitor': state.visitor,
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.7871.181 Mobile Safari/537.36',
-      'Origin': 'https://playbhau.com',
-      'Referer': 'https://playbhau.com/',
-      'PackageId': '2',
-      'x-requested-with': 'mark.via.gp'
-    };
-
     try {
-      const response = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=41285&otherGame=true', {
-        method: 'GET',
-        headers: headers
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/',
+        'PackageId': '2'
+      };
+      const res = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=41285&otherGame=true', { method: 'GET', headers });
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0 && data.success) {
-          const gameData = data.data || {};
-          let gameUrl = gameData.gameUrl || '';
-          if (gameUrl) {
-            gameUrl = gameUrl.replace(/\\/g, '');
-            gameUrl = decodeURIComponent(gameUrl);
-            return {
-              success: true,
-              game_name: gameData.gameName || 'Chicken Road 2',
-              game_url: gameUrl,
-              iframe: gameData.iframe || false
-            };
+          let url = data.data?.gameUrl || '';
+          if (url) {
+            url = decodeURIComponent(url.replace(/\\/g, ''));
+            return { success: true, game_name: 'Chicken Road 2', game_url: url };
           }
         }
       }
-      return null;
-    } catch (error) {
-      return null;
-    }
+    } catch (e) {}
+    return null;
   }
 
+  // ----- spin & claim -----
   async function spinTurntable(betAmount = 10, count = 1) {
     if (!state.token) return null;
-
     try {
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
         lang: 'en_US',
         visitor: state.visitor,
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0 (Linux; Android 13)',
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         versionCode: '999',
         isDemo: 1,
-        count: count,
-        betAmount: betAmount
+        count,
+        betAmount
       };
-
       const headers = {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json',
@@ -1062,93 +873,80 @@ body:before{
         'packageid': '2',
         'visitor': state.visitor,
         'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
-        'x-requested-with': 'mark.via.gp'
+        'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh2255.xyz/app/turntable/order/create', {
+      const res = await fetch('https://api.bh2255.xyz/app/turntable/order/create', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0) {
           log('✅ Spin successful!', 'ok');
           return data;
         } else {
-          log(`❌ Spin failed: ${data.msg || 'Unknown error'}`, 'error');
+          log(`❌ Spin failed: ${data.msg || 'Unknown'}`, 'error');
           return null;
         }
       }
       return null;
-    } catch (error) {
-      log(`❌ Spin error: ${error.message}`, 'error');
+    } catch (e) {
+      log(`❌ Spin error: ${e.message}`, 'error');
       return null;
     }
   }
 
   async function claimVipReward() {
     if (!state.token) return null;
-
     try {
       const req_date = Date.now();
-      const visitor = '0bcbcd2bea0bde4737e38d0e23bbf654dfc9';
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
         lang: 'en_US',
-        visitor: visitor,
+        visitor: state.visitor,
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0',
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         versionCode: '999',
         level: 1
       };
-
       const headers = {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json',
         'token': state.token,
         'packageid': '2',
-        'visitor': visitor,
+        'visitor': state.visitor,
         'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
-        'x-requested-with': 'mark.via.gp'
+        'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh556677wplus.com/app/vip/getVipLevelReward', {
+      const res = await fetch('https://api.bh556677wplus.com/app/vip/getVipLevelReward', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0) {
           log('✅ VIP Reward claimed!', 'ok');
           return data;
         } else {
-          log(`❌ VIP claim failed: ${data.msg || 'Unknown error'}`, 'error');
+          log(`❌ VIP claim failed: ${data.msg || 'Unknown'}`, 'error');
           return null;
         }
       }
       return null;
-    } catch (error) {
-      log(`❌ VIP error: ${error.message}`, 'error');
+    } catch (e) {
+      log(`❌ VIP error: ${e.message}`, 'error');
       return null;
     }
   }
 
-  // ─── DEPOSIT FUNCTIONS ──────────────────────────────
+  // ----- deposit helpers -----
   async function getDepositAmounts() {
     if (!state.token) return;
-
     try {
       const req_date = Date.now();
       const payload = {
@@ -1159,10 +957,9 @@ body:before{
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0',
         versionCode: '999'
       };
-
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -1171,30 +968,24 @@ body:before{
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh556677ww.com/app/pay/balance/list', {
+      const res = await fetch('https://api.bh556677ww.com/app/pay/balance/list', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0) {
           state.depositAmounts = data.data || [];
           return state.depositAmounts;
         }
       }
       return null;
-    } catch (error) {
-      log(`⚠️ Amounts error: ${error.message}`, 'warn');
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   async function getPaymentMethods() {
     if (!state.token) return;
-
     try {
       const req_date = Date.now();
       const payload = {
@@ -1206,10 +997,9 @@ body:before{
         packageInfo: 'com.resulta.checka',
         reqDate: req_date,
         channelUser: 0,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0',
         versionCode: '999'
       };
-
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -1218,40 +1008,33 @@ body:before{
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh556677ww.com/app/pay/type/active/list', {
+      const res = await fetch('https://api.bh556677ww.com/app/pay/type/active/list', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0) {
           state.paymentMethods = data.data || [];
           return state.paymentMethods;
         }
       }
       return null;
-    } catch (error) {
-      log(`⚠️ Payment methods error: ${error.message}`, 'warn');
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   async function createDeposit(amount, payTypeId, balanceId, payTag) {
     if (!state.token) return null;
-
     try {
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
         lang: 'en_US',
         visitor: state.visitor,
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0',
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         versionCode: '999',
@@ -1261,7 +1044,6 @@ body:before{
         rechargeBalance: 0,
         payCategory: 1
       };
-
       const headers = {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json',
@@ -1269,46 +1051,36 @@ body:before{
         'packageid': '2',
         'visitor': state.visitor,
         'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
-        'x-requested-with': 'mark.via.gp'
+        'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh2255.xyz/app/pay/income', {
+      const res = await fetch('https://api.bh2255.xyz/app/pay/income', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.code === 0) {
-          return data;
-        } else {
-          log(`❌ Deposit failed: ${data.msg || 'Unknown error'}`, 'error');
-          return null;
-        }
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.code === 0) return data;
+        else log(`❌ Deposit failed: ${data.msg || 'Unknown'}`, 'error');
+        return null;
       }
       return null;
-    } catch (error) {
-      log(`❌ Deposit error: ${error.message}`, 'error');
+    } catch (e) {
+      log(`❌ Deposit error: ${e.message}`, 'error');
       return null;
     }
   }
 
   function getBalanceIdForAmount(amount) {
     for (const item of state.depositAmounts) {
-      if (parseFloat(item.balance) === parseFloat(amount)) {
-        return String(item.id);
-      }
+      if (parseFloat(item.balance) === parseFloat(amount)) return String(item.id);
     }
     return null;
   }
 
-  // ─── WITHDRAW FUNCTIONS ──────────────────────────────
+  // ----- withdraw / card helpers -----
   async function getWithdrawCards() {
     if (!state.token) return;
-
     try {
       const req_date = Date.now();
       const payload = {
@@ -1319,10 +1091,9 @@ body:before{
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        ua: 'Mozilla/5.0',
         versionCode: '999'
       };
-
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -1331,15 +1102,13 @@ body:before{
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh556677ww.com/app/card/info', {
+      const res = await fetch('https://api.bh556677ww.com/app/card/info', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0) {
           const cards = data.data || [];
           state.withdrawCards = Array.isArray(cards) ? cards : (cards.list || []);
@@ -1348,19 +1117,13 @@ body:before{
         }
       }
       return null;
-    } catch (error) {
-      log(`⚠️ Cards error: ${error.message}`, 'warn');
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
-  // ─── ADD CARD FUNCTIONS ──────────────────────────────
   async function apiAddCard(name, number, ifsc, email) {
     if (!state.token) return { success: false, msg: 'Not logged in' };
-
     try {
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
@@ -1374,10 +1137,9 @@ body:before{
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+        ua: 'Mozilla/5.0',
         versionCode: '999'
       };
-
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -1386,33 +1148,26 @@ body:before{
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh2255.xyz/app/card/add', {
+      const res = await fetch('https://api.bh2255.xyz/app/card/add', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
+      if (res.status === 200) {
+        const data = await res.json();
         if (data.code === 0 || data.success === true) {
-          return { success: true, data: data };
-        } else {
-          return { success: false, msg: data.msg || 'Add card failed' };
+          return { success: true, data };
         }
+        return { success: false, msg: data.msg || 'Add card failed' };
       }
       return { success: false, msg: 'Network error' };
-    } catch (error) {
-      return { success: false, msg: error.message };
-    }
+    } catch (e) { return { success: false, msg: e.message }; }
   }
 
   async function apiDeleteCard(cardId) {
     if (!state.token) return { success: false, msg: 'Not logged in' };
-
     try {
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
@@ -1422,10 +1177,9 @@ body:before{
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+        ua: 'Mozilla/5.0',
         versionCode: '999'
       };
-
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -1434,33 +1188,24 @@ body:before{
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh2255.xyz/app/card/del', {
+      const res = await fetch('https://api.bh2255.xyz/app/card/del', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.code === 0 || data.success === true) {
-          return { success: true };
-        } else {
-          return { success: false, msg: data.msg || 'Delete failed' };
-        }
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.code === 0 || data.success === true) return { success: true };
+        return { success: false, msg: data.msg || 'Delete failed' };
       }
       return { success: false, msg: 'Network error' };
-    } catch (error) {
-      return { success: false, msg: error.message };
-    }
+    } catch (e) { return { success: false, msg: e.message }; }
   }
 
   async function apiWithdraw(amount, cardId) {
     if (!state.token) return { success: false, msg: 'Not logged in' };
-
     try {
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
@@ -1471,10 +1216,9 @@ body:before{
         packageId: 2,
         packageInfo: 'com.resulta.checka',
         reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+        ua: 'Mozilla/5.0',
         versionCode: '999'
       };
-
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -1483,136 +1227,89 @@ body:before{
         'Origin': 'https://playbhau.com',
         'Referer': 'https://playbhau.com/'
       };
-
-      const response = await fetch('https://api.bh2255.xyz/app/pay/paid', {
+      const res = await fetch('https://api.bh2255.xyz/app/pay/paid', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.code === 0 || data.success === true) {
-          return { success: true, data: data };
-        } else {
-          return { success: false, msg: data.msg || 'Withdraw failed' };
-        }
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.code === 0 || data.success === true) return { success: true, data };
+        return { success: false, msg: data.msg || 'Withdraw failed' };
       }
       return { success: false, msg: 'Network error' };
-    } catch (error) {
-      return { success: false, msg: error.message };
-    }
+    } catch (e) { return { success: false, msg: e.message }; }
   }
 
-  // ─── AUTO CLAIM FUNCTION ──────────────────────────────
+  // ----- AUTO CLAIM -----
   async function autoClaim() {
     if (state.isAutoClaiming) {
       log('⚠️ Auto claim already in progress!', 'warn');
       return;
     }
-
     if (!state.isLoggedIn) {
       log('❌ Please login first!', 'error');
       return;
     }
-
     state.isAutoClaiming = true;
-    
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
         <div class="title">⚡ Auto Claim Progress</div>
-        <div id="autoClaimProgress" style="font-size:12px;color:#8a9aaa;">
-          <div>🔄 Starting auto claim process...</div>
-        </div>
+        <div id="autoClaimProgress" style="font-size:12px;color:#8a9aaa;"></div>
       </div>
     `;
-
     const progressDiv = document.getElementById('autoClaimProgress');
     let results = [];
-
     try {
-      log('👑 Step 1: Claiming VIP Reward...', 'info');
       progressDiv.innerHTML += `<div>👑 Claiming VIP Reward...</div>`;
-      
-      const vipResult = await claimVipReward();
-      if (vipResult) {
-        results.push({ step: 'VIP Reward', status: '✅ Success' });
+      const vip = await claimVipReward();
+      if (vip) { results.push({ step: 'VIP Reward', status: '✅ Success' });
         progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ VIP Reward claimed!</div>`;
-        log('✅ VIP Reward claimed successfully!', 'ok');
-      } else {
-        results.push({ step: 'VIP Reward', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ VIP Reward failed!</div>`;
-        log('❌ VIP Reward claim failed!', 'error');
+        log('✅ VIP Reward claimed!', 'ok');
+      } else { results.push({ step: 'VIP Reward', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ VIP failed</div>`;
+        log('❌ VIP claim failed', 'error');
       }
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      log('🎰 Step 2: Spinning 1st time...', 'info');
-      progressDiv.innerHTML += `<div>🎰 Spinning 1st time...</div>`;
-      
-      const spin1 = await spinTurntable(10, 1);
-      if (spin1) {
-        results.push({ step: 'Spin #1', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1 successful!</div>`;
-        log('✅ Spin #1 completed!', 'ok');
-      } else {
-        results.push({ step: 'Spin #1', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1 failed!</div>`;
-        log('❌ Spin #1 failed!', 'error');
+      await new Promise(r => setTimeout(r, 800));
+      progressDiv.innerHTML += `<div>🎰 Spin #1 ...</div>`;
+      const s1 = await spinTurntable(10,1);
+      if (s1) { results.push({ step: 'Spin #1', status: '✅ Success' });
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1</div>`;
+        log('✅ Spin #1', 'ok');
+      } else { results.push({ step: 'Spin #1', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1</div>`;
+        log('❌ Spin #1 failed', 'error');
       }
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      log('🎰 Step 3: Spinning 2nd time...', 'info');
-      progressDiv.innerHTML += `<div>🎰 Spinning 2nd time...</div>`;
-      
-      const spin2 = await spinTurntable(10, 1);
-      if (spin2) {
-        results.push({ step: 'Spin #2', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2 successful!</div>`;
-        log('✅ Spin #2 completed!', 'ok');
-      } else {
-        results.push({ step: 'Spin #2', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2 failed!</div>`;
-        log('❌ Spin #2 failed!', 'error');
+      await new Promise(r => setTimeout(r, 500));
+      progressDiv.innerHTML += `<div>🎰 Spin #2 ...</div>`;
+      const s2 = await spinTurntable(10,1);
+      if (s2) { results.push({ step: 'Spin #2', status: '✅ Success' });
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2</div>`;
+        log('✅ Spin #2', 'ok');
+      } else { results.push({ step: 'Spin #2', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2</div>`;
+        log('❌ Spin #2 failed', 'error');
       }
-
       await getBalance();
-      
-      progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">`;
-      progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;">📊 Summary:</div>`;
-      
-      for (const r of results) {
+      progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;color:#ffd700;font-weight:700;">📊 Summary</div>`;
+      results.forEach(r => {
         const color = r.status.includes('✅') ? '#5df0ae' : '#ff6b6b';
         progressDiv.innerHTML += `<div style="color:${color};">${r.step}: ${r.status}</div>`;
-      }
-      
-      progressDiv.innerHTML += `<div style="color:#68a9ff;margin-top:5px;">💰 Balance: ₹${state.balance.toFixed(2)}</div>`;
-      progressDiv.innerHTML += `</div>`;
-
-      const successCount = results.filter(r => r.status.includes('✅')).length;
-      if (successCount === 3) {
-        log('🎉 All steps completed successfully!', 'ok');
-        progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;font-size:14px;margin-top:8px;">🎉 ALL STEPS COMPLETED!</div>`;
-      } else {
-        log('⚠️ Some steps failed. Please check logs.', 'warn');
-        progressDiv.innerHTML += `<div style="color:#ffd45d;margin-top:8px;">⚠️ Some steps failed. Check logs.</div>`;
-      }
-
-    } catch (error) {
-      log(`❌ Auto claim error: ${error.message}`, 'error');
-      progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Error: ${error.message}</div>`;
+      });
+      progressDiv.innerHTML += `<div style="color:#68a9ff;">💰 Balance: ₹${state.balance.toFixed(2)}</div>`;
+    } catch (e) {
+      log(`❌ Auto claim error: ${e.message}`, 'error');
+      progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Error: ${e.message}</div>`;
     }
-
     state.isAutoClaiming = false;
   }
 
-  // ─── RENDER FUNCTIONS ──────────────────────────────
+  // ----- RENDER FUNCTIONS -----
   function renderGames() {
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
         <div class="title">🎮 Launch Games</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
           <button class="btn-sm btn-success btn-block" id="launchFanTan">🎯 Fan Tan</button>
           <button class="btn-sm btn-warning btn-block" id="launchChicken">🐔 Chicken Road 2</button>
           <button class="btn-sm btn-primary btn-block" id="launchBoth">🎮 Both Games</button>
@@ -1620,431 +1317,228 @@ body:before{
         <div id="gameResult" class="mt-10"></div>
       </div>
     `;
-
-    document.getElementById('launchFanTan').addEventListener('click', async function() {
-      log('🎮 Loading Fan Tan...', 'info');
-      const result = await getFanTanUrl();
-      if (result && result.success) {
-        window.open(result.game_url, '_blank');
-        log('✅ Fan Tan opened!', 'ok');
-        document.getElementById('gameResult').innerHTML = `
-          <div class="game-result"><span class="success">✅ Fan Tan launched!</span></div>
-        `;
-      } else {
-        log('❌ Failed to load Fan Tan', 'error');
-      }
+    document.getElementById('launchFanTan').addEventListener('click', async () => {
+      const res = await getFanTanUrl();
+      if (res && res.success) { window.open(res.game_url, '_blank'); log('✅ Fan Tan opened', 'ok');
+        document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Fan Tan launched!</span></div>`;
+      } else log('❌ Fan Tan failed', 'error');
     });
-
-    document.getElementById('launchChicken').addEventListener('click', async function() {
-      log('🐔 Loading Chicken Road 2...', 'info');
-      const result = await getChickenRoadUrl();
-      if (result && result.success) {
-        window.open(result.game_url, '_blank');
-        log('✅ Chicken Road 2 opened!', 'ok');
-        document.getElementById('gameResult').innerHTML = `
-          <div class="game-result"><span class="success">✅ Chicken Road 2 launched!</span></div>
-        `;
-      } else {
-        log('❌ Failed to load Chicken Road 2', 'error');
-      }
+    document.getElementById('launchChicken').addEventListener('click', async () => {
+      const res = await getChickenRoadUrl();
+      if (res && res.success) { window.open(res.game_url, '_blank'); log('✅ Chicken Road opened', 'ok');
+        document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Chicken Road 2 launched!</span></div>`;
+      } else log('❌ Chicken Road failed', 'error');
     });
-
-    document.getElementById('launchBoth').addEventListener('click', async function() {
-      const result1 = await getFanTanUrl();
-      if (result1 && result1.success) window.open(result1.game_url, '_blank');
-      const result2 = await getChickenRoadUrl();
-      if (result2 && result2.success) window.open(result2.game_url, '_blank');
-      log('✅ Both games launched!', 'ok');
-      document.getElementById('gameResult').innerHTML = `
-        <div class="game-result"><span class="success">✅ Both games launched!</span></div>
-      `;
+    document.getElementById('launchBoth').addEventListener('click', async () => {
+      const r1 = await getFanTanUrl(); if (r1?.success) window.open(r1.game_url, '_blank');
+      const r2 = await getChickenRoadUrl(); if (r2?.success) window.open(r2.game_url, '_blank');
+      log('✅ Both games launched', 'ok');
+      document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Both launched!</span></div>`;
     });
   }
 
   async function renderDeposit() {
-    dynamicContent.innerHTML = `
-      <div class="dynamic-card">
-        <div class="title">💰 Deposit</div>
-        <div id="depositContent"><div style="color:#6a7a9a;font-size:12px;">Loading...</div></div>
-      </div>
-    `;
-
-    const depositContent = document.getElementById('depositContent');
-
+    dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💰 Deposit</div><div id="depositContent">Loading...</div></div>`;
+    const depContent = document.getElementById('depositContent');
     await getDepositAmounts();
     await getPaymentMethods();
-
-    if (!state.depositAmounts.length) {
-      depositContent.innerHTML = '<div style="color:#6a7a9a;font-size:12px;">No deposit options available</div>';
-      return;
-    }
-
+    if (!state.depositAmounts.length) { depContent.innerHTML = '<div style="color:#6a7a9a;">No options</div>'; return; }
     let html = `
-      <div style="margin-bottom:8px;">
-        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">📊 Select Amount:</div>
-        <div class="amount-grid" id="amountGrid">
-    `;
-
+      <div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;">Amount</div>
+      <div class="amount-grid" id="amountGrid">`;
     for (const item of state.depositAmounts) {
       const amt = parseFloat(item.balance);
       html += `<button class="amount-btn" data-amount="${amt}">₹${amt}</button>`;
     }
-
-    html += `
-        </div>
-      </div>
-      <div style="margin-bottom:8px;">
-        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">💳 Select Payment:</div>
-        <div id="paymentMethodsList">
-    `;
-
+    html += `</div></div>
+      <div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;">Payment</div>
+      <div id="paymentMethodsList">`;
     const payMethods = state.paymentMethods.filter(m => m.payTag === 'PAYMENT_CENTER_PAY');
-
-    if (!payMethods.length) {
-      html += '<div style="color:#6a7a9a;font-size:11px;">No payment methods</div>';
-    } else {
-      for (const method of payMethods) {
-        html += `
-          <div class="payment-method" data-id="${method.id}" data-tag="${method.payTag}">
-            <div>
-              <div class="pm-name">${method.payName || 'Unknown'}</div>
-              <div class="pm-desc">₹${method.minAmount || 0} - ₹${method.maxAmount || 0}</div>
-            </div>
-          </div>
-        `;
+    if (!payMethods.length) html += '<div style="color:#6a7a9a;">No methods</div>';
+    else {
+      for (const m of payMethods) {
+        html += `<div class="payment-method" data-id="${m.id}" data-tag="${m.payTag}">
+          <div><div class="pm-name">${m.payName || 'Unknown'}</div><div class="pm-desc">₹${m.minAmount || 0} - ₹${m.maxAmount || 0}</div></div>
+        </div>`;
       }
     }
-
-    html += `
-        </div>
-      </div>
+    html += `</div></div>
       <button class="btn-sm btn-deposit btn-block" id="depositSubmitBtn">💳 Deposit Now</button>
-      <div id="depositResult" class="mt-10"></div>
-    `;
+      <div id="depositResult" class="mt-10"></div>`;
+    depContent.innerHTML = html;
 
-    depositContent.innerHTML = html;
-
-    document.querySelectorAll('.amount-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.amount-btn').forEach(b => {
+      b.addEventListener('click', function() {
+        document.querySelectorAll('.amount-btn').forEach(x => x.classList.remove('active'));
         this.classList.add('active');
         state.selectedAmount = parseFloat(this.dataset.amount);
       });
     });
-
     document.querySelectorAll('.payment-method').forEach(el => {
       el.addEventListener('click', function() {
-        document.querySelectorAll('.payment-method').forEach(p => p.classList.remove('selected'));
+        document.querySelectorAll('.payment-method').forEach(x => x.classList.remove('selected'));
         this.classList.add('selected');
-        state.selectedPayment = {
-          id: parseInt(this.dataset.id),
-          tag: this.dataset.tag
-        };
+        state.selectedPayment = { id: parseInt(this.dataset.id), tag: this.dataset.tag };
       });
     });
-
     document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
-      if (!state.selectedAmount) {
-        log('❌ Please select an amount', 'error');
-        return;
+      if (!state.selectedAmount || !state.selectedPayment) {
+        log('❌ Select amount & payment', 'error'); return;
       }
-      if (!state.selectedPayment) {
-        log('❌ Please select a payment method', 'error');
-        return;
-      }
-
       const balanceId = getBalanceIdForAmount(state.selectedAmount);
-      if (!balanceId) {
-        log('❌ Invalid amount selected', 'error');
-        return;
-      }
-
-      log(`💰 Creating deposit for ₹${state.selectedAmount}...`, 'info');
-      this.disabled = true;
-      this.textContent = '⏳ Processing...';
-
-      const result = await createDeposit(
-        state.selectedAmount,
-        state.selectedPayment.id,
-        balanceId,
-        state.selectedPayment.tag
-      );
-
-      this.disabled = false;
-      this.textContent = '💳 Deposit Now';
-
-      const resultDiv = document.getElementById('depositResult');
+      if (!balanceId) { log('❌ Invalid amount', 'error'); return; }
+      this.disabled = true; this.textContent = '⏳ Processing...';
+      const result = await createDeposit(state.selectedAmount, state.selectedPayment.id, balanceId, state.selectedPayment.tag);
+      this.disabled = false; this.textContent = '💳 Deposit Now';
+      const div = document.getElementById('depositResult');
       if (result && result.code === 0) {
-        const paymentUrl = result.data ? result.data.replace(/\\/g, '') : '';
-        resultDiv.innerHTML = `
-          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;margin-top:8px;">
-            <div style="color:#5df0ae;font-weight:600;font-size:12px;">✅ Deposit created!</div>
-            ${paymentUrl ? `<div style="word-break:break-all;font-size:9px;color:#8a9aaa;margin-top:4px;">🔗 ${paymentUrl}</div>` : ''}
-            <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">
-              <button class="btn-sm btn-warning" onclick="window.open('${paymentUrl}','_blank')">🌐 Open</button>
-              <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${paymentUrl}')">📋 Copy</button>
-            </div>
-            <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">
-              Order ID: ${result.data?.orderId || 'N/A'}
-            </div>
+        const url = result.data ? result.data.replace(/\\/g, '') : '';
+        div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+          <div style="color:#5df0ae;font-weight:600;">✅ Deposit created!</div>
+          ${url ? `<div style="font-size:9px;word-break:break-all;">🔗 ${url}</div>` : ''}
+          <div style="margin-top:4px;display:flex;gap:4px;">
+            <button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')">🌐 Open</button>
+            <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')">📋 Copy</button>
           </div>
-        `;
-        log('✅ Deposit order created!', 'ok');
+        </div>`;
+        log('✅ Deposit order created', 'ok');
       } else {
-        resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ Failed: ${result?.msg || 'Unknown error'}</div>`;
+        div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result?.msg || 'Failed'}</div>`;
         log('❌ Deposit failed', 'error');
       }
     });
   }
 
-  // ─── ADD CARD RENDER ──────────────────────────────
   async function renderAddCard() {
-    // First get existing cards
     await getWithdrawCards();
-
-    // Auto generate name
-    const name = getRandomName();
-    const fullName = name.full;
-    const email = getEmail(fullName);
-
-    let cardListHtml = '';
-    if (state.cardList && state.cardList.length > 0) {
-      cardListHtml = '<div style="margin-bottom:10px;color:#68a9ff;font-size:12px;font-weight:600;">📋 Your Cards:</div>';
-      for (const card of state.cardList) {
-        const id = card.id || card.cardId || '?';
-        const holder = card.accountName || card.holderName || card.name || 'Unknown';
-        const bank = card.bankName || card.bank || 'Bank';
-        const acc = card.accountNumber || card.cardNumber || card.cardNo || '';
-        cardListHtml += `
-          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);padding:8px 12px;border-radius:8px;margin-bottom:4px;">
-            <div style="font-size:12px;">
-              <span style="color:#ffd700;">${bank}</span> - ${holder}
-              <div style="color:#6a7a9a;font-size:10px;">${acc ? '****' + acc.slice(-4) : 'No account'}</div>
-            </div>
-            <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;">🗑️</button>
-          </div>
-        `;
+    const firstNames = ['Ananya','Aadhya','Ishita','Aanya','Advika','Charvi','Diya','Anvi','Aarohi','Sara','Riya','Naira','Pari','Tara','Ira','Vanya','Myra','Kavya','Priya','Neha','Sneha','Anika','Aisha','Meera','Kaira','Ishani','Anjali','Sakshi','Trisha','Ridhi','Sanvi','Shreya','Pihu','Adviti','Tanvi','Suhani','Kiara','Arya','Anaya'];
+    const lastNames = ['Sharma','Verma','Patel','Kumar','Singh','Gupta','Yadav','Joshi','Malhotra','Mehta','Agarwal','Bhatia','Chopra','Kaur','Das','Sen','Mukherjee','Banerjee','Chatterjee','Basu','Dutta','Ganguly','Lahiri','Majumdar','Maitra','Pal','Sarkar','Bose','Chakraborty','Roy'];
+    const randName = () => firstNames[Math.floor(Math.random()*firstNames.length)] + ' ' + lastNames[Math.floor(Math.random()*lastNames.length)];
+    const randEmail = (n) => n.toLowerCase().replace(/ /g,'') + '@gmail.com';
+    let cardHtml = '';
+    if (state.cardList && state.cardList.length) {
+      cardHtml = '<div style="margin-bottom:10px;color:#68a9ff;font-size:12px;font-weight:600;">📋 Your Cards:</div>';
+      for (const c of state.cardList) {
+        const id = c.id || c.cardId || '?';
+        const holder = c.accountName || c.holderName || c.name || 'Unknown';
+        const bank = c.bankName || c.bank || 'Bank';
+        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
+        cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);padding:6px 12px;border-radius:10px;margin-bottom:4px;">
+          <div style="font-size:12px;"><span style="color:#ffd700;">${bank}</span> - ${holder}<div style="color:#6a7a9a;font-size:10px;">${acc ? '****'+acc.slice(-4) : ''}</div></div>
+          <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;">🗑️</button>
+        </div>`;
       }
-    } else {
-      cardListHtml = '<div style="color:#6a7a9a;font-size:12px;margin-bottom:10px;">No cards added yet</div>';
-    }
+    } else cardHtml = '<div style="color:#6a7a9a;font-size:12px;margin-bottom:10px;">No cards added</div>';
 
+    const autoName = randName();
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
         <div class="title">💳 Add Bank Card</div>
-        ${cardListHtml}
-        <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
-          <div class="input-group" style="margin-bottom:8px;">
-            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">👤 Account Holder Name</label>
-            <input id="cardNameInput" value="${fullName}" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
-          </div>
-          <div class="input-group" style="margin-bottom:8px;">
-            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">💳 Account Number</label>
-            <input id="cardNumberInput" placeholder="1234567890" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
-          </div>
-          <div class="input-group" style="margin-bottom:8px;">
-            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">🏛️ IFSC Code</label>
-            <input id="ifscInput" placeholder="MAHB0002009" value="MAHB0002009" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
-          </div>
-          <div class="input-group" style="margin-bottom:8px;">
-            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">📧 Email (optional)</label>
-            <input id="cardEmailInput" value="${email}" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
-          </div>
-          <div style="font-size:10px;color:#6a7a9a;margin-bottom:8px;">💡 Auto-generated name & email</div>
+        ${cardHtml}
+        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
+          <div class="input-group"><label>👤 Account Holder</label><input id="cardNameInput" value="${autoName}"></div>
+          <div class="input-group"><label>💳 Account Number</label><input id="cardNumberInput" placeholder="1234567890"></div>
+          <div class="input-group"><label>🏛️ IFSC</label><input id="ifscInput" value="MAHB0002009"></div>
+          <div class="input-group"><label>📧 Email</label><input id="cardEmailInput" value="${randEmail(autoName)}"></div>
           <button class="btn-sm btn-card-add btn-block" id="addCardSubmitBtn">➕ Add Card</button>
           <div id="addCardResult" class="mt-10"></div>
         </div>
       </div>
     `;
 
-    // Delete card handlers
-    document.querySelectorAll('.delete-card-btn').forEach(btn => {
-      btn.addEventListener('click', async function() {
-        const cardId = this.dataset.id;
-        if (!confirm(`Delete card ID: ${cardId}?`)) return;
-        log(`🗑️ Deleting card ${cardId}...`, 'info');
-        const result = await apiDeleteCard(cardId);
-        if (result.success) {
-          log('✅ Card deleted!', 'ok');
-          renderAddCard();
-          await getWithdrawCards();
-        } else {
-          log(`❌ Delete failed: ${result.msg}`, 'error');
-        }
+    document.querySelectorAll('.delete-card-btn').forEach(b => {
+      b.addEventListener('click', async function() {
+        if (!confirm('Delete card?')) return;
+        const res = await apiDeleteCard(this.dataset.id);
+        if (res.success) { log('✅ Card deleted', 'ok'); renderAddCard(); await getWithdrawCards(); }
+        else log(`❌ Delete failed: ${res.msg}`, 'error');
       });
-    });
-
-    // Refresh name button
-    const refreshBtn = document.createElement('button');
-    refreshBtn.className = 'btn-sm btn-outline btn-block';
-    refreshBtn.textContent = '🔄 Generate New Name';
-    refreshBtn.style.marginTop = '4px';
-    document.querySelector('#addCardResult').parentNode.appendChild(refreshBtn);
-    
-    refreshBtn.addEventListener('click', function() {
-      const newName = getRandomName();
-      document.getElementById('cardNameInput').value = newName.full;
-      document.getElementById('cardEmailInput').value = getEmail(newName.full);
-      log('🔄 New name generated: ' + newName.full, 'info');
     });
 
     document.getElementById('addCardSubmitBtn').addEventListener('click', async function() {
       const name = document.getElementById('cardNameInput').value.trim();
-      const number = document.getElementById('cardNumberInput').value.trim().replace(/\s/g, '');
+      const number = document.getElementById('cardNumberInput').value.trim().replace(/\s/g,'');
       const ifsc = document.getElementById('ifscInput').value.trim().toUpperCase();
       const email = document.getElementById('cardEmailInput').value.trim();
-
-      if (!name || !number || !ifsc) {
-        log('❌ Name, Account Number and IFSC are required!', 'error');
-        return;
-      }
-
-      this.disabled = true;
-      this.textContent = '⏳ Adding...';
-
+      if (!name || !number || !ifsc) { log('❌ All fields required', 'error'); return; }
+      this.disabled = true; this.textContent = '⏳ Adding...';
       const result = await apiAddCard(name, number, ifsc, email);
-
-      this.disabled = false;
-      this.textContent = '➕ Add Card';
-
-      const resultDiv = document.getElementById('addCardResult');
+      this.disabled = false; this.textContent = '➕ Add Card';
+      const div = document.getElementById('addCardResult');
       if (result.success) {
-        resultDiv.innerHTML = `<div style="color:#5df0ae;font-size:12px;">✅ Card added successfully!</div>`;
-        log('✅ Card added!', 'ok');
-        // Auto generate new name for next card
-        const newName = getRandomName();
-        document.getElementById('cardNameInput').value = newName.full;
-        document.getElementById('cardEmailInput').value = getEmail(newName.full);
+        div.innerHTML = `<div style="color:#5df0ae;">✅ Card added!</div>`;
+        log('✅ Card added', 'ok');
+        const newName = randName();
+        document.getElementById('cardNameInput').value = newName;
+        document.getElementById('cardEmailInput').value = randEmail(newName);
         document.getElementById('cardNumberInput').value = '';
         document.getElementById('ifscInput').value = 'MAHB0002009';
-        setTimeout(() => renderAddCard(), 1000);
+        setTimeout(() => renderAddCard(), 800);
         await getWithdrawCards();
       } else {
-        resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ ${result.msg || 'Failed to add card'}</div>`;
+        div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result.msg || 'Failed'}</div>`;
         log(`❌ Add card failed: ${result.msg}`, 'error');
       }
     });
   }
 
   async function renderWithdraw() {
-    dynamicContent.innerHTML = `
-      <div class="dynamic-card">
-        <div class="title">💸 Withdraw Funds</div>
-        <div id="withdrawContent"><div style="color:#6a7a9a;font-size:12px;">Loading...</div></div>
-      </div>
-    `;
-
-    const withdrawContent = document.getElementById('withdrawContent');
-
+    dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💸 Withdraw Funds</div><div id="withdrawContent">Loading...</div></div>`;
+    const wc = document.getElementById('withdrawContent');
     await getWithdrawCards();
-
-    if (!state.withdrawCards || state.withdrawCards.length === 0) {
-      withdrawContent.innerHTML = `
-        <div style="color:#6a7a9a;font-size:12px;text-align:center;padding:10px;">
-          ❌ No bank cards found.<br>
-          <span style="color:#ffd45d;font-size:11px;">Please add a card first</span>
-        </div>
-      `;
+    if (!state.withdrawCards || !state.withdrawCards.length) {
+      wc.innerHTML = `<div style="color:#6a7a9a;text-align:center;padding:12px;">❌ No cards. Please add one.</div>`;
       return;
     }
-
-    let html = `
-      <div style="margin-bottom:8px;">
-        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">🏦 Select Card:</div>
-        <div id="cardList">
-    `;
-
-    for (const card of state.withdrawCards) {
-      const id = card.id || card.cardId || '?';
-      const holder = card.accountName || card.holderName || card.name || 'Unknown';
-      const bank = card.bankName || card.bank || 'Bank';
-      const acc = card.accountNumber || card.cardNumber || card.cardNo || '';
-      html += `
-        <div class="payment-method card-item" data-id="${id}">
-          <div>
-            <div class="pm-name">${bank} - ${holder}</div>
-            <div class="pm-desc">${acc ? '****' + acc.slice(-4) : 'No account'}</div>
-          </div>
-        </div>
-      `;
+    let html = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;">Select Card</div><div id="cardList">`;
+    for (const c of state.withdrawCards) {
+      const id = c.id || c.cardId || '?';
+      const holder = c.accountName || c.holderName || c.name || 'Unknown';
+      const bank = c.bankName || c.bank || 'Bank';
+      const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
+      html += `<div class="payment-method card-item" data-id="${id}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
     }
-
-    html += `
-        </div>
+    html += `</div></div>
+      <div class="input-group"><label>💰 Amount</label><input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="1"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;">
+        <button class="quick-amount" data-amount="100">₹100</button>
+        <button class="quick-amount" data-amount="200">₹200</button>
+        <button class="quick-amount" data-amount="500">₹500</button>
+        <button class="quick-amount" data-amount="1000">₹1000</button>
       </div>
-      <div style="margin-bottom:8px;">
-        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">💰 Amount:</div>
-        <input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="1" style="width:100%;padding:10px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:14px;">
-      </div>
-      <div class="quick-amounts" style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;">
-        <button class="btn-sm quick-amount" data-amount="100" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹100</button>
-        <button class="btn-sm quick-amount" data-amount="200" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹200</button>
-        <button class="btn-sm quick-amount" data-amount="500" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹500</button>
-        <button class="btn-sm quick-amount" data-amount="1000" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹1000</button>
-      </div>
-      <button class="btn-sm btn-withdraw-btn btn-block" id="withdrawSubmitBtn">💸 Withdraw Now</button>
-      <div id="withdrawResult" class="mt-10"></div>
-    `;
-
-    withdrawContent.innerHTML = html;
+      <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn">💸 Withdraw Now</button>
+      <div id="withdrawResult" class="mt-10"></div>`;
+    wc.innerHTML = html;
 
     document.querySelectorAll('.card-item').forEach(el => {
       el.addEventListener('click', function() {
-        document.querySelectorAll('.card-item').forEach(p => p.classList.remove('selected'));
+        document.querySelectorAll('.card-item').forEach(x => x.classList.remove('selected'));
         this.classList.add('selected');
         state.selectedCard = parseInt(this.dataset.id);
-        log(`💳 Card selected: ${this.querySelector('.pm-name').textContent}`, 'info');
       });
     });
-
-    document.querySelectorAll('.quick-amount').forEach(btn => {
-      btn.addEventListener('click', function() {
+    document.querySelectorAll('.quick-amount').forEach(b => {
+      b.addEventListener('click', function() {
         document.getElementById('withdrawAmountInput').value = this.dataset.amount;
-        log(`💰 Quick amount selected: ₹${this.dataset.amount}`, 'info');
       });
     });
-
     document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
-      if (!state.selectedCard) {
-        log('❌ Please select a card', 'error');
-        return;
-      }
-
+      if (!state.selectedCard) { log('❌ Select a card', 'error'); return; }
       const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
-      if (!amount || amount <= 0) {
-        log('❌ Please enter a valid amount', 'error');
-        return;
-      }
-
-      if (state.balance !== null && amount > state.balance) {
-        log(`❌ Insufficient balance. Available: ₹${state.balance}`, 'error');
-        return;
-      }
-
-      log(`💸 Processing withdrawal of ₹${amount}...`, 'info');
-      this.disabled = true;
-      this.textContent = '⏳ Processing...';
-
+      if (!amount || amount <= 0) { log('❌ Enter valid amount', 'error'); return; }
+      if (state.balance !== null && amount > state.balance) { log(`❌ Insufficient balance`, 'error'); return; }
+      this.disabled = true; this.textContent = '⏳ Processing...';
       const result = await apiWithdraw(amount, state.selectedCard);
-
-      this.disabled = false;
-      this.textContent = '💸 Withdraw Now';
-
-      const resultDiv = document.getElementById('withdrawResult');
+      this.disabled = false; this.textContent = '💸 Withdraw Now';
+      const div = document.getElementById('withdrawResult');
       if (result && result.success) {
-        resultDiv.innerHTML = `
-          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;margin-top:8px;">
-            <div style="color:#5df0ae;font-weight:600;font-size:12px;">✅ Withdrawal successful!</div>
-            <div style="color:#8a9aaa;font-size:11px;">₹${amount} withdrawn successfully</div>
-            <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${result.data?.orderId || 'N/A'}</div>
-          </div>
-        `;
-        log(`✅ Withdrawal of ₹${amount} completed!`, 'ok');
+        div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;"><div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div><div style="color:#8a9aaa;">₹${amount} withdrawn</div></div>`;
+        log(`✅ Withdrawal ₹${amount}`, 'ok');
         await getBalance();
         balanceDisplay.textContent = state.balance.toFixed(2);
       } else {
-        resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ Failed: ${result?.msg || 'Unknown error'}</div>`;
-        log(`❌ Withdrawal failed: ${result?.msg || 'Unknown error'}`, 'error');
+        div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result?.msg || 'Failed'}</div>`;
+        log(`❌ Withdraw failed`, 'error');
       }
     });
   }
@@ -2055,7 +1549,7 @@ body:before{
       <div class="dynamic-card">
         <div class="title">📊 Balance</div>
         <div style="text-align:center;padding:15px;">
-          <div style="font-size:30px;font-weight:800;color:#5df0ae;">₹${state.balance.toFixed(2)}</div>
+          <div style="font-size:32px;font-weight:800;color:#5df0ae;">₹${state.balance.toFixed(2)}</div>
           <div style="color:#6a7a9a;font-size:12px;">Available Balance</div>
         </div>
       </div>
@@ -2064,79 +1558,49 @@ body:before{
   }
 
   function renderWelcome() {
-    dynamicContent.innerHTML = `
-      <div class="dynamic-card">
-        <div style="color:#6a7a9a;font-size:13px;text-align:center;padding:10px 0;">
-          👋 Welcome! Select an option from the menu.
-        </div>
-      </div>
-    `;
+    dynamicContent.innerHTML = `<div class="dynamic-card"><div style="color:#6a7a9a;text-align:center;padding:12px 0;">👋 Welcome! Select an option.</div></div>`;
   }
 
-  // ─── HANDLERS ──────────────────────────────────────
+  // ----- login handler -----
   async function handleLogin(e) {
     e.preventDefault();
-
     const phone = phoneInput.value.trim();
     const password = passwordInput.value.trim();
-
-    if (phone.length !== 10) {
-      log('⚠️ Please enter a valid 10-digit phone number.', 'warn');
-      phoneInput.focus();
-      return;
-    }
-
-    log('📱 Phone number accepted.', 'ok');
-    log('🔐 Login request prepared.', 'ok');
-
-    loginBtn.disabled = true;
-    loginBtn.textContent = '⏳ Logging in...';
-
-    const success = await login(phone, password);
-
-    if (success) {
+    if (phone.length !== 10) { log('⚠️ Enter 10-digit phone', 'warn'); phoneInput.focus(); return; }
+    loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
+    const ok = await login(phone, password);
+    if (ok) {
       log('✅ Login successful! Loading dashboard...', 'ok');
-      loginSection.classList.add('hidden');
-      menuSection.classList.remove('hidden');
+      loginSection.style.display = 'none';
+      dashboard.style.display = 'block';
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      log('✅ Dashboard ready! Select an option.', 'ok');
+      log('✅ Dashboard ready!', 'ok');
     } else {
-      log('❌ Login failed. Please try again.', 'error');
+      log('❌ Login failed. Try again.', 'error');
     }
-
-    loginBtn.disabled = false;
-    loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
+    loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
 
+  // ----- logout -----
   function handleLogout() {
-    state.token = null;
-    state.isLoggedIn = false;
-    state.phone = null;
-    state.balance = 0;
-    state.selectedAmount = null;
-    state.selectedPayment = null;
-    state.isAutoClaiming = false;
-    state.depositAmounts = [];
-    state.paymentMethods = [];
-    state.withdrawCards = [];
-    state.cardList = [];
-    state.selectedCard = null;
-    loginSection.classList.remove('hidden');
-    menuSection.classList.add('hidden');
+    state.token = null; state.isLoggedIn = false; state.phone = null; state.balance = 0;
+    state.selectedAmount = null; state.selectedPayment = null; state.isAutoClaiming = false;
+    state.depositAmounts = []; state.paymentMethods = []; state.withdrawCards = []; state.cardList = []; state.selectedCard = null;
+    loginSection.style.display = 'block';
+    dashboard.style.display = 'none';
     dynamicContent.innerHTML = '';
     balanceDisplay.textContent = '0.00';
-    log('👋 Logged out successfully!', 'info');
+    log('👋 Logged out', 'info');
   }
 
-  // ─── MENU EVENTS ──────────────────────────────────
+  // ----- menu events -----
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function() {
       const action = this.dataset.action;
       document.querySelectorAll('.menu-item').forEach(i => i.style.borderColor = 'rgba(255,255,255,0.06)');
       this.style.borderColor = 'rgba(151,119,255,0.35)';
-
       switch(action) {
         case 'deposit': renderDeposit(); break;
         case 'games': renderGames(); break;
@@ -2149,23 +1613,18 @@ body:before{
     });
   });
 
-  // ─── EVENTS ──────────────────────────────────────
-  phoneInput.addEventListener('input', () => {
-    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-  });
-
-  showPassword.addEventListener('click', () => {
+  // ----- UI events -----
+  phoneInput.addEventListener('input', () => { phoneInput.value = phoneInput.value.replace(/\D/g,'').slice(0,10); });
+  showPassBtn.addEventListener('click', () => {
     passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-    showPassword.textContent = passwordInput.type === 'password' ? '◉' : '◉';
+    showPassBtn.textContent = passwordInput.type === 'password' ? '◉' : '◉';
   });
-
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
-  // ─── INIT ─────────────────────────────────────────
+  // init
   log('🚀 Bhau Lottery Launcher Ready', 'ok');
-  log('📱 Enter phone number and click Login', 'info');
+  log('📱 Enter phone & click Login', 'info');
   log('🔐 Password: Sanju2005 (auto-filled)', 'info');
-
 })();
 </script>
 </body>
