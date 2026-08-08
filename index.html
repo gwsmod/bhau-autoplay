@@ -1113,6 +1113,10 @@
           const cards = data.data || [];
           state.withdrawCards = Array.isArray(cards) ? cards : (cards.list || []);
           state.cardList = state.withdrawCards;
+          // Auto select first card if available
+          if (state.withdrawCards.length > 0 && state.selectedCard === null) {
+            state.selectedCard = parseInt(state.withdrawCards[0].id || state.withdrawCards[0].cardId);
+          }
           return state.withdrawCards;
         }
       }
@@ -1241,7 +1245,7 @@
     } catch (e) { return { success: false, msg: e.message }; }
   }
 
-  // ----- AUTO CLAIM -----
+  // ----- AUTO CLAIM (updated order: spin → VIP → wait 3s → spin) -----
   async function autoClaim() {
     if (state.isAutoClaiming) {
       log('⚠️ Auto claim already in progress!', 'warn');
@@ -1251,6 +1255,13 @@
       log('❌ Please login first!', 'error');
       return;
     }
+    
+    // Confirmation
+    if (!confirm('⚡ Start Auto Claim?\n\n1st Spin → VIP Reward → wait 3s → 2nd Spin')) {
+      log('❌ Auto claim cancelled', 'warn');
+      return;
+    }
+    
     state.isAutoClaiming = true;
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
@@ -1261,6 +1272,19 @@
     const progressDiv = document.getElementById('autoClaimProgress');
     let results = [];
     try {
+      // Step 1: Spin #1
+      progressDiv.innerHTML += `<div>🎰 Spin #1 ...</div>`;
+      const s1 = await spinTurntable(10,1);
+      if (s1) { results.push({ step: 'Spin #1', status: '✅ Success' });
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1 successful!</div>`;
+        log('✅ Spin #1 completed!', 'ok');
+      } else { results.push({ step: 'Spin #1', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1 failed</div>`;
+        log('❌ Spin #1 failed', 'error');
+      }
+      
+      // Step 2: VIP Reward
+      await new Promise(r => setTimeout(r, 500));
       progressDiv.innerHTML += `<div>👑 Claiming VIP Reward...</div>`;
       const vip = await claimVipReward();
       if (vip) { results.push({ step: 'VIP Reward', status: '✅ Success' });
@@ -1270,26 +1294,23 @@
         progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ VIP failed</div>`;
         log('❌ VIP claim failed', 'error');
       }
-      await new Promise(r => setTimeout(r, 800));
-      progressDiv.innerHTML += `<div>🎰 Spin #1 ...</div>`;
-      const s1 = await spinTurntable(10,1);
-      if (s1) { results.push({ step: 'Spin #1', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1</div>`;
-        log('✅ Spin #1', 'ok');
-      } else { results.push({ step: 'Spin #1', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1</div>`;
-        log('❌ Spin #1 failed', 'error');
-      }
-      await new Promise(r => setTimeout(r, 500));
+      
+      // Step 3: Wait 3 seconds
+      progressDiv.innerHTML += `<div style="color:#ffd45d;">⏳ Waiting 3 seconds...</div>`;
+      log('⏳ Waiting 3 seconds before next spin...', 'info');
+      await new Promise(r => setTimeout(r, 3000));
+      
+      // Step 4: Spin #2
       progressDiv.innerHTML += `<div>🎰 Spin #2 ...</div>`;
       const s2 = await spinTurntable(10,1);
       if (s2) { results.push({ step: 'Spin #2', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2</div>`;
-        log('✅ Spin #2', 'ok');
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2 successful!</div>`;
+        log('✅ Spin #2 completed!', 'ok');
       } else { results.push({ step: 'Spin #2', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2</div>`;
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2 failed</div>`;
         log('❌ Spin #2 failed', 'error');
       }
+      
       await getBalance();
       progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;color:#ffd700;font-weight:700;">📊 Summary</div>`;
       results.forEach(r => {
@@ -1297,6 +1318,16 @@
         progressDiv.innerHTML += `<div style="color:${color};">${r.step}: ${r.status}</div>`;
       });
       progressDiv.innerHTML += `<div style="color:#68a9ff;">💰 Balance: ₹${state.balance.toFixed(2)}</div>`;
+      
+      const successCount = results.filter(r => r.status.includes('✅')).length;
+      if (successCount === 3) {
+        log('🎉 All steps completed successfully!', 'ok');
+        progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;font-size:14px;margin-top:8px;">🎉 ALL STEPS COMPLETED!</div>`;
+      } else {
+        log('⚠️ Some steps failed. Please check logs.', 'warn');
+        progressDiv.innerHTML += `<div style="color:#ffd45d;margin-top:8px;">⚠️ Some steps failed. Check logs.</div>`;
+      }
+      
     } catch (e) {
       log(`❌ Auto claim error: ${e.message}`, 'error');
       progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Error: ${e.message}</div>`;
@@ -1393,7 +1424,6 @@
       const div = document.getElementById('depositResult');
       if (result && result.code === 0) {
         let url = result.data ? result.data.replace(/\\/g, '') : '';
-        // If URL exists, open it in new tab
         if (url) {
           window.open(url, '_blank');
           log('🌐 Deposit page opened in new tab', 'info');
@@ -1496,12 +1526,19 @@
       return;
     }
     let html = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;">Select Card</div><div id="cardList">`;
+    let firstCardId = null;
     for (const c of state.withdrawCards) {
       const id = c.id || c.cardId || '?';
+      if (firstCardId === null) firstCardId = parseInt(id);
       const holder = c.accountName || c.holderName || c.name || 'Unknown';
       const bank = c.bankName || c.bank || 'Bank';
       const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-      html += `<div class="payment-method card-item" data-id="${id}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
+      const selected = (state.selectedCard !== null && parseInt(id) === state.selectedCard) ? 'selected' : '';
+      html += `<div class="payment-method card-item ${selected}" data-id="${id}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
+    }
+    // Auto select first card if none selected
+    if (state.selectedCard === null && firstCardId !== null) {
+      state.selectedCard = firstCardId;
     }
     html += `</div></div>
       <div class="input-group"><label>💰 Amount</label><input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="1"></div>
@@ -1513,7 +1550,6 @@
       </div>
       <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn">💸 Withdraw Now</button>
       <div id="withdrawResult" class="mt-10"></div>
-      <!-- Withdrawal logs -->
       <div id="withdrawLogs" style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
         <div style="color:#68a9ff;font-size:12px;font-weight:600;margin-bottom:6px;">📋 Withdrawal Logs</div>
         <div id="withdrawLogList" style="font-size:11px;color:#8a9aaa;max-height:100px;overflow-y:auto;"></div>
@@ -1521,7 +1557,6 @@
     `;
     wc.innerHTML = html;
 
-    // Load withdrawal logs from localStorage
     function loadWithdrawLogs() {
       const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
       const list = document.getElementById('withdrawLogList');
@@ -1559,7 +1594,6 @@
       if (!amount || amount <= 0) { log('❌ Enter valid amount', 'error'); return; }
       if (state.balance !== null && amount > state.balance) { log(`❌ Insufficient balance`, 'error'); return; }
       
-      // Get card name for log
       let cardName = '';
       document.querySelectorAll('.card-item').forEach(el => {
         if (el.classList.contains('selected')) {
@@ -1574,7 +1608,6 @@
       this.disabled = false; this.textContent = '💸 Withdraw Now';
       const div = document.getElementById('withdrawResult');
       
-      // Save log
       const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
       const logEntry = {
         amount: amount,
@@ -1602,7 +1635,6 @@
       }
     });
     
-    // Load logs on render
     setTimeout(loadWithdrawLogs, 100);
   }
 
@@ -1624,7 +1656,29 @@
     dynamicContent.innerHTML = `<div class="dynamic-card"><div style="color:#6a7a9a;text-align:center;padding:12px 0;">👋 Welcome! Select an option.</div></div>`;
   }
 
-  // ----- login handler -----
+  // ----- login handler (auto-login on phone input) -----
+  async function autoLogin(phone) {
+    if (phone.length === 10 && !state.isLoggedIn) {
+      const password = passwordInput.value.trim() || 'Sanju2005';
+      log('📱 Auto-login triggered for: ' + phone, 'info');
+      loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
+      const ok = await login(phone, password);
+      if (ok) {
+        log('✅ Auto-login successful!', 'ok');
+        loginSection.style.display = 'none';
+        dashboard.style.display = 'block';
+        userPhoneDisplay.textContent = phone;
+        await getBalance();
+        renderWelcome();
+        log('✅ Dashboard ready!', 'ok');
+      } else {
+        log('❌ Auto-login failed. Try manual login.', 'error');
+      }
+      loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
+    }
+  }
+
+  // ----- login handler (manual) -----
   async function handleLogin(e) {
     e.preventDefault();
     const phone = phoneInput.value.trim();
@@ -1677,7 +1731,14 @@
   });
 
   // ----- UI events -----
-  phoneInput.addEventListener('input', () => { phoneInput.value = phoneInput.value.replace(/\D/g,'').slice(0,10); });
+  phoneInput.addEventListener('input', function() {
+    const val = this.value.replace(/\D/g,'').slice(0,10);
+    this.value = val;
+    if (val.length === 10 && !state.isLoggedIn) {
+      autoLogin(val);
+    }
+  });
+  
   showPassBtn.addEventListener('click', () => {
     passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
     showPassBtn.textContent = passwordInput.type === 'password' ? '◉' : '◉';
@@ -1686,7 +1747,7 @@
 
   // init
   log('🚀 Bhau Lottery Launcher Ready', 'ok');
-  log('📱 Enter phone & click Login', 'info');
+  log('📱 Enter phone number (auto-login on 10 digits)', 'info');
   log('🔐 Password: Sanju2005 (auto-filled)', 'info');
 })();
 </script>
