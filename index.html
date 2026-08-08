@@ -325,6 +325,16 @@ body:before{
   background: rgba(255,215,0,.08);
 }
 
+.menu-item.deposit-item {
+  border-color: rgba(46,213,115,.15);
+  background: rgba(46,213,115,.03);
+}
+
+.menu-item.deposit-item:hover {
+  border-color: rgba(46,213,115,.35);
+  background: rgba(46,213,115,.08);
+}
+
 /* ─── DYNAMIC CONTENT ────────────────────────────────────── */
 #dynamicContent {
   margin-top: 12px;
@@ -472,6 +482,14 @@ body:before{
 
 .btn-gold:hover { transform: translateY(-1px); }
 
+.btn-deposit {
+  background: linear-gradient(135deg, #2ed573, #1b9e4a);
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-deposit:hover { transform: translateY(-1px); }
+
 .btn-block {
   width: 100%;
   padding: 10px;
@@ -502,8 +520,17 @@ body:before{
   50% { box-shadow: 0 0 40px rgba(255,215,0,0.5); }
 }
 
+@keyframes pulse-deposit {
+  0%, 100% { box-shadow: 0 0 20px rgba(46,213,115,0.2); }
+  50% { box-shadow: 0 0 40px rgba(46,213,115,0.4); }
+}
+
 .menu-item.auto-claim {
   animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.menu-item.deposit-item {
+  animation: pulse-deposit 2s ease-in-out infinite;
 }
 
 @media(max-width:430px){
@@ -593,15 +620,15 @@ body:before{
       </div>
 
       <div class="menu-grid">
+        <div class="menu-item deposit-item" data-action="deposit">
+          <span class="icon">💰</span>
+          <div class="title">Deposit</div>
+          <div class="desc">Add funds to account</div>
+        </div>
         <div class="menu-item" data-action="games">
           <span class="icon">🎮</span>
           <div class="title">Launch Games</div>
           <div class="desc">Fan Tan, Chicken Road</div>
-        </div>
-        <div class="menu-item" data-action="deposit">
-          <span class="icon">💰</span>
-          <div class="title">Deposit</div>
-          <div class="desc">Add funds to account</div>
         </div>
         <div class="menu-item auto-claim" data-action="autoclaim">
           <span class="icon">⚡</span>
@@ -1036,6 +1063,165 @@ body:before{
     }
   }
 
+  async function getDepositAmounts() {
+    if (!state.token) return;
+
+    try {
+      const req_date = Date.now();
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        versionCode: '999'
+      };
+
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh556677ww.com/app/pay/balance/list', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          state.depositAmounts = data.data || [];
+          return state.depositAmounts;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`⚠️ Amounts error: ${error.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function getPaymentMethods() {
+    if (!state.token) return;
+
+    try {
+      const req_date = Date.now();
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        channelUser: 0,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        versionCode: '999'
+      };
+
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh556677ww.com/app/pay/type/active/list', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          state.paymentMethods = data.data || [];
+          return state.paymentMethods;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`⚠️ Payment methods error: ${error.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function createDeposit(amount, payTypeId, balanceId, payTag) {
+    if (!state.token) return null;
+
+    try {
+      const req_date = Date.now();
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        versionCode: '999',
+        balanceId: String(balanceId),
+        payTag: payTag || 'PAYMENT_CENTER_PAY',
+        payTypeId: String(payTypeId),
+        rechargeBalance: 0,
+        payCategory: 1
+      };
+
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'visitor': state.visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        'x-requested-with': 'mark.via.gp'
+      };
+
+      const response = await fetch('https://api.bh2255.xyz/app/pay/income', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          return data;
+        } else {
+          log(`❌ Deposit failed: ${data.msg || 'Unknown error'}`, 'error');
+          return null;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`❌ Deposit error: ${error.message}`, 'error');
+      return null;
+    }
+  }
+
+  function getBalanceIdForAmount(amount) {
+    for (const item of state.depositAmounts) {
+      if (parseFloat(item.balance) === parseFloat(amount)) {
+        return String(item.id);
+      }
+    }
+    return null;
+  }
+
   // ─── AUTO CLAIM FUNCTION ──────────────────────────────
   async function autoClaim() {
     if (state.isAutoClaiming) {
@@ -1050,7 +1236,6 @@ body:before{
 
     state.isAutoClaiming = true;
     
-    // Show progress in dynamic content
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
         <div class="title">⚡ Auto Claim Progress</div>
@@ -1064,7 +1249,6 @@ body:before{
     let results = [];
 
     try {
-      // Step 1: Claim VIP Reward
       log('👑 Step 1: Claiming VIP Reward...', 'info');
       progressDiv.innerHTML += `<div>👑 Claiming VIP Reward...</div>`;
       
@@ -1079,10 +1263,8 @@ body:before{
         log('❌ VIP Reward claim failed!', 'error');
       }
 
-      // Wait 1 second
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Step 2: Spin 1st time
       log('🎰 Step 2: Spinning 1st time...', 'info');
       progressDiv.innerHTML += `<div>🎰 Spinning 1st time...</div>`;
       
@@ -1097,10 +1279,8 @@ body:before{
         log('❌ Spin #1 failed!', 'error');
       }
 
-      // Wait 0.5 seconds
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Step 3: Spin 2nd time
       log('🎰 Step 3: Spinning 2nd time...', 'info');
       progressDiv.innerHTML += `<div>🎰 Spinning 2nd time...</div>`;
       
@@ -1115,7 +1295,6 @@ body:before{
         log('❌ Spin #2 failed!', 'error');
       }
 
-      // Show summary
       await getBalance();
       
       progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">`;
@@ -1144,6 +1323,143 @@ body:before{
     }
 
     state.isAutoClaiming = false;
+  }
+
+  // ─── DEPOSIT FUNCTION ──────────────────────────────────
+  async function renderDeposit() {
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">💰 Deposit</div>
+        <div id="depositContent"><div style="color:#6a7a9a;font-size:12px;">Loading deposit options...</div></div>
+      </div>
+    `;
+
+    const depositContent = document.getElementById('depositContent');
+
+    await getDepositAmounts();
+    await getPaymentMethods();
+
+    if (!state.depositAmounts.length) {
+      depositContent.innerHTML = '<div style="color:#6a7a9a;font-size:12px;">No deposit options available</div>';
+      return;
+    }
+
+    let html = `
+      <div style="margin-bottom:8px;">
+        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">📊 Select Amount:</div>
+        <div class="amount-grid" id="amountGrid">
+    `;
+
+    for (const item of state.depositAmounts) {
+      const amt = parseFloat(item.balance);
+      html += `<button class="amount-btn" data-amount="${amt}">₹${amt}</button>`;
+    }
+
+    html += `
+        </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">💳 Select Payment:</div>
+        <div id="paymentMethodsList">
+    `;
+
+    const payMethods = state.paymentMethods.filter(m => m.payTag === 'PAYMENT_CENTER_PAY');
+
+    if (!payMethods.length) {
+      html += '<div style="color:#6a7a9a;font-size:11px;">No payment methods</div>';
+    } else {
+      for (const method of payMethods) {
+        html += `
+          <div class="payment-method" data-id="${method.id}" data-tag="${method.payTag}">
+            <div>
+              <div class="pm-name">${method.payName || 'Unknown'}</div>
+              <div class="pm-desc">₹${method.minAmount || 0} - ₹${method.maxAmount || 0}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    html += `
+        </div>
+      </div>
+      <button class="btn-sm btn-deposit btn-block" id="depositSubmitBtn">💳 Deposit Now</button>
+      <div id="depositResult" class="mt-10"></div>
+    `;
+
+    depositContent.innerHTML = html;
+
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        state.selectedAmount = parseFloat(this.dataset.amount);
+      });
+    });
+
+    document.querySelectorAll('.payment-method').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(p => p.classList.remove('selected'));
+        this.classList.add('selected');
+        state.selectedPayment = {
+          id: parseInt(this.dataset.id),
+          tag: this.dataset.tag
+        };
+      });
+    });
+
+    document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
+      if (!state.selectedAmount) {
+        log('❌ Please select an amount', 'error');
+        return;
+      }
+      if (!state.selectedPayment) {
+        log('❌ Please select a payment method', 'error');
+        return;
+      }
+
+      const balanceId = getBalanceIdForAmount(state.selectedAmount);
+      if (!balanceId) {
+        log('❌ Invalid amount selected', 'error');
+        return;
+      }
+
+      log(`💰 Creating deposit for ₹${state.selectedAmount}...`, 'info');
+      this.disabled = true;
+      this.textContent = '⏳ Processing...';
+
+      const result = await createDeposit(
+        state.selectedAmount,
+        state.selectedPayment.id,
+        balanceId,
+        state.selectedPayment.tag
+      );
+
+      this.disabled = false;
+      this.textContent = '💳 Deposit Now';
+
+      const resultDiv = document.getElementById('depositResult');
+      if (result && result.code === 0) {
+        const paymentUrl = result.data ? result.data.replace(/\\/g, '') : '';
+        resultDiv.innerHTML = `
+          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;margin-top:8px;">
+            <div style="color:#5df0ae;font-weight:600;font-size:12px;">✅ Deposit created!</div>
+            ${paymentUrl ? `<div style="word-break:break-all;font-size:9px;color:#8a9aaa;margin-top:4px;">🔗 ${paymentUrl}</div>` : ''}
+            <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">
+              <button class="btn-sm btn-warning" onclick="window.open('${paymentUrl}','_blank')">🌐 Open</button>
+              <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${paymentUrl}')">📋 Copy</button>
+            </div>
+            <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">
+              Order ID: ${result.data?.orderId || 'N/A'}
+            </div>
+          </div>
+        `;
+        log('✅ Deposit order created!', 'ok');
+      } else {
+        resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ Failed: ${result?.msg || 'Unknown error'}</div>`;
+        log('❌ Deposit failed', 'error');
+      }
+    });
   }
 
   // ─── RENDER FUNCTIONS ──────────────────────────────
@@ -1198,25 +1514,6 @@ body:before{
         <div class="game-result"><span class="success">✅ Both games launched!</span></div>
       `;
     });
-  }
-
-  async function renderDeposit() {
-    dynamicContent.innerHTML = `
-      <div class="dynamic-card">
-        <div class="title">💰 Deposit</div>
-        <div id="depositContent"><div style="color:#6a7a9a;font-size:12px;">Loading...</div></div>
-      </div>
-    `;
-
-    const depositContent = document.getElementById('depositContent');
-
-    // For demo, show sample deposit options
-    depositContent.innerHTML = `
-      <div style="color:#6a7a9a;font-size:12px;text-align:center;padding:10px;">
-        💳 Deposit feature coming soon<br>
-        <span style="color:#5df0ae;font-size:11px;">API integration in progress</span>
-      </div>
-    `;
   }
 
   async function renderBalance() {
@@ -1288,6 +1585,8 @@ body:before{
     state.selectedAmount = null;
     state.selectedPayment = null;
     state.isAutoClaiming = false;
+    state.depositAmounts = [];
+    state.paymentMethods = [];
     loginSection.classList.remove('hidden');
     menuSection.classList.add('hidden');
     dynamicContent.innerHTML = '';
@@ -1303,8 +1602,8 @@ body:before{
       this.style.borderColor = 'rgba(151,119,255,0.35)';
 
       switch(action) {
-        case 'games': renderGames(); break;
         case 'deposit': renderDeposit(); break;
+        case 'games': renderGames(); break;
         case 'autoclaim': autoClaim(); break;
         case 'balance': renderBalance(); break;
         case 'logout': handleLogout(); break;
