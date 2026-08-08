@@ -1,2047 +1,1599 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>BHau Lotto - Premium Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background: #0a0e1a;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            background-image: 
-                radial-gradient(ellipse at 10% 20%, rgba(61, 90, 160, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 80%, rgba(125, 255, 179, 0.08) 0%, transparent 50%);
-        }
-
-        .container {
-            max-width: 500px;
-            width: 100%;
-            background: linear-gradient(145deg, #111827, #0d1528);
-            border-radius: 40px;
-            padding: 28px 22px 32px;
-            box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.8),
-                0 0 0 1px rgba(125, 255, 179, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(125, 255, 179, 0.06);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(61, 90, 160, 0.03) 0%, transparent 60%);
-            pointer-events: none;
-        }
-
-        /* ─── HEADER ─── */
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        .header-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(61, 90, 160, 0.2), rgba(125, 255, 179, 0.1));
-            border: 1px solid rgba(125, 255, 179, 0.15);
-            padding: 4px 16px;
-            border-radius: 40px;
-            font-size: 10px;
-            color: #7dffb3;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .header h1 {
-            font-size: 34px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #7dffb3 0%, #3d5aa0 50%, #7dffb3 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 4s ease-in-out infinite;
-            letter-spacing: -1px;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .header .sub {
-            color: #6a7a9a;
-            font-size: 13px;
-            margin-top: 4px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .header .sub .dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #3d5aa0;
-            border-radius: 50%;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* ─── SOUND TOGGLE ─── */
-        .sound-toggle {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 999;
-            background: rgba(20, 28, 50, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 40px;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .sound-toggle:hover {
-            transform: scale(1.05);
-            border-color: rgba(125, 255, 179, 0.2);
-        }
-
-        .sound-toggle .sound-icon {
-            font-size: 20px;
-        }
-
-        .sound-toggle .sound-label {
-            font-size: 11px;
-            color: #8a9aaa;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .sound-toggle .sound-status {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-
-        .sound-toggle .sound-status.on {
-            background: rgba(46, 213, 115, 0.15);
-            color: #2ed573;
-        }
-
-        .sound-toggle .sound-status.off {
-            background: rgba(255, 71, 87, 0.15);
-            color: #ff4757;
-        }
-
-        /* ─── CARDS ─── */
-        .card {
-            background: linear-gradient(145deg, rgba(16, 24, 43, 0.8), rgba(10, 16, 30, 0.9));
-            border-radius: 24px;
-            padding: 18px 20px;
-            margin-bottom: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(125, 255, 179, 0.1), transparent);
-        }
-
-        .card-glow {
-            border-color: rgba(125, 255, 179, 0.08);
-            box-shadow: 0 0 30px rgba(125, 255, 179, 0.02);
-        }
-
-        /* ─── INPUTS ─── */
-        .input-group {
-            margin-bottom: 12px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #7a8aaa;
-            margin-bottom: 5px;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .input-group input,
-        .input-group select {
-            width: 100%;
-            padding: 14px 18px;
-            background: rgba(15, 22, 41, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            color: #eef2f9;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            border-color: rgba(125, 255, 179, 0.3);
-            box-shadow: 0 0 20px rgba(125, 255, 179, 0.05);
-            background: rgba(15, 22, 41, 0.95);
-        }
-
-        .input-group select {
-            appearance: none;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a7a9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-        }
-
-        .input-group select option {
-            background: #111827;
-            color: #eef2f9;
-        }
-
-        /* ─── BUTTONS ─── */
-        .btn {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3d5aa0, #2a4a8a);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(61, 90, 160, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(61, 90, 160, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #1f8b4c, #167a3e);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(31, 139, 76, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(31, 139, 76, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #b13e4b, #8a2e3a);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(177, 62, 75, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(177, 62, 75, 0.4);
-        }
-
-        .btn-withdraw {
-            background: linear-gradient(135deg, #d4a020, #b8841a);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(212, 160, 32, 0.3);
-        }
-
-        .btn-withdraw:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(212, 160, 32, 0.4);
-        }
-
-        .btn-logout {
-            background: linear-gradient(135deg, #4a2a3a, #3a1a2a);
-            color: #b08a9a;
-            border: 1px solid rgba(177, 62, 75, 0.15);
-            box-shadow: none;
-        }
-
-        .btn-logout:hover {
-            background: linear-gradient(135deg, #5a3a4a, #4a2a3a);
-            border-color: rgba(177, 62, 75, 0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            color: #8a9aaa;
-            box-shadow: none;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .btn-sm {
-            padding: 8px 14px;
-            font-size: 12px;
-            width: auto;
-            border-radius: 12px;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        /* ─── FORM ROW ─── */
-        .form-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 4px;
-        }
-
-        .form-row .btn {
-            flex: 1;
-            padding: 14px 16px;
-        }
-
-        .form-row .btn-outline {
-            flex: 0.5;
-            min-width: 100px;
-        }
-
-        /* ─── QUICK AMOUNT ─── */
-        .quick-amounts {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin: 8px 0;
-        }
-
-        .quick-amounts .btn-sm {
-            flex: 1;
-            min-width: 50px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            color: #8a9aaa;
-            box-shadow: none;
-            padding: 8px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 12px;
-        }
-
-        .quick-amounts .btn-sm:hover {
-            background: rgba(125, 255, 179, 0.05);
-            border-color: rgba(125, 255, 179, 0.15);
-            color: #7dffb3;
-        }
-
-        /* ─── CUSTOM TOAST / NOTIFICATION ─── */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            max-width: 400px;
-            width: 90%;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .toast-item {
-            background: rgba(20, 28, 50, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 16px 20px;
-            border-left: 4px solid #5a76b0;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-            animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            pointer-events: auto;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .toast-item:hover {
-            transform: translateX(-4px);
-        }
-
-        .toast-item.error {
-            border-left-color: #ff4757;
-            background: rgba(40, 20, 30, 0.95);
-        }
-
-        .toast-item.success {
-            border-left-color: #2ed573;
-            background: rgba(20, 40, 30, 0.95);
-        }
-
-        .toast-item.warning {
-            border-left-color: #ffa502;
-            background: rgba(40, 35, 20, 0.95);
-        }
-
-        .toast-item.info {
-            border-left-color: #5a76b0;
-            background: rgba(20, 30, 50, 0.95);
-        }
-
-        .toast-item .toast-icon {
-            font-size: 22px;
-            flex-shrink: 0;
-            margin-top: 2px;
-            width: 30px;
-            text-align: center;
-        }
-
-        .toast-item .toast-content {
-            flex: 1;
-        }
-
-        .toast-item .toast-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #7a8aaa;
-            margin-bottom: 2px;
-        }
-
-        .toast-item .toast-msg {
-            font-size: 14px;
-            color: #eef2f9;
-            line-height: 1.4;
-            font-weight: 500;
-        }
-
-        .toast-item .toast-msg .highlight {
-            color: #7dffb3;
-            font-weight: 700;
-        }
-
-        .toast-item .toast-time {
-            font-size: 10px;
-            color: #4a5a7a;
-            margin-top: 4px;
-            font-weight: 400;
-        }
-
-        .toast-item .toast-close {
-            background: rgba(255, 255, 255, 0.03);
-            border: none;
-            color: #6a7a9a;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            margin-top: -4px;
-        }
-
-        .toast-item .toast-close:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #eef2f9;
-        }
-
-        @keyframes slideInRight {
-            0% {
-                opacity: 0;
-                transform: translateX(60px) scale(0.95);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
-        }
-
-        @keyframes slideOutRight {
-            0% {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateX(60px) scale(0.95);
-            }
-        }
-
-        .toast-item.hiding {
-            animation: slideOutRight 0.3s ease forwards;
-        }
-
-        /* ─── INFO GRID ─── */
-        .info-grid {
-            display: grid;
-            gap: 10px;
-        }
-
-        .info-item {
-            background: rgba(12, 20, 39, 0.6);
-            padding: 14px 18px;
-            border-radius: 16px;
-            border-left: 3px solid #3d5aa0;
-            transition: all 0.3s ease;
-        }
-
-        .info-item:hover {
-            background: rgba(12, 20, 39, 0.9);
-        }
-
-        .info-item .label {
-            font-size: 10px;
-            color: #6a7a9a;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .info-item .label .toggle-form-btn {
-            background: rgba(42, 58, 90, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: #8a9aaa;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-item .label .toggle-form-btn:hover {
-            background: rgba(42, 58, 90, 0.8);
-            color: #c6d2f0;
-        }
-
-        .info-item .value {
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 6px;
-            color: #eef2f9;
-        }
-
-        .info-item .value.balance {
-            color: #7dffb3;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .info-item .value.balance .currency {
-            font-size: 18px;
-            color: #6a7a9a;
-            font-weight: 600;
-        }
-
-        .info-item.balance-item {
-            border-left-color: #7dffb3;
-            background: rgba(125, 255, 179, 0.03);
-        }
-
-        /* ─── BANK CARD ─── */
-        .bank-card {
-            background: linear-gradient(135deg, rgba(12, 20, 39, 0.8), rgba(8, 14, 28, 0.9));
-            padding: 14px 18px;
-            border-radius: 16px;
-            border-left: 3px solid #ffd700;
-            margin-top: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .bank-card:hover {
-            transform: translateX(4px);
-            border-left-color: #ffed4a;
-        }
-
-        .bank-card .bank-name {
-            font-weight: 700;
-            color: #ffd700;
-            font-size: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .bank-card .bank-name .card-id {
-            font-size: 10px;
-            color: #4a5a7a;
-            font-weight: 400;
-        }
-
-        .bank-card .details {
-            font-size: 14px;
-            color: #b0c0da;
-            margin-top: 4px;
-        }
-
-        .bank-card .ifsc {
-            font-size: 11px;
-            color: #6a7a9a;
-            margin-top: 2px;
-        }
-
-        .bank-card .card-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        /* ─── WITHDRAW SECTION ─── */
-        .withdraw-section {
-            background: rgba(15, 26, 42, 0.6);
-            border-radius: 16px;
-            padding: 14px;
-            margin-top: 8px;
-            border: 1px solid rgba(212, 160, 32, 0.08);
-        }
-
-        .withdraw-section .withdraw-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .withdraw-section .withdraw-header .title {
-            font-weight: 700;
-            color: #d4a020;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .withdraw-section .withdraw-header .toggle-btn {
-            background: rgba(42, 58, 90, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: #8a9aaa;
-            padding: 4px 16px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .withdraw-section .withdraw-header .toggle-btn:hover {
-            background: rgba(42, 58, 90, 0.6);
-            color: #c6d2f0;
-        }
-
-        .selected-card {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #8a9aaa;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .selected-card strong {
-            color: #ffd700;
-        }
-
-        /* ─── STATUS ─── */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 16px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-badge.online {
-            background: rgba(125, 255, 179, 0.08);
-            color: #7dffb3;
-            border: 1px solid rgba(125, 255, 179, 0.1);
-        }
-
-        .status-badge .status-dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #7dffb3;
-            border-radius: 50%;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        /* ─── PHONE DISPLAY ─── */
-        .phone-display {
-            font-size: 18px;
-            font-weight: 700;
-            color: #eef2f9;
-            letter-spacing: -0.3px;
-        }
-
-        .last-updated {
-            font-size: 10px;
-            color: #4a5a7a;
-            margin-top: 4px;
-        }
-
-        /* ─── HIDDEN ─── */
-        .hidden {
-            display: none !important;
-        }
-
-        /* ─── DEBUG ─── */
-        .debug-box {
-            background: rgba(10, 15, 26, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 11px;
-            color: #4a6a8a;
-            max-height: 100px;
-            overflow: auto;
-            font-family: 'Courier New', monospace;
-        }
-
-        .debug-box .success { color: #7dffb3; }
-        .debug-box .error { color: #ff6b6b; }
-        .debug-box .info { color: #5a8aba; }
-
-        /* ─── FOOTER ─── */
-        .footer {
-            text-align: center;
-            font-size: 11px;
-            color: #2a3a5a;
-            margin-top: 18px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .footer span {
-            color: #3d5aa0;
-        }
-
-        /* ─── LOADING ─── */
-        .loading-spinner {
-            display: inline-block;
-            width: 22px;
-            height: 22px;
-            border: 3px solid rgba(42, 58, 90, 0.3);
-            border-top: 3px solid #7dffb3;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 480px) {
-            .container { padding: 20px 16px 24px; }
-            .header h1 { font-size: 28px; }
-            .info-item .value.balance { font-size: 24px; }
-            .form-row { flex-direction: column; }
-            .form-row .btn-outline { flex: 1; min-width: auto; }
-            .toast-container { right: 10px; left: 10px; width: auto; top: 10px; }
-            .toast-item { padding: 12px 16px; }
-            .sound-toggle { bottom: 10px; left: 10px; padding: 8px 12px; }
-            .sound-toggle .sound-label { display: none; }
-        }
-
-        /* ─── HIDE AUDIO ELEMENTS ─── */
-        audio.custom-sound {
-            display: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>BHAU LOTTERY — Sanju</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050713;
+  --panel:rgba(11,17,38,.72);
+  --line:rgba(151,119,255,.25);
+  --purple:#9b35ff;
+  --blue:#1977ff;
+  --gold:#ffbd28;
+  --text:#f7f8ff;
+  --muted:#9299b8;
+}
+html,body{min-height:100%;background:var(--bg)}
+body{
+  min-height:100vh;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 50% 8%,rgba(126,39,255,.26),transparent 25%),
+    radial-gradient(circle at 8% 70%,rgba(24,102,255,.16),transparent 25%),
+    radial-gradient(circle at 92% 55%,rgba(181,38,255,.13),transparent 25%),
+    linear-gradient(180deg,#050611 0%,#080a18 55%,#03050d 100%);
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;
+  background-image:
+    radial-gradient(circle at 20% 20%,#fff 0 1px,transparent 1.5px),
+    radial-gradient(circle at 70% 15%,#fff 0 1px,transparent 1.5px),
+    radial-gradient(circle at 85% 65%,#fff 0 1px,transparent 1.5px),
+    radial-gradient(circle at 30% 80%,#fff 0 1px,transparent 1.5px);
+  background-size:180px 180px,230px 230px,270px 270px,310px 310px;
+}
+
+.page{
+  width:min(620px,100%);
+  min-height:100vh;
+  margin:auto;
+  padding:20px 14px 28px;
+  position:relative;
+}
+
+.glass{
+  background:linear-gradient(145deg,rgba(22,27,55,.82),rgba(6,10,25,.72));
+  border:1px solid var(--line);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.08),
+    0 25px 80px rgba(0,0,0,.48),
+    0 0 50px rgba(102,36,255,.08);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+}
+
+.brand{
+  text-align:center;
+  padding:16px 12px 18px;
+}
+.crown{
+  font-size:42px;
+  filter:drop-shadow(0 0 16px rgba(255,184,37,.65));
+  animation:float 3s ease-in-out infinite;
+}
+.logo{
+  margin-top:-3px;
+  font-size:clamp(58px,15vw,92px);
+  line-height:.85;
+  font-weight:1000;
+  letter-spacing:-5px;
+  background:linear-gradient(180deg,#fff9d4 0%,#ffd84e 28%,#ff9d0a 68%,#b85b00 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 8px 18px rgba(255,156,0,.25));
+}
+.lottery{
+  margin-top:12px;
+  font-size:clamp(26px,7vw,43px);
+  font-weight:1000;
+  letter-spacing:5px;
+  background:linear-gradient(180deg,#fff,#b9bfff 50%,#713dff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.sanju{
+  display:inline-flex;
+  margin-top:15px;
+  padding:8px 28px;
+  border:1px solid rgba(255,194,42,.65);
+  border-radius:999px;
+  color:#ffd34b;
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:5px;
+  background:rgba(118,47,255,.16);
+  box-shadow:0 0 25px rgba(149,48,255,.25),inset 0 1px rgba(255,255,255,.12);
+}
+.tag{
+  margin-top:12px;
+  color:#b9a5ff;
+  font-size:12px;
+  letter-spacing:3px;
+  font-weight:800;
+}
+
+.card{
+  margin-top:8px;
+  border-radius:32px;
+  padding:26px 18px 20px;
+}
+.welcome{text-align:center;margin-bottom:24px}
+.welcome .mini{
+  color:#c75aff;
+  font-size:12px;
+  letter-spacing:4px;
+  font-weight:900;
+  margin-bottom:7px;
+}
+.welcome h1{
+  font-size:30px;
+  line-height:1.1;
+}
+.welcome h1 span{
+  color:#bd57ff;
+  text-shadow:0 0 18px rgba(189,87,255,.35);
+}
+.welcome p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.form{
+  padding:18px;
+  border-radius:24px;
+  background:rgba(3,7,20,.34);
+  border:1px solid rgba(255,255,255,.08);
+}
+.label{
+  display:block;
+  margin:4px 2px 9px;
+  color:#9db8ed;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1.5px;
+}
+.input{
+  display:flex;
+  align-items:center;
+  height:59px;
+  border-radius:17px;
+  border:1px solid rgba(129,112,255,.28);
+  background:rgba(5,9,24,.72);
+  box-shadow:inset 0 1px rgba(255,255,255,.05);
+  margin-bottom:18px;
+  transition:.2s;
+}
+.input:focus-within{
+  border-color:#8b51ff;
+  box-shadow:0 0 0 3px rgba(139,81,255,.12),0 0 22px rgba(139,81,255,.12);
+}
+.icon{
+  width:53px;
+  text-align:center;
+  font-size:22px;
+}
+.input input{
+  width:100%;
+  height:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  font-size:16px;
+  padding-right:14px;
+}
+.input input::placeholder{color:#686f8e}
+.auto{
+  margin-top:-9px;
+  margin-bottom:17px;
+  color:#858cab;
+  font-size:12px;
+}
+.login{
+  width:100%;
+  height:60px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:18px;
+  color:#fff;
+  font-size:16px;
+  font-weight:1000;
+  letter-spacing:.7px;
+  cursor:pointer;
+  background:linear-gradient(100deg,#126aff,#6124e9 65%,#b22cff);
+  box-shadow:0 13px 35px rgba(73,46,255,.32),inset 0 1px rgba(255,255,255,.25);
+  transition:.2s;
+}
+.login:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.login:active{transform:translateY(0) scale(.99)}
+
+.logs{
+  margin-top:18px;
+  padding:18px;
+  border-radius:24px;
+  background:rgba(3,7,20,.5);
+  border:1px solid rgba(255,255,255,.08);
+}
+.logs h2{
+  font-size:17px;
+  color:#68a9ff;
+  margin-bottom:12px;
+}
+.terminal{
+  border-radius:16px;
+  background:#030711;
+  border:1px solid rgba(86,106,165,.15);
+  padding:15px;
+  min-height:100px;
+  max-height:150px;
+  overflow-y:auto;
+  color:#8e9bc0;
+  font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.terminal .time{color:#4b9fff}
+.terminal .ok{color:#5df0ae}
+.terminal .warn{color:#ffd45d}
+.terminal .error{color:#ff6b6b}
+.terminal .highlight{color:#ffd700}
+.terminal .info{color:#68a9ff}
+
+.security{
+  margin-top:18px;
+  padding:17px 10px 4px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  text-align:center;
+  gap:4px;
+}
+.security .item{
+  padding:6px 4px;
+  color:#aeb5d1;
+  font-size:11px;
+  font-weight:800;
+}
+.security .big{
+  display:block;
+  color:#fff;
+  font-size:12px;
+  margin-bottom:4px;
+}
+.security .icon{
+  display:block;
+  width:auto;
+  color:#a764ff;
+  font-size:24px;
+  margin-bottom:4px;
+}
+
+/* ─── MENU SECTION ────────────────────────────────────────── */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.menu-item {
+  background: rgba(3,7,20,.5);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.menu-item:hover {
+  border-color: rgba(151,119,255,.35);
+  background: rgba(151,119,255,.08);
+  transform: translateY(-2px);
+}
+
+.menu-item .icon {
+  font-size: 28px;
+  display: block;
+  width: auto;
+  margin-bottom: 6px;
+}
+
+.menu-item .title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f7f8ff;
+}
+
+.menu-item .desc {
+  font-size: 10px;
+  color: #6a7a9a;
+  margin-top: 2px;
+}
+
+.menu-item.logout-item {
+  border-color: rgba(255,107,107,.15);
+}
+
+.menu-item.logout-item:hover {
+  border-color: rgba(255,107,107,.35);
+  background: rgba(255,107,107,.08);
+}
+
+.menu-item.auto-claim {
+  border-color: rgba(255,215,0,.15);
+  background: rgba(255,215,0,.03);
+}
+
+.menu-item.auto-claim:hover {
+  border-color: rgba(255,215,0,.35);
+  background: rgba(255,215,0,.08);
+}
+
+.menu-item.withdraw-item {
+  border-color: rgba(212,160,32,.15);
+  background: rgba(212,160,32,.03);
+}
+
+.menu-item.withdraw-item:hover {
+  border-color: rgba(212,160,32,.35);
+  background: rgba(212,160,32,.08);
+}
+
+/* ─── DYNAMIC CONTENT ────────────────────────────────────── */
+#dynamicContent {
+  margin-top: 12px;
+}
+
+.dynamic-card {
+  background: rgba(3,7,20,.5);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.dynamic-card .title {
+  color: #68a9ff;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Amount Grid */
+.amount-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.amount-btn {
+  padding: 8px;
+  background: rgba(15,22,41,0.8);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: #eef2f9;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 12px;
+}
+
+.amount-btn:hover {
+  border-color: rgba(125,255,179,0.3);
+  background: rgba(125,255,179,0.05);
+}
+
+.amount-btn.active {
+  border-color: #7dffb3;
+  background: rgba(125,255,179,0.1);
+  color: #7dffb3;
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  font-size: 12px;
+}
+
+.payment-method:hover {
+  border-color: rgba(125,255,179,0.2);
+}
+
+.payment-method.selected {
+  border-color: #7dffb3;
+  background: rgba(125,255,179,0.05);
+}
+
+.payment-method .pm-name {
+  color: #eef2f9;
+  font-weight: 500;
+}
+.payment-method .pm-desc {
+  color: #6a7a9a;
+  font-size: 11px;
+}
+
+.game-result {
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.game-result .success { color: #5df0ae; }
+.game-result .error { color: #ff6b6b; }
+.game-result .info { color: #68a9ff; }
+.game-result .highlight { color: #ffd700; }
+
+.btn-sm {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #1f8b4c, #167a3e);
+  color: #fff;
+}
+
+.btn-success:hover { transform: translateY(-1px); }
+
+.btn-warning {
+  background: linear-gradient(135deg, #d4a020, #b8841a);
+  color: #fff;
+}
+
+.btn-warning:hover { transform: translateY(-1px); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #3d5aa0, #2a4a8a);
+  color: #fff;
+}
+
+.btn-primary:hover { transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #8a9aaa;
+}
+
+.btn-outline:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #ffd700, #f0a500);
+  color: #000;
+  font-weight: 800;
+}
+
+.btn-gold:hover { transform: translateY(-1px); }
+
+.btn-withdraw-btn {
+  background: linear-gradient(135deg, #d4a020, #b8841a);
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-withdraw-btn:hover { transform: translateY(-1px); }
+
+.btn-block {
+  width: 100%;
+  padding: 10px;
+}
+
+.flex-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.flex-row .btn-sm {
+  flex: 1;
+}
+
+.hidden { display: none !important; }
+.mt-10 { margin-top: 10px; }
+.mb-10 { margin-bottom: 10px; }
+.text-center { text-align: center; }
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+  50% { box-shadow: 0 0 40px rgba(255,215,0,0.5); }
+}
+
+@keyframes pulse-withdraw {
+  0%, 100% { box-shadow: 0 0 20px rgba(212,160,32,0.2); }
+  50% { box-shadow: 0 0 40px rgba(212,160,32,0.4); }
+}
+
+.menu-item.auto-claim {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.menu-item.withdraw-item {
+  animation: pulse-withdraw 2s ease-in-out infinite;
+}
+
+@media(max-width:430px){
+  .page{padding:12px 9px 20px}
+  .card{padding:22px 12px 16px;border-radius:27px}
+  .form{padding:15px}
+  .welcome h1{font-size:26px}
+  .logo{letter-spacing:-4px}
+  .security .item{font-size:10px}
+  .menu-grid{grid-template-columns:1fr 1fr}
+  .amount-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+.terminal::-webkit-scrollbar {
+  width: 4px;
+}
+.terminal::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 2px;
+}
+.terminal::-webkit-scrollbar-thumb {
+  background: #3d5aa0;
+  border-radius: 2px;
+}
+</style>
 </head>
+
 <body>
-    <!-- ─── SOUND TOGGLE ─── -->
-    <div class="sound-toggle" id="soundToggle">
-        <span class="sound-icon" id="soundIcon">🔊</span>
-        <span class="sound-label">Sound</span>
-        <span class="sound-status on" id="soundStatus">ON</span>
+<main class="page">
+
+  <!-- BHAU LOTTERY BRAND -->
+  <header class="brand">
+    <div class="crown">♛</div>
+    <div class="logo">BHAU</div>
+    <div class="lottery">LOTTERY</div>
+    <div class="sanju">✦ SANJU ✦</div>
+    <div class="tag">BY SANJU • PLAY SMART • WIN BIG</div>
+  </header>
+
+  <!-- MAIN CARD -->
+  <section class="glass card" id="mainCard">
+
+    <!-- ─── LOGIN SECTION ──────────────────────────────────── -->
+    <div id="loginSection">
+      <div class="welcome">
+        <div class="mini">✦ WELCOME BACK ✦</div>
+        <h1>Hello, <span>Sanju!</span> 👑</h1>
+        <p>Login to continue your journey</p>
+      </div>
+
+      <form class="form" id="loginForm">
+        <label class="label">📱 PHONE NUMBER</label>
+        <div class="input">
+          <div class="icon">📞</div>
+          <input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" autocomplete="tel" required>
+        </div>
+
+        <label class="label">🔐 PASSWORD</label>
+        <div class="input">
+          <div class="icon">🔒</div>
+          <input id="password" type="password" value="Sanju2005" placeholder="Enter your password" autocomplete="current-password" required>
+          <button type="button" id="showPassword" style="border:0;background:none;color:#9da4c3;font-size:20px;padding:0 15px;cursor:pointer">◉</button>
+        </div>
+
+        <div class="auto">● Auto-filled password</div>
+
+        <button class="login" type="submit" id="loginBtn">
+          🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →
+        </button>
+      </form>
+
+      <div class="logs">
+        <h2>📄 LOG OUTPUT</h2>
+        <div class="terminal" id="terminal">
+          <div><span class="time">[SYSTEM]</span> <span class="ok">✓ System ready...</span></div>
+          <div><span class="time">[READY]</span> 🎯 Bhau Lottery launcher ready</div>
+          <div><span class="time">[LOGIN]</span> 📱 Enter phone number and password</div>
+        </div>
+      </div>
     </div>
 
-    <!-- ─── CUSTOM SOUND FILES ─── -->
-    <audio id="soundSuccess" class="custom-sound" preload="auto">
-        <source src="sounds/success.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="soundError" class="custom-sound" preload="auto">
-        <source src="sounds/error.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="soundDelete" class="custom-sound" preload="auto">
-        <source src="sounds/delete.mp3" type="audio/mpeg">
-    </audio>
+    <!-- ─── MENU SECTION ──────────────────────────────────── -->
+    <div id="menuSection" class="hidden">
+      <div style="text-align:center;margin-bottom:12px;">
+        <span style="color:#7dffb3;font-weight:700;font-size:14px;">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
+        <span style="color:#6a7a9a;font-size:12px;display:block;">💰 Balance: ₹<span id="balanceDisplay">0.00</span></span>
+      </div>
 
-    <!-- ─── TOAST CONTAINER ─── -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <div class="container" id="app">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="header-badge">✦ Premium Dashboard</div>
-            <h1>🎯 BHAU LOTTO</h1>
-            <div class="sub">
-                <span class="dot"></span>
-                <span>Secure Login</span>
-                <span class="dot"></span>
-            </div>
+      <div class="menu-grid">
+        <div class="menu-item" data-action="games">
+          <span class="icon">🎮</span>
+          <div class="title">Launch Games</div>
+          <div class="desc">Fan Tan, Chicken Road</div>
         </div>
-
-        <!-- LOGIN SECTION -->
-        <div id="loginSection">
-            <div class="card">
-                <div class="input-group">
-                    <label>📱 Phone Number</label>
-                    <input type="tel" id="phoneInput" placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric" />
-                </div>
-                <button class="btn btn-primary btn-full" id="loginBtn">🔑 Login to Dashboard</button>
-                <div id="loginStatus" class="toast hidden"></div>
-                <div id="debugBox" class="debug-box hidden"></div>
-            </div>
+        <div class="menu-item" data-action="deposit">
+          <span class="icon">💰</span>
+          <div class="title">Deposit</div>
+          <div class="desc">Add funds to account</div>
         </div>
-
-        <!-- USER INFO SECTION -->
-        <div id="userInfoSection" class="hidden">
-            <div class="card card-glow">
-                <!-- Status Bar -->
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                    <span class="status-badge online">
-                        <span class="status-dot"></span> Online
-                    </span>
-                    <span class="phone-display" id="userPhoneDisplay">📱 +91</span>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="info-grid">
-                    <div class="info-item balance-item">
-                        <div class="label">
-                            <span>💰 Wallet Balance</span>
-                            <button class="toggle-form-btn" id="refreshBalanceBtn">⟳ Refresh</button>
-                        </div>
-                        <div class="value balance" id="balanceDisplay">
-                            <span class="currency">₹</span> —
-                        </div>
-                        <div class="last-updated" id="lastUpdated">Last updated: —</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="label">🆔 User ID</div>
-                        <div class="value" id="userIdDisplay">—</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="label">📊 Total Withdrawn</div>
-                        <div class="value" id="withdrawDisplay">—</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="label">💰 Total Recharged</div>
-                        <div class="value" id="rechargeDisplay">—</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="label">
-                            <span>🏦 Bank Cards</span>
-                            <button class="toggle-form-btn" id="toggleAddCardBtn">➕ Add Card</button>
-                        </div>
-                        <div id="cardsDisplay" style="margin-top:6px;">
-                            <span style="color:#6a7a9a;font-size:13px;">No cards added</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Card Form -->
-                <div id="addCardForm" class="hidden" style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
-                    <div class="input-group"><label>👤 Account Holder Name</label><input id="cardName" placeholder="Full Name" /></div>
-                    <div class="input-group"><label>💳 Account Number</label><input id="cardNumber" placeholder="1234567890" /></div>
-                    <div class="input-group"><label>🏛️ IFSC Code</label><input id="ifscCode" placeholder="MAHB0002009" value="MAHB0002009" /></div>
-                    <div class="input-group"><label>📧 Email (optional)</label><input id="cardEmail" placeholder="email@gmail.com" /></div>
-                    <div class="form-row">
-                        <button class="btn btn-success" id="submitCardBtn">✅ Add Card</button>
-                        <button class="btn btn-outline" id="cancelAddCard">✖ Cancel</button>
-                    </div>
-                    <div id="addCardStatus" class="toast hidden mt-2"></div>
-                </div>
-
-                <!-- Withdraw Section -->
-                <div id="withdrawSection" style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
-                    <div class="withdraw-section">
-                        <div class="withdraw-header">
-                            <span class="title">💸 Withdraw Funds</span>
-                            <button class="toggle-btn" id="toggleWithdrawBtn">Open</button>
-                        </div>
-
-                        <div id="withdrawForm" class="hidden">
-                            <div class="selected-card" id="selectedCardDisplay">
-                                <span style="color:#6a7a9a;">No card selected</span>
-                            </div>
-
-                            <div class="input-group">
-                                <label>💳 Select Card</label>
-                                <select id="cardSelect">
-                                    <option value="">— Select a card —</option>
-                                </select>
-                            </div>
-
-                            <div class="input-group">
-                                <label>💰 Amount</label>
-                                <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" />
-                            </div>
-
-                            <div class="quick-amounts">
-                                <button class="btn-sm quick-amount" data-amount="100">₹100</button>
-                                <button class="btn-sm quick-amount" data-amount="200">₹200</button>
-                                <button class="btn-sm quick-amount" data-amount="500">₹500</button>
-                                <button class="btn-sm quick-amount" data-amount="650">₹650</button>
-                                <button class="btn-sm quick-amount" data-amount="671">₹671</button>
-                                <button class="btn-sm quick-amount" data-amount="691">₹691</button>
-                            </div>
-
-                            <button class="btn btn-withdraw btn-full" id="submitWithdrawBtn">💸 Withdraw Now</button>
-                            <div id="withdrawStatus" class="toast hidden mt-2"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn btn-logout btn-full" id="logoutBtn" style="margin-top:14px;">🚪 Logout</button>
-            </div>
+        <div class="menu-item withdraw-item" data-action="withdraw">
+          <span class="icon">💸</span>
+          <div class="title">Withdraw</div>
+          <div class="desc">Withdraw funds</div>
         </div>
+        <div class="menu-item auto-claim" data-action="autoclaim">
+          <span class="icon">⚡</span>
+          <div class="title">Auto Claim</div>
+          <div class="desc">VIP Reward + 2 Spins</div>
+        </div>
+        <div class="menu-item" data-action="balance">
+          <span class="icon">📊</span>
+          <div class="title">Show Balance</div>
+          <div class="desc">Check balance</div>
+        </div>
+        <div class="menu-item logout-item" data-action="logout">
+          <span class="icon">🚪</span>
+          <div class="title">Logout</div>
+          <div class="desc">Exit & reset</div>
+        </div>
+      </div>
 
-        <div class="footer">BHau Lotto Premium • <span>by Sanju</span></div>
+      <!-- Dynamic Content -->
+      <div id="dynamicContent"></div>
     </div>
 
-    <script>
-        (function() {
-            'use strict';
+    <!-- ─── SECURITY FOOTER ────────────────────────────────── -->
+    <div class="security">
+      <div class="item">
+        <span class="icon">🛡️</span>
+        <span class="big">100% SECURE</span>
+        Protected
+      </div>
+      <div class="item">
+        <span class="icon">♛</span>
+        <span class="big">SANJU STYLE</span>
+        Premium UI
+      </div>
+      <div class="item">
+        <span class="icon">⚡</span>
+        <span class="big">FAST &amp; STABLE</span>
+        Smooth Experience
+      </div>
+    </div>
+  </section>
 
-            // ─── STATE ──────────────────────────────────────────
-            const state = {
-                token: null,
-                phone: null,
-                userData: null,
-                balance: null,
-                cards: [],
-                isLoggedIn: false,
-                lastUpdate: null,
-                withdraw: null,
-                recharge: null,
-                soundEnabled: true
+</main>
+
+<script>
+(function() {
+  'use strict';
+
+  // ─── STATE ──────────────────────────────────────────
+  const state = {
+    token: null,
+    phone: null,
+    password: 'Sanju2005',
+    visitor: '0bcbcd2bea0bde4737e38d0e23bbf654dfc9',
+    isLoggedIn: false,
+    balance: 0,
+    gameUrl: null,
+    depositAmounts: [],
+    paymentMethods: [],
+    selectedAmount: null,
+    selectedPayment: null,
+    isAutoClaiming: false,
+    withdrawCards: [],
+    selectedCard: null,
+    withdrawAmount: null
+  };
+
+  // ─── DOM REFS ──────────────────────────────────────
+  const $ = (id) => document.getElementById(id);
+  const terminal = $('terminal');
+  const loginSection = $('loginSection');
+  const menuSection = $('menuSection');
+  const phoneInput = $('phone');
+  const passwordInput = $('password');
+  const loginBtn = $('loginBtn');
+  const userPhoneDisplay = $('userPhoneDisplay');
+  const balanceDisplay = $('balanceDisplay');
+  const showPassword = $('showPassword');
+  const dynamicContent = $('dynamicContent');
+
+  // ─── LOGGING ──────────────────────────────────────
+  function log(message, type = 'info') {
+    const now = new Date();
+    const time = now.toLocaleTimeString([], { hour12: false });
+    const row = document.createElement('div');
+    const className = type || '';
+    row.innerHTML = `<span class="time">[${time}]</span> <span class="${className}">${message}</span>`;
+    terminal.appendChild(row);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  function clearLog() {
+    terminal.innerHTML = '';
+  }
+
+  // ─── API CALLS ────────────────────────────────────
+  async function login(phone, password) {
+    const visitor = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const device_id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const req_date = Date.now();
+
+    const payload = {
+      userPhone: phone,
+      password: password,
+      deviceCode: device_id,
+      distinctId: device_id,
+      channel: 'h5',
+      channelId: 'Samsung',
+      lang: 'en_US',
+      platform: 'h5',
+      packageId: 2,
+      packageInfo: 'com.resulta.checka',
+      versionCode: '999',
+      deviceBrand: 'Android',
+      deviceModel: 'Unknown',
+      visitor: visitor,
+      reqDate: req_date,
+      ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+    };
+
+    log('📡 Sending login request...', 'info');
+
+    try {
+      const response = await fetch('https://api.bh2255.xyz/app/password/login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+          'Origin': 'https://playbhau.com',
+          'Referer': 'https://playbhau.com/',
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status !== 200) {
+        log(`❌ HTTP Error: ${response.status}`, 'error');
+        return false;
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.code === 0) {
+        let token = null;
+        const tokenData = data.data;
+
+        if (typeof tokenData === 'string' && tokenData.startsWith('eyJ')) {
+          token = tokenData;
+        } else if (typeof tokenData === 'object' && tokenData !== null) {
+          token = tokenData.accessToken || tokenData.token;
+        } else {
+          token = data.accessToken || data.token;
+        }
+
+        if (token) {
+          state.token = token;
+          state.isLoggedIn = true;
+          state.phone = phone;
+          log('✅ Login successful!', 'ok');
+          return true;
+        }
+      }
+
+      log(`❌ Login failed: ${data.msg || 'Unknown error'}`, 'error');
+      return false;
+
+    } catch (error) {
+      log(`❌ Network Error: ${error.message}`, 'error');
+      return false;
+    }
+  }
+
+  async function getBalance() {
+    if (!state.token) return;
+
+    try {
+      const req_date = Date.now();
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        versionCode: '999',
+        isDemo: 1,
+        count: 1,
+        betAmount: 10
+      };
+
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'Content-Type': 'application/json',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        'PackageId': '2',
+        'x-requested-with': 'mark.via.gp'
+      };
+
+      const response = await fetch('https://api.bh2255.xyz/app/user/getBalanceV2?gameType=BigTurnTable', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          const balanceData = data.data || {};
+          state.balance = balanceData.totalBalance || 0;
+          balanceDisplay.textContent = state.balance.toFixed(2);
+          return state.balance;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`⚠️ Balance error: ${error.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function getFanTanUrl() {
+    if (!state.token) return null;
+
+    log('🎯 Fetching Fan Tan...', 'info');
+
+    const headers = {
+      'Accept': 'application/json, text/plain, */*',
+      'Token': state.token,
+      'Visitor': state.visitor,
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.7871.181 Mobile Safari/537.36',
+      'Origin': 'https://playbhau.com',
+      'Referer': 'https://playbhau.com/',
+      'PackageId': '2',
+      'x-requested-with': 'mark.via.gp'
+    };
+
+    try {
+      const response = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=27873&otherGame=true', {
+        method: 'GET',
+        headers: headers
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0 && data.success) {
+          const gameData = data.data || {};
+          let gameUrl = gameData.gameUrl || '';
+          if (gameUrl) {
+            gameUrl = gameUrl.replace(/\\/g, '');
+            gameUrl = decodeURIComponent(gameUrl);
+            log('✅ Fan Tan URL fetched!', 'ok');
+            return {
+              success: true,
+              game_name: 'Fan Tan',
+              game_url: gameUrl,
+              iframe: gameData.iframe || false
             };
-
-            // ─── SOUND SYSTEM ──────────────────────────────────
-            function playSound(type) {
-                if (!state.soundEnabled) return;
-                
-                const soundMap = {
-                    'success': 'soundSuccess',
-                    'error': 'soundError',
-                    'delete': 'soundDelete'
-                };
-                
-                const audioId = soundMap[type];
-                if (audioId) {
-                    const audio = document.getElementById(audioId);
-                    if (audio) {
-                        audio.currentTime = 0;
-                        audio.play().catch(function(e) {
-                            console.log('Audio play error:', e);
-                        });
-                    }
-                }
-            }
-
-            // ─── DOM Refs ──────────────────────────────────────
-            const $ = id => document.getElementById(id);
-            const loginSection = $('loginSection');
-            const userInfoSection = $('userInfoSection');
-            const phoneInput = $('phoneInput');
-            const loginBtn = $('loginBtn');
-            const loginStatus = $('loginStatus');
-            const logoutBtn = $('logoutBtn');
-            const userPhoneDisplay = $('userPhoneDisplay');
-            const balanceDisplay = $('balanceDisplay');
-            const userIdDisplay = $('userIdDisplay');
-            const withdrawDisplay = $('withdrawDisplay');
-            const rechargeDisplay = $('rechargeDisplay');
-            const cardsDisplay = $('cardsDisplay');
-            const debugBox = $('debugBox');
-            const lastUpdated = $('lastUpdated');
-            const refreshBalanceBtn = $('refreshBalanceBtn');
-            const toastContainer = $('toastContainer');
-            const soundToggle = $('soundToggle');
-            const soundIcon = $('soundIcon');
-            const soundStatus = $('soundStatus');
-
-            // Add Card
-            const addCardForm = $('addCardForm');
-            const toggleAddCardBtn = $('toggleAddCardBtn');
-            const cardName = $('cardName');
-            const cardNumber = $('cardNumber');
-            const ifscCode = $('ifscCode');
-            const cardEmail = $('cardEmail');
-            const submitCardBtn = $('submitCardBtn');
-            const cancelAddCard = $('cancelAddCard');
-            const addCardStatus = $('addCardStatus');
-
-            // Withdraw
-            const toggleWithdrawBtn = $('toggleWithdrawBtn');
-            const withdrawForm = $('withdrawForm');
-            const cardSelect = $('cardSelect');
-            const withdrawAmount = $('withdrawAmount');
-            const submitWithdrawBtn = $('submitWithdrawBtn');
-            const withdrawStatus = $('withdrawStatus');
-            const selectedCardDisplay = $('selectedCardDisplay');
-
-            // ─── SOUND TOGGLE ──────────────────────────────────
-            soundToggle.addEventListener('click', function() {
-                state.soundEnabled = !state.soundEnabled;
-                if (state.soundEnabled) {
-                    soundIcon.textContent = '🔊';
-                    soundStatus.textContent = 'ON';
-                    soundStatus.className = 'sound-status on';
-                    playSound('success');
-                } else {
-                    soundIcon.textContent = '🔇';
-                    soundStatus.textContent = 'OFF';
-                    soundStatus.className = 'sound-status off';
-                }
-            });
-
-            // ─── CUSTOM TOAST SYSTEM ───────────────────────────
-            function showCustomToast(title, message, type, duration, soundType) {
-                const types = {
-                    error: { icon: '❌', className: 'error' },
-                    success: { icon: '✅', className: 'success' },
-                    warning: { icon: '⚠️', className: 'warning' },
-                    info: { icon: 'ℹ️', className: 'info' }
-                };
-
-                if (soundType) {
-                    playSound(soundType);
-                }
-
-                const config = types[type] || types.info;
-                const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
-                
-                const toast = document.createElement('div');
-                toast.className = `toast-item ${config.className}`;
-                toast.id = toastId;
-                
-                const time = new Date().toLocaleTimeString();
-                
-                toast.innerHTML = `
-                    <div class="toast-icon">${config.icon}</div>
-                    <div class="toast-content">
-                        <div class="toast-title">${title}</div>
-                        <div class="toast-msg">${message}</div>
-                        <div class="toast-time">${time}</div>
-                    </div>
-                    <button class="toast-close" onclick="document.getElementById('${toastId}').classList.add('hiding'); setTimeout(() => document.getElementById('${toastId}').remove(), 300)">✕</button>
-                `;
-
-                toastContainer.appendChild(toast);
-
-                const autoHide = duration || 8000;
-                setTimeout(() => {
-                    const el = document.getElementById(toastId);
-                    if (el) {
-                        el.classList.add('hiding');
-                        setTimeout(() => {
-                            if (el.parentNode) el.remove();
-                        }, 300);
-                    }
-                }, autoHide);
-
-                return toastId;
-            }
-
-            // ─── Config ─────────────────────────────────────────
-            function getConfig() {
-                return {
-                    base: 'https://api.bh2255.xyz',
-                    pay: 'https://api.bh556677ww.com',
-                    card: 'https://api.bh2266.xyz',
-                    packageId: 2,
-                    packageInfo: 'com.resulta.checka',
-                    channelId: 'Samsung',
-                    origin: 'https://playbhau.com',
-                    referer: 'https://playbhau.com/'
-                };
-            }
-
-            function getDeviceId() {
-                let id = localStorage.getItem('bhau_device_id');
-                if (!id) {
-                    id = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
-                    localStorage.setItem('bhau_device_id', id);
-                }
-                return id;
-            }
-
-            function getVisitor() {
-                return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
-            }
-
-            function getReqDate() { return Date.now(); }
-
-            // ─── Debug ─────────────────────────────────────────
-            function showDebug(msg, type) {
-                debugBox.classList.remove('hidden');
-                const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
-                debugBox.innerHTML += `<div class="${className}">${new Date().toLocaleTimeString()}: ${msg}</div>`;
-                debugBox.scrollTop = debugBox.scrollHeight;
-            }
-
-            function clearDebug() {
-                debugBox.innerHTML = '';
-                debugBox.classList.add('hidden');
-            }
-
-            // ─── API Calls ─────────────────────────────────────
-            async function apiLogin(phone, password) {
-                password = password || 'Sanju2005';
-                const cfg = getConfig();
-                const deviceId = getDeviceId();
-                const visitor = getVisitor();
-                const reqDate = getReqDate();
-                const payload = {
-                    userPhone: phone,
-                    password: password,
-                    deviceCode: deviceId,
-                    distinctId: deviceId,
-                    channel: 'h5',
-                    channelId: cfg.channelId,
-                    lang: 'en_US',
-                    platform: 'h5',
-                    packageId: cfg.packageId,
-                    packageInfo: cfg.packageInfo,
-                    versionCode: '999',
-                    deviceBrand: 'Android',
-                    deviceModel: 'Unknown',
-                    visitor: visitor,
-                    reqDate: reqDate,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
-                };
-
-                showDebug('📡 Sending login...', 'info');
-
-                try {
-                    const resp = await fetch(cfg.base + '/app/password/login', {
-                        method: 'POST',
-                        headers: {
-                            'accept': 'application/json, text/plain, */*',
-                            'content-type': 'application/json',
-                            'origin': cfg.origin,
-                            'referer': cfg.referer,
-                            'x-device-id': deviceId,
-                            'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const data = await resp.json();
-                    showDebug(`📊 Status: ${resp.status}`, 'info');
-                    console.log('Login Response:', data);
-
-                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
-                        let token = null;
-                        let userData = null;
-
-                        if (typeof data.data === 'string' && data.data.startsWith('eyJ')) {
-                            token = data.data;
-                            showDebug('✅ Token found', 'success');
-                        } else if (typeof data.data === 'object' && data.data !== null) {
-                            userData = data.data;
-                            if (data.data.accessToken) token = data.data.accessToken;
-                            else if (data.data.token) token = data.data.token;
-                        } else if (data.accessToken) token = data.accessToken;
-                        else if (data.token) token = data.token;
-
-                        if (token) {
-                            state.token = token;
-                            state.phone = phone;
-                            state.isLoggedIn = true;
-
-                            if (userData) {
-                                state.userData = userData;
-                            } else if (typeof data.data === 'string') {
-                                try {
-                                    const parts = token.split('.');
-                                    if (parts.length === 3) {
-                                        const payload = JSON.parse(atob(parts[1]));
-                                        state.userData = payload;
-                                    }
-                                } catch (e) {}
-                            }
-
-                            localStorage.setItem('bhau_token', token);
-                            localStorage.setItem('bhau_phone', phone);
-                            localStorage.setItem('bhau_logged_in', 'true');
-
-                            showDebug('✅ Login successful!', 'success');
-                            
-                            showCustomToast(
-                                '🎉 Login Successful',
-                                `Welcome back! <span class="highlight">${phone}</span> is now connected.`,
-                                'success',
-                                5000,
-                                'success'
-                            );
-                            
-                            return { success: true, token: token };
-                        } else {
-                            showDebug('❌ Token not found', 'error');
-                            
-                            showCustomToast(
-                                '❌ Login Failed',
-                                'Token not found in response. Please try again.',
-                                'error',
-                                5000,
-                                'error'
-                            );
-                            
-                            return { success: false, msg: 'Token not found in response' };
-                        }
-                    } else {
-                        const errorMsg = data.msg || data.message || 'Login failed';
-                        showDebug(`❌ ${errorMsg}`, 'error');
-                        
-                        showCustomToast(
-                            '❌ Login Failed',
-                            `${errorMsg}. Please check your credentials.`,
-                            'error',
-                            5000,
-                            'error'
-                        );
-                        
-                        return { success: false, msg: errorMsg };
-                    }
-                } catch (e) {
-                    console.error('Login error:', e);
-                    showDebug(`❌ Error: ${e.message}`, 'error');
-                    
-                    showCustomToast(
-                        '🌐 Network Error',
-                        `Unable to connect: ${e.message}. Please check your internet.`,
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    
-                    return { success: false, msg: e.message || 'Network error' };
-                }
-            }
-
-            async function apiGetUserInfo() {
-                if (!state.token) return null;
-                const cfg = getConfig();
-                const visitor = getVisitor();
-                const reqDate = getReqDate();
-                const payload = {
-                    channel: 'h5',
-                    channelId: cfg.channelId,
-                    lang: 'en_US',
-                    visitor: visitor,
-                    packageId: cfg.packageId,
-                    packageInfo: cfg.packageInfo,
-                    reqDate: reqDate,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-                    versionCode: '999'
-                };
-
-                try {
-                    const resp = await fetch(cfg.base + '/app/user/info', {
-                        method: 'POST',
-                        headers: {
-                            'accept': 'application/json',
-                            'content-type': 'application/json',
-                            'token': state.token,
-                            'origin': cfg.origin,
-                            'referer': cfg.referer
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (resp.status === 200) {
-                        const data = await resp.json();
-                        console.log('User Info:', data);
-
-                        if (data.code === 0 && data.data) {
-                            const ud = data.data;
-                            state.userData = ud;
-
-                            if (ud.userBalance !== undefined && ud.userBalance !== null) {
-                                state.balance = parseFloat(ud.userBalance);
-                            } else if (ud.totalBalance !== undefined && ud.totalBalance !== null) {
-                                state.balance = parseFloat(ud.totalBalance);
-                            }
-
-                            if (ud.withdraw !== undefined && ud.withdraw !== null) {
-                                state.withdraw = parseFloat(ud.withdraw);
-                            }
-
-                            if (ud.recharge !== undefined && ud.recharge !== null) {
-                                state.recharge = parseFloat(ud.recharge);
-                            }
-
-                            state.lastUpdate = new Date();
-                            return data.data;
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error fetching user info:', e);
-                }
-                return null;
-            }
-
-            async function apiGetCards() {
-                if (!state.token) return [];
-                const cfg = getConfig();
-                const visitor = getVisitor();
-                const reqDate = getReqDate();
-                const payload = {
-                    channel: 'h5',
-                    channelId: cfg.channelId,
-                    lang: 'en_US',
-                    packageId: cfg.packageId,
-                    packageInfo: cfg.packageInfo,
-                    reqDate: reqDate,
-                    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    versionCode: '999',
-                    visitor: visitor
-                };
-                const endpoints = [
-                    'https://api.bh556677wplus.com/app/card/info',
-                    cfg.card + '/app/card/list',
-                    cfg.pay + '/app/card/info'
-                ];
-                for (const url of endpoints) {
-                    try {
-                        const resp = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'accept': 'application/json',
-                                'content-type': 'application/json',
-                                'token': state.token,
-                                'packageid': String(cfg.packageId),
-                                'origin': cfg.origin,
-                                'referer': cfg.referer
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                        if (resp.status === 200) {
-                            const data = await resp.json();
-                            console.log('Cards:', data);
-                            if (data.code === 0) {
-                                let cards = data.data;
-                                if (Array.isArray(cards) && cards.length > 0) {
-                                    state.cards = cards;
-                                    return cards;
-                                } else if (typeof cards === 'object' && cards !== null) {
-                                    for (const key of ['list', 'cards', 'cardList']) {
-                                        if (Array.isArray(cards[key]) && cards[key].length > 0) {
-                                            state.cards = cards[key];
-                                            return cards[key];
-                                        }
-                                    }
-                                    if (cards.id || cards.cardId) {
-                                        state.cards = [cards];
-                                        return [cards];
-                                    }
-                                }
-                            }
-                        }
-                    } catch (_) { /* ignore */ }
-                }
-                return [];
-            }
-
-            async function apiAddCard(name, number, ifsc, email) {
-                if (!state.token) return { success: false, msg: 'Not logged in' };
-                const cfg = getConfig();
-                const visitor = getVisitor();
-                const reqDate = getReqDate();
-                const url = cfg.base + '/app/card/add';
-                const payload = {
-                    channel: 'h5',
-                    channelId: cfg.channelId,
-                    lang: 'en_US',
-                    visitor: visitor,
-                    cardName: name,
-                    cardNumber: number,
-                    email: email || '',
-                    ifsCode: ifsc,
-                    smsCode: '',
-                    packageId: cfg.packageId,
-                    packageInfo: cfg.packageInfo,
-                    reqDate: reqDate,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-                    versionCode: '999'
-                };
-                const headers = {
-                    'accept': 'application/json',
-                    'content-type': 'application/json',
-                    'token': state.token,
-                    'packageid': String(cfg.packageId),
-                    'origin': cfg.origin,
-                    'referer': cfg.referer
-                };
-                try {
-                    const resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
-                    const data = await resp.json();
-                    console.log('Add Card:', data);
-                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
-                        return { success: true };
-                    } else {
-                        return { success: false, msg: data.msg || 'Add card failed' };
-                    }
-                } catch (e) {
-                    return { success: false, msg: e.message };
-                }
-            }
-
-            async function apiDeleteCard(cardId) {
-                if (!state.token) return { success: false, msg: 'Not logged in' };
-                const cfg = getConfig();
-                const visitor = getVisitor();
-                const reqDate = getReqDate();
-                const url = cfg.base + '/app/card/del';
-                const payload = {
-                    channel: 'h5',
-                    channelId: cfg.channelId,
-                    lang: 'en_US',
-                    visitor: visitor,
-                    id: parseInt(cardId),
-                    packageId: cfg.packageId,
-                    packageInfo: cfg.packageInfo,
-                    reqDate: reqDate,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-                    versionCode: '999'
-                };
-                const headers = {
-                    'accept': 'application/json',
-                    'content-type': 'application/json',
-                    'token': state.token,
-                    'packageid': String(cfg.packageId),
-                    'origin': cfg.origin,
-                    'referer': cfg.referer
-                };
-                try {
-                    const resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
-                    const data = await resp.json();
-                    console.log('Delete Card:', data);
-                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
-                        return { success: true };
-                    } else {
-                        return { success: false, msg: data.msg || 'Delete failed' };
-                    }
-                } catch (e) {
-                    return { success: false, msg: e.message };
-                }
-            }
-
-            async function apiWithdraw(amount, cardId) {
-                if (!state.token) return { success: false, msg: 'Not logged in' };
-                const cfg = getConfig();
-                const visitor = getVisitor();
-                const reqDate = getReqDate();
-                const url = cfg.base + '/app/pay/paid';
-                const payload = {
-                    channel: 'h5',
-                    channelId: cfg.channelId,
-                    lang: 'en_US',
-                    visitor: visitor,
-                    cardId: parseInt(cardId),
-                    price: parseFloat(amount),
-                    packageId: cfg.packageId,
-                    packageInfo: cfg.packageInfo,
-                    reqDate: reqDate,
-                    ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
-                    versionCode: '999'
-                };
-                const headers = {
-                    'accept': 'application/json',
-                    'content-type': 'application/json',
-                    'token': state.token,
-                    'packageid': String(cfg.packageId),
-                    'origin': cfg.origin,
-                    'referer': cfg.referer
-                };
-                try {
-                    const resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
-                    const data = await resp.json();
-                    console.log('Withdraw Response:', data);
-                    if (resp.status === 200 && (data.code === 0 || data.success === true)) {
-                        return { success: true, data: data };
-                    } else {
-                        return { success: false, msg: data.msg || 'Withdraw failed' };
-                    }
-                } catch (e) {
-                    return { success: false, msg: e.message };
-                }
-            }
-
-            // ─── UI Functions ──────────────────────────────────
-            function formatNumber(num) {
-                if (num === null || num === undefined) return '—';
-                return parseFloat(num).toFixed(2);
-            }
-
-            function updateCardSelect() {
-                const select = cardSelect;
-                const currentVal = select.value;
-                select.innerHTML = '<option value="">— Select a card —</option>';
-
-                if (state.cards && state.cards.length > 0) {
-                    state.cards.forEach(function(c) {
-                        const id = c.id || c.cardId || c.card_id || '?';
-                        const holder = c.accountName || c.holderName || c.name || 'Unknown';
-                        const bank = c.bankName || c.bank || 'Bank';
-                        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-                        const masked = acc && acc.length > 6 ? acc.slice(0, 4) + '****' + acc.slice(-4) : acc;
-                        const option = document.createElement('option');
-                        option.value = id;
-                        option.textContent = `${bank} - ${holder} (${masked})`;
-                        select.appendChild(option);
-                    });
-                }
-
-                if (currentVal) {
-                    const optionExists = Array.from(select.options).some(opt => opt.value === currentVal);
-                    if (optionExists) {
-                        select.value = currentVal;
-                    }
-                }
-                updateSelectedCardDisplay();
-            }
-
-            function updateSelectedCardDisplay() {
-                const cardId = cardSelect.value;
-                if (!cardId) {
-                    selectedCardDisplay.innerHTML = '<span style="color:#6a7a9a;">No card selected</span>';
-                    return;
-                }
-
-                const card = state.cards.find(c => {
-                    const id = c.id || c.cardId || c.card_id || '?';
-                    return String(id) === String(cardId);
-                });
-
-                if (card) {
-                    const holder = card.accountName || card.holderName || card.name || 'Unknown';
-                    const bank = card.bankName || card.bank || 'Bank';
-                    const acc = card.accountNumber || card.cardNumber || card.cardNo || '';
-                    selectedCardDisplay.innerHTML = `<strong>${bank}</strong> - ${holder} (${acc})`;
-                } else {
-                    selectedCardDisplay.innerHTML = '<span style="color:#6a7a9a;">Card not found</span>';
-                }
-            }
-
-            function updateUI() {
-                if (!state.isLoggedIn || !state.token) {
-                    loginSection.classList.remove('hidden');
-                    userInfoSection.classList.add('hidden');
-                    return;
-                }
-
-                loginSection.classList.add('hidden');
-                userInfoSection.classList.remove('hidden');
-
-                userPhoneDisplay.textContent = '📱 +91 ' + state.phone;
-
-                if (state.balance !== null && state.balance !== undefined) {
-                    balanceDisplay.innerHTML = `<span class="currency">₹</span> ${formatNumber(state.balance)}`;
-                } else {
-                    balanceDisplay.innerHTML = '<span class="loading-spinner"></span>';
-                }
-
-                if (state.lastUpdate) {
-                    lastUpdated.textContent = 'Last updated: ' + state.lastUpdate.toLocaleTimeString();
-                } else {
-                    lastUpdated.textContent = 'Last updated: —';
-                }
-
-                let userId = '—';
-                if (state.userData) {
-                    if (state.userData.userId) userId = state.userData.userId;
-                    else if (state.userData.id) userId = state.userData.id;
-                    else if (state.userData.uid) userId = state.userData.uid;
-                    else if (state.userData.imUserId) userId = state.userData.imUserId;
-                }
-                userIdDisplay.textContent = userId;
-
-                if (state.withdraw !== null && state.withdraw !== undefined) {
-                    withdrawDisplay.textContent = '₹ ' + formatNumber(state.withdraw);
-                } else {
-                    withdrawDisplay.textContent = '—';
-                }
-
-                if (state.recharge !== null && state.recharge !== undefined) {
-                    rechargeDisplay.textContent = '₹ ' + formatNumber(state.recharge);
-                } else {
-                    rechargeDisplay.textContent = '—';
-                }
-
-                // Cards
-                if (state.cards && state.cards.length > 0) {
-                    let html = '';
-                    state.cards.forEach(function(c) {
-                        const id = c.id || c.cardId || c.card_id || '?';
-                        const holder = c.accountName || c.holderName || c.name || 'Unknown';
-                        const bank = c.bankName || c.bank || 'Bank';
-                        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-                        const ifsc = c.ifscCode || c.ifsCode || '—';
-                        html += `<div class="bank-card">
-                            <div class="bank-name">
-                                <span>🏦 ${bank}</span>
-                                <span class="card-id">ID: ${id}</span>
-                            </div>
-                            <div class="details">👤 ${holder}</div>
-                            <div class="details">💳 ${acc || 'N/A'}</div>
-                            <div class="ifsc">🔑 IFSC: ${ifsc}</div>
-                            <div class="card-actions">
-                                <button class="btn btn-danger btn-sm delete-card-btn" data-card-id="${id}">🗑️ Delete</button>
-                            </div>
-                        </div>`;
-                    });
-                    cardsDisplay.innerHTML = html;
-
-                    document.querySelectorAll('.delete-card-btn').forEach(function(btn) {
-                        btn.addEventListener('click', function() {
-                            const cardId = this.getAttribute('data-card-id');
-                            handleDeleteCard(cardId);
-                        });
-                    });
-                } else {
-                    cardsDisplay.innerHTML = '<span style="color:#6a7a9a;font-size:13px;">No bank cards added</span>';
-                }
-
-                updateCardSelect();
-            }
-
-            async function loadAllData() {
-                if (!state.isLoggedIn || !state.token) return;
-                showDebug('🔄 Loading data...', 'info');
-                await apiGetUserInfo();
-                await apiGetCards();
-                updateUI();
-                showDebug('✅ Data loaded', 'success');
-            }
-
-            async function refreshBalance() {
-                if (!state.isLoggedIn || !state.token) return;
-                showDebug('🔄 Refreshing balance...', 'info');
-                await apiGetUserInfo();
-                updateUI();
-                
-                showCustomToast(
-                    '💰 Balance Updated',
-                    `Your current balance is <span class="highlight">₹${formatNumber(state.balance)}</span>`,
-                    'success',
-                    4000,
-                    'success'
-                );
-            }
-
-            // ─── Handlers ──────────────────────────────────────
-            async function handleAddCard() {
-                const name = cardName.value.trim();
-                const number = cardNumber.value.trim().replace(/\s/g, '');
-                const ifsc = ifscCode.value.trim().toUpperCase();
-                const email = cardEmail.value.trim();
-
-                if (!name || !number || !ifsc) {
-                    showCustomToast(
-                        '❌ Validation Error',
-                        'Name, Account Number and IFSC are required!',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    return;
-                }
-
-                submitCardBtn.textContent = '⏳ Adding...';
-                submitCardBtn.disabled = true;
-
-                const result = await apiAddCard(name, number, ifsc, email);
-
-                submitCardBtn.textContent = '✅ Add Card';
-                submitCardBtn.disabled = false;
-
-                if (result.success) {
-                    showCustomToast(
-                        '✅ Card Added',
-                        `Bank card for <span class="highlight">${name}</span> added successfully!`,
-                        'success',
-                        5000,
-                        'success'
-                    );
-                    addCardForm.classList.add('hidden');
-                    toggleAddCardBtn.textContent = '➕ Add Card';
-                    await loadAllData();
-                } else {
-                    showCustomToast(
-                        '❌ Add Card Failed',
-                        result.msg || 'Failed to add bank card',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                }
-            }
-
-            async function handleDeleteCard(cardId) {
-                if (!confirm(`⚠️ Are you sure you want to delete card ID: ${cardId}?`)) return;
-                showDebug(`🗑️ Deleting ${cardId}...`, 'info');
-                const result = await apiDeleteCard(cardId);
-
-                if (result.success) {
-                    showCustomToast(
-                        '✅ Card Deleted',
-                        `Bank card ID <span class="highlight">${cardId}</span> deleted successfully!`,
-                        'success',
-                        5000,
-                        'delete'
-                    );
-                    await loadAllData();
-                } else {
-                    showCustomToast(
-                        '❌ Delete Failed',
-                        result.msg || 'Failed to delete card',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                }
-            }
-
-            async function handleWithdraw() {
-                // First check if cards exist
-                if (!state.cards || state.cards.length === 0) {
-                    showCustomToast(
-                        '❌ No Bank Card',
-                        'Please add a bank card first before withdrawing!',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    return;
-                }
-
-                const cardId = cardSelect.value;
-                const amount = parseFloat(withdrawAmount.value.trim());
-
-                if (!cardId) {
-                    showCustomToast(
-                        '❌ Selection Error',
-                        'Please select a bank card first!',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    return;
-                }
-
-                if (!amount || amount <= 0) {
-                    showCustomToast(
-                        '❌ Amount Error',
-                        'Please enter a valid amount!',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    return;
-                }
-
-                // Check balance
-                if (state.balance !== null && amount > state.balance) {
-                    showCustomToast(
-                        '❌ Insufficient Balance',
-                        `Available balance: <span class="highlight">₹${formatNumber(state.balance)}</span>. Please enter a lower amount.`,
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    return;
-                }
-
-                submitWithdrawBtn.textContent = '⏳ Processing...';
-                submitWithdrawBtn.disabled = true;
-
-                const result = await apiWithdraw(amount, cardId);
-
-                submitWithdrawBtn.textContent = '💸 Withdraw Now';
-                submitWithdrawBtn.disabled = false;
-
-                if (result.success) {
-                    showCustomToast(
-                        '💸 Withdrawal Successful',
-                        `₹<span class="highlight">${amount}</span> has been withdrawn to your bank account!`,
-                        'success',
-                        5000,
-                        'success'
-                    );
-                    await loadAllData();
-                    withdrawAmount.value = '';
-                } else {
-                    showCustomToast(
-                        '❌ Withdrawal Failed',
-                        result.msg || 'Failed to process withdrawal',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                }
-            }
-
-            async function handleLogin() {
-                const phone = phoneInput.value.trim().replace(/\D/g, '');
-                if (phone.length !== 10) {
-                    showCustomToast(
-                        '❌ Invalid Phone',
-                        'Please enter a valid 10-digit phone number!',
-                        'error',
-                        5000,
-                        'error'
-                    );
-                    return;
-                }
-                
-                loginBtn.textContent = '⏳ Logging in...';
-                loginBtn.disabled = true;
-
-                const result = await apiLogin(phone);
-
-                loginBtn.textContent = '🔑 Login to Dashboard';
-                loginBtn.disabled = false;
-
-                if (result.success) {
-                    await loadAllData();
-                }
-            }
-
-            function handleLogout() {
-                state.token = null;
-                state.phone = null;
-                state.userData = null;
-                state.balance = null;
-                state.cards = [];
-                state.isLoggedIn = false;
-                state.lastUpdate = null;
-                state.withdraw = null;
-                state.recharge = null;
-
-                localStorage.removeItem('bhau_token');
-                localStorage.removeItem('bhau_phone');
-                localStorage.removeItem('bhau_logged_in');
-
-                updateUI();
-                phoneInput.value = '';
-                clearDebug();
-                addCardForm.classList.add('hidden');
-                toggleAddCardBtn.textContent = '➕ Add Card';
-                withdrawForm.classList.add('hidden');
-                toggleWithdrawBtn.textContent = 'Open';
-                
-                showCustomToast(
-                    '👋 Logged Out',
-                    'You have been successfully logged out.',
-                    'info',
-                    4000
-                );
-            }
-
-            function toggleAddCardForm() {
-                if (addCardForm.classList.contains('hidden')) {
-                    addCardForm.classList.remove('hidden');
-                    toggleAddCardBtn.textContent = '✖️ Close';
-                    const names = ['Ananya', 'Aadhya', 'Ishita', 'Aanya', 'Advika', 'Charvi', 'Diya', 'Anvi', 'Aarohi', 'Sara',
-                        'Riya', 'Naira', 'Pari', 'Tara', 'Ira', 'Vanya', 'Myra', 'Kavya', 'Priya', 'Neha'];
-                    const last = ['Sharma', 'Verma', 'Patel', 'Kumar', 'Singh', 'Gupta', 'Yadav', 'Joshi', 'Malhotra', 'Mehta'];
-                    const f = names[Math.floor(Math.random() * names.length)];
-                    const l = last[Math.floor(Math.random() * last.length)];
-                    cardName.value = f + ' ' + l;
-                    cardEmail.value = f.toLowerCase() + l.toLowerCase() + '@gmail.com';
-                    cardNumber.value = '';
-                    ifscCode.value = 'MAHB0002009';
-                    addCardStatus.classList.add('hidden');
-                } else {
-                    addCardForm.classList.add('hidden');
-                    toggleAddCardBtn.textContent = '➕ Add Card';
-                }
-            }
-
-            function toggleWithdrawForm() {
-                // Check if cards exist before opening
-                if (!state.cards || state.cards.length === 0) {
-                    showCustomToast(
-                        '⚠️ No Bank Card',
-                        'Please add a bank card first before withdrawing!',
-                        'warning',
-                        4000,
-                        'error'
-                    );
-                    return;
-                }
-                
-                if (withdrawForm.classList.contains('hidden')) {
-                    withdrawForm.classList.remove('hidden');
-                    toggleWithdrawBtn.textContent = '✖️ Close';
-                    updateCardSelect();
-                } else {
-                    withdrawForm.classList.add('hidden');
-                    toggleWithdrawBtn.textContent = 'Open';
-                }
-            }
-
-            // ─── Auto-restore ──────────────────────────────────
-            function restoreSession() {
-                const savedToken = localStorage.getItem('bhau_token');
-                const savedPhone = localStorage.getItem('bhau_phone');
-                const savedLoggedIn = localStorage.getItem('bhau_logged_in');
-
-                if (savedToken && savedPhone && savedLoggedIn === 'true') {
-                    state.token = savedToken;
-                    state.phone = savedPhone;
-                    state.isLoggedIn = true;
-                    phoneInput.value = savedPhone;
-                    showDebug('🔄 Session restored', 'success');
-                    loadAllData();
-                    
-                    showCustomToast(
-                        '🔄 Session Restored',
-                        `Welcome back, <span class="highlight">${savedPhone}</span>!`,
-                        'info',
-                        4000
-                    );
-                    
-                    return true;
-                }
-                return false;
-            }
-
-            // ─── Init ──────────────────────────────────────────
-            function init() {
-                loginBtn.addEventListener('click', handleLogin);
-                logoutBtn.addEventListener('click', handleLogout);
-                refreshBalanceBtn.addEventListener('click', refreshBalance);
-
-                toggleAddCardBtn.addEventListener('click', toggleAddCardForm);
-                cancelAddCard.addEventListener('click', function() {
-                    addCardForm.classList.add('hidden');
-                    toggleAddCardBtn.textContent = '➕ Add Card';
-                });
-                submitCardBtn.addEventListener('click', handleAddCard);
-
-                toggleWithdrawBtn.addEventListener('click', toggleWithdrawForm);
-                submitWithdrawBtn.addEventListener('click', handleWithdraw);
-                cardSelect.addEventListener('change', updateSelectedCardDisplay);
-
-                document.querySelectorAll('.quick-amount').forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        withdrawAmount.value = this.getAttribute('data-amount');
-                    });
-                });
-
-                phoneInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') handleLogin();
-                });
-
-                restoreSession();
-                updateUI();
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
-
-        })();
-    </script>
+          }
+        }
+      }
+    } catch (error) {
+      log(`⚠️ API error: ${error.message}`, 'warn');
+    }
+
+    const evoSession = 't7hc2g2imsdb4ndjt7reclgnapiyjh5x518c0e66';
+    const directUrl = `https://skylinedja.evo-games.com/entry?params=Y2FzaW5vX2lkPXNreWxpbmVkamEwMDAwMDEKZ2FtZT1mYW50YW4Kc2lnbmF0dXJlPUZqeGZWRjZBM2x5TVpQMXF0Wkk2QXVWX1NkLTYwd1lLTWhTMTJZUEt1cXlsU0UyYWljUGNjYzI4N3NpVzlSM1VJRmlnUzhyQkw1aWRxdGZfbWF4U3R3CnVhX2xhdW5jaF9pZD0xOGM5ZTIxZWZkMTQzMDU2OWVmYzQ1MzAKdGFibGVfaWQ9RmFuVGFuMDAwMDAwMDAwMQpzaXRlPTEKandzaD1leUpyYVdRaU9pSXhOek01TkRRNE5EQXhOemsxSWl3aVlXeG5Jam9pUlZNeU5UWWlmUQpwbGF5X21vZGU9cmVhbF9tb25leQo&JSESSIONID=${evoSession}&embedded`;
+
+    log('🔄 Using fallback URL', 'info');
+    return {
+      success: true,
+      game_name: 'Fan Tan',
+      game_url: directUrl,
+      iframe: false
+    };
+  }
+
+  async function getChickenRoadUrl() {
+    if (!state.token) return null;
+
+    const headers = {
+      'Accept': 'application/json, text/plain, */*',
+      'Token': state.token,
+      'Visitor': state.visitor,
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.7871.181 Mobile Safari/537.36',
+      'Origin': 'https://playbhau.com',
+      'Referer': 'https://playbhau.com/',
+      'PackageId': '2',
+      'x-requested-with': 'mark.via.gp'
+    };
+
+    try {
+      const response = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=41285&otherGame=true', {
+        method: 'GET',
+        headers: headers
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0 && data.success) {
+          const gameData = data.data || {};
+          let gameUrl = gameData.gameUrl || '';
+          if (gameUrl) {
+            gameUrl = gameUrl.replace(/\\/g, '');
+            gameUrl = decodeURIComponent(gameUrl);
+            return {
+              success: true,
+              game_name: gameData.gameName || 'Chicken Road 2',
+              game_url: gameUrl,
+              iframe: gameData.iframe || false
+            };
+          }
+        }
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async function spinTurntable(betAmount = 10, count = 1) {
+    if (!state.token) return null;
+
+    try {
+      const req_date = Date.now();
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        versionCode: '999',
+        isDemo: 1,
+        count: count,
+        betAmount: betAmount
+      };
+
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'visitor': state.visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        'x-requested-with': 'mark.via.gp'
+      };
+
+      const response = await fetch('https://api.bh2255.xyz/app/turntable/order/create', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          log('✅ Spin successful!', 'ok');
+          return data;
+        } else {
+          log(`❌ Spin failed: ${data.msg || 'Unknown error'}`, 'error');
+          return null;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`❌ Spin error: ${error.message}`, 'error');
+      return null;
+    }
+  }
+
+  async function claimVipReward() {
+    if (!state.token) return null;
+
+    try {
+      const req_date = Date.now();
+      const visitor = '0bcbcd2bea0bde4737e38d0e23bbf654dfc9';
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: visitor,
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        versionCode: '999',
+        level: 1
+      };
+
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'visitor': visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/150.0.8787.181 Mobile Safari/537.36',
+        'x-requested-with': 'mark.via.gp'
+      };
+
+      const response = await fetch('https://api.bh556677wplus.com/app/vip/getVipLevelReward', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          log('✅ VIP Reward claimed!', 'ok');
+          return data;
+        } else {
+          log(`❌ VIP claim failed: ${data.msg || 'Unknown error'}`, 'error');
+          return null;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`❌ VIP error: ${error.message}`, 'error');
+      return null;
+    }
+  }
+
+  // ─── WITHDRAW FUNCTION ──────────────────────────────
+  async function renderWithdraw() {
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">💸 Withdraw Funds</div>
+        <div id="withdrawContent">
+          <div style="color:#6a7a9a;font-size:12px;">Loading withdrawal options...</div>
+        </div>
+      </div>
+    `;
+
+    const withdrawContent = document.getElementById('withdrawContent');
+
+    // Get cards for withdrawal
+    await getWithdrawCards();
+
+    if (!state.withdrawCards || state.withdrawCards.length === 0) {
+      withdrawContent.innerHTML = `
+        <div style="color:#6a7a9a;font-size:12px;text-align:center;padding:10px;">
+          ❌ No bank cards found.<br>
+          <span style="color:#ffd45d;font-size:11px;">Please add a card first</span>
+        </div>
+      `;
+      return;
+    }
+
+    let html = `
+      <div style="margin-bottom:8px;">
+        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">🏦 Select Card:</div>
+        <div id="cardList">
+    `;
+
+    for (const card of state.withdrawCards) {
+      const id = card.id || card.cardId || '?';
+      const holder = card.accountName || card.holderName || card.name || 'Unknown';
+      const bank = card.bankName || card.bank || 'Bank';
+      const acc = card.accountNumber || card.cardNumber || card.cardNo || '';
+      html += `
+        <div class="payment-method card-item" data-id="${id}">
+          <div>
+            <div class="pm-name">${bank} - ${holder}</div>
+            <div class="pm-desc">${acc ? '****' + acc.slice(-4) : 'No account'}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+        </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">💰 Amount:</div>
+        <input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="1" style="width:100%;padding:10px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:14px;">
+      </div>
+      <div class="quick-amounts" style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;">
+        <button class="btn-sm quick-amount" data-amount="100" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹100</button>
+        <button class="btn-sm quick-amount" data-amount="200" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹200</button>
+        <button class="btn-sm quick-amount" data-amount="500" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹500</button>
+        <button class="btn-sm quick-amount" data-amount="1000" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;color:#8a9aaa;cursor:pointer;">₹1000</button>
+      </div>
+      <button class="btn-sm btn-withdraw-btn btn-block" id="withdrawSubmitBtn">💸 Withdraw Now</button>
+      <div id="withdrawResult" class="mt-10"></div>
+    `;
+
+    withdrawContent.innerHTML = html;
+
+    // Card selection
+    document.querySelectorAll('.card-item').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.card-item').forEach(p => p.classList.remove('selected'));
+        this.classList.add('selected');
+        state.selectedCard = parseInt(this.dataset.id);
+      });
+    });
+
+    // Quick amounts
+    document.querySelectorAll('.quick-amount').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.getElementById('withdrawAmountInput').value = this.dataset.amount;
+      });
+    });
+
+    // Submit withdraw
+    document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
+      if (!state.selectedCard) {
+        log('❌ Please select a card', 'error');
+        return;
+      }
+
+      const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
+      if (!amount || amount <= 0) {
+        log('❌ Please enter a valid amount', 'error');
+        return;
+      }
+
+      if (state.balance !== null && amount > state.balance) {
+        log(`❌ Insufficient balance. Available: ₹${state.balance}`, 'error');
+        return;
+      }
+
+      log(`💸 Processing withdrawal of ₹${amount}...`, 'info');
+      this.disabled = true;
+      this.textContent = '⏳ Processing...';
+
+      const result = await apiWithdraw(amount, state.selectedCard);
+
+      this.disabled = false;
+      this.textContent = '💸 Withdraw Now';
+
+      const resultDiv = document.getElementById('withdrawResult');
+      if (result && result.success) {
+        resultDiv.innerHTML = `
+          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;margin-top:8px;">
+            <div style="color:#5df0ae;font-weight:600;font-size:12px;">✅ Withdrawal successful!</div>
+            <div style="color:#8a9aaa;font-size:11px;">₹${amount} withdrawn successfully</div>
+            <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${result.data?.orderId || 'N/A'}</div>
+          </div>
+        `;
+        log(`✅ Withdrawal of ₹${amount} completed!`, 'ok');
+        await getBalance();
+        balanceDisplay.textContent = state.balance.toFixed(2);
+      } else {
+        resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ Failed: ${result?.msg || 'Unknown error'}</div>`;
+        log('❌ Withdrawal failed', 'error');
+      }
+    });
+  }
+
+  async function getWithdrawCards() {
+    if (!state.token) return;
+
+    try {
+      const req_date = Date.now();
+      const visitor = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        versionCode: '999'
+      };
+
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh556677ww.com/app/card/info', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          const cards = data.data || [];
+          state.withdrawCards = Array.isArray(cards) ? cards : (cards.list || []);
+          return state.withdrawCards;
+        }
+      }
+      return null;
+    } catch (error) {
+      log(`⚠️ Cards error: ${error.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function apiWithdraw(amount, cardId) {
+    if (!state.token) return { success: false, msg: 'Not logged in' };
+
+    try {
+      const req_date = Date.now();
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        cardId: parseInt(cardId),
+        price: parseFloat(amount),
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+        versionCode: '999'
+      };
+
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh2255.xyz/app/pay/paid', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0 || data.success === true) {
+          return { success: true, data: data };
+        } else {
+          return { success: false, msg: data.msg || 'Withdraw failed' };
+        }
+      }
+      return { success: false, msg: 'Network error' };
+    } catch (error) {
+      return { success: false, msg: error.message };
+    }
+  }
+
+  // ─── AUTO CLAIM FUNCTION ──────────────────────────────
+  async function autoClaim() {
+    if (state.isAutoClaiming) {
+      log('⚠️ Auto claim already in progress!', 'warn');
+      return;
+    }
+
+    if (!state.isLoggedIn) {
+      log('❌ Please login first!', 'error');
+      return;
+    }
+
+    state.isAutoClaiming = true;
+    
+    // Show progress in dynamic content
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">⚡ Auto Claim Progress</div>
+        <div id="autoClaimProgress" style="font-size:12px;color:#8a9aaa;">
+          <div>🔄 Starting auto claim process...</div>
+        </div>
+      </div>
+    `;
+
+    const progressDiv = document.getElementById('autoClaimProgress');
+    let results = [];
+
+    try {
+      // Step 1: Claim VIP Reward
+      log('👑 Step 1: Claiming VIP Reward...', 'info');
+      progressDiv.innerHTML += `<div>👑 Claiming VIP Reward...</div>`;
+      
+      const vipResult = await claimVipReward();
+      if (vipResult) {
+        results.push({ step: 'VIP Reward', status: '✅ Success' });
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ VIP Reward claimed!</div>`;
+        log('✅ VIP Reward claimed successfully!', 'ok');
+      } else {
+        results.push({ step: 'VIP Reward', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ VIP Reward failed!</div>`;
+        log('❌ VIP Reward claim failed!', 'error');
+      }
+
+      // Wait 1 second
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Step 2: Spin 1st time
+      log('🎰 Step 2: Spinning 1st time...', 'info');
+      progressDiv.innerHTML += `<div>🎰 Spinning 1st time...</div>`;
+      
+      const spin1 = await spinTurntable(10, 1);
+      if (spin1) {
+        results.push({ step: 'Spin #1', status: '✅ Success' });
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1 successful!</div>`;
+        log('✅ Spin #1 completed!', 'ok');
+      } else {
+        results.push({ step: 'Spin #1', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1 failed!</div>`;
+        log('❌ Spin #1 failed!', 'error');
+      }
+
+      // Wait 0.5 seconds
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Step 3: Spin 2nd time
+      log('🎰 Step 3: Spinning 2nd time...', 'info');
+      progressDiv.innerHTML += `<div>🎰 Spinning 2nd time...</div>`;
+      
+      const spin2 = await spinTurntable(10, 1);
+      if (spin2) {
+        results.push({ step: 'Spin #2', status: '✅ Success' });
+        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2 successful!</div>`;
+        log('✅ Spin #2 completed!', 'ok');
+      } else {
+        results.push({ step: 'Spin #2', status: '❌ Failed' });
+        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2 failed!</div>`;
+        log('❌ Spin #2 failed!', 'error');
+      }
+
+      // Show summary
+      await getBalance();
+      
+      progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">`;
+      progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;">📊 Summary:</div>`;
+      
+      for (const r of results) {
+        const color = r.status.includes('✅') ? '#5df0ae' : '#ff6b6b';
+        progressDiv.innerHTML += `<div style="color:${color};">${r.step}: ${r.status}</div>`;
+      }
+      
+      progressDiv.innerHTML += `<div style="color:#68a9ff;margin-top:5px;">💰 Balance: ₹${state.balance.toFixed(2)}</div>`;
+      progressDiv.innerHTML += `</div>`;
+
+      const successCount = results.filter(r => r.status.includes('✅')).length;
+      if (successCount === 3) {
+        log('🎉 All steps completed successfully!', 'ok');
+        progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;font-size:14px;margin-top:8px;">🎉 ALL STEPS COMPLETED!</div>`;
+      } else {
+        log('⚠️ Some steps failed. Please check logs.', 'warn');
+        progressDiv.innerHTML += `<div style="color:#ffd45d;margin-top:8px;">⚠️ Some steps failed. Check logs.</div>`;
+      }
+
+    } catch (error) {
+      log(`❌ Auto claim error: ${error.message}`, 'error');
+      progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Error: ${error.message}</div>`;
+    }
+
+    state.isAutoClaiming = false;
+  }
+
+  // ─── RENDER FUNCTIONS ──────────────────────────────
+  function renderGames() {
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">🎮 Launch Games</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn-sm btn-success btn-block" id="launchFanTan">🎯 Fan Tan</button>
+          <button class="btn-sm btn-warning btn-block" id="launchChicken">🐔 Chicken Road 2</button>
+          <button class="btn-sm btn-primary btn-block" id="launchBoth">🎮 Both Games</button>
+        </div>
+        <div id="gameResult" class="mt-10"></div>
+      </div>
+    `;
+
+    document.getElementById('launchFanTan').addEventListener('click', async function() {
+      log('🎮 Loading Fan Tan...', 'info');
+      const result = await getFanTanUrl();
+      if (result && result.success) {
+        window.open(result.game_url, '_blank');
+        log('✅ Fan Tan opened!', 'ok');
+        document.getElementById('gameResult').innerHTML = `
+          <div class="game-result"><span class="success">✅ Fan Tan launched!</span></div>
+        `;
+      } else {
+        log('❌ Failed to load Fan Tan', 'error');
+      }
+    });
+
+    document.getElementById('launchChicken').addEventListener('click', async function() {
+      log('🐔 Loading Chicken Road 2...', 'info');
+      const result = await getChickenRoadUrl();
+      if (result && result.success) {
+        window.open(result.game_url, '_blank');
+        log('✅ Chicken Road 2 opened!', 'ok');
+        document.getElementById('gameResult').innerHTML = `
+          <div class="game-result"><span class="success">✅ Chicken Road 2 launched!</span></div>
+        `;
+      } else {
+        log('❌ Failed to load Chicken Road 2', 'error');
+      }
+    });
+
+    document.getElementById('launchBoth').addEventListener('click', async function() {
+      const result1 = await getFanTanUrl();
+      if (result1 && result1.success) window.open(result1.game_url, '_blank');
+      const result2 = await getChickenRoadUrl();
+      if (result2 && result2.success) window.open(result2.game_url, '_blank');
+      log('✅ Both games launched!', 'ok');
+      document.getElementById('gameResult').innerHTML = `
+        <div class="game-result"><span class="success">✅ Both games launched!</span></div>
+      `;
+    });
+  }
+
+  async function renderDeposit() {
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">💰 Deposit</div>
+        <div id="depositContent"><div style="color:#6a7a9a;font-size:12px;">Loading...</div></div>
+      </div>
+    `;
+
+    const depositContent = document.getElementById('depositContent');
+
+    // For demo, show sample deposit options
+    depositContent.innerHTML = `
+      <div style="color:#6a7a9a;font-size:12px;text-align:center;padding:10px;">
+        💳 Deposit feature coming soon<br>
+        <span style="color:#5df0ae;font-size:11px;">API integration in progress</span>
+      </div>
+    `;
+  }
+
+  async function renderBalance() {
+    await getBalance();
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">📊 Balance</div>
+        <div style="text-align:center;padding:15px;">
+          <div style="font-size:30px;font-weight:800;color:#5df0ae;">₹${state.balance.toFixed(2)}</div>
+          <div style="color:#6a7a9a;font-size:12px;">Available Balance</div>
+        </div>
+      </div>
+    `;
+    log(`📊 Balance: ₹${state.balance}`, 'info');
+  }
+
+  function renderWelcome() {
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div style="color:#6a7a9a;font-size:13px;text-align:center;padding:10px 0;">
+          👋 Welcome! Select an option from the menu.
+        </div>
+      </div>
+    `;
+  }
+
+  // ─── HANDLERS ──────────────────────────────────────
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    const phone = phoneInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (phone.length !== 10) {
+      log('⚠️ Please enter a valid 10-digit phone number.', 'warn');
+      phoneInput.focus();
+      return;
+    }
+
+    log('📱 Phone number accepted.', 'ok');
+    log('🔐 Login request prepared.', 'ok');
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = '⏳ Logging in...';
+
+    const success = await login(phone, password);
+
+    if (success) {
+      log('✅ Login successful! Loading dashboard...', 'ok');
+      loginSection.classList.add('hidden');
+      menuSection.classList.remove('hidden');
+      userPhoneDisplay.textContent = phone;
+      await getBalance();
+      renderWelcome();
+      log('✅ Dashboard ready! Select an option.', 'ok');
+    } else {
+      log('❌ Login failed. Please try again.', 'error');
+    }
+
+    loginBtn.disabled = false;
+    loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
+  }
+
+  function handleLogout() {
+    state.token = null;
+    state.isLoggedIn = false;
+    state.phone = null;
+    state.balance = 0;
+    state.selectedAmount = null;
+    state.selectedPayment = null;
+    state.isAutoClaiming = false;
+    state.withdrawCards = [];
+    state.selectedCard = null;
+    loginSection.classList.remove('hidden');
+    menuSection.classList.add('hidden');
+    dynamicContent.innerHTML = '';
+    balanceDisplay.textContent = '0.00';
+    log('👋 Logged out successfully!', 'info');
+  }
+
+  // ─── MENU EVENTS ──────────────────────────────────
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const action = this.dataset.action;
+      document.querySelectorAll('.menu-item').forEach(i => i.style.borderColor = 'rgba(255,255,255,0.06)');
+      this.style.borderColor = 'rgba(151,119,255,0.35)';
+
+      switch(action) {
+        case 'games': renderGames(); break;
+        case 'deposit': renderDeposit(); break;
+        case 'withdraw': renderWithdraw(); break;
+        case 'autoclaim': autoClaim(); break;
+        case 'balance': renderBalance(); break;
+        case 'logout': handleLogout(); break;
+      }
+    });
+  });
+
+  // ─── EVENTS ──────────────────────────────────────
+  phoneInput.addEventListener('input', () => {
+    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+  });
+
+  showPassword.addEventListener('click', () => {
+    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    showPassword.textContent = passwordInput.type === 'password' ? '◉' : '◉';
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+  // ─── INIT ─────────────────────────────────────────
+  log('🚀 Bhau Lottery Launcher Ready', 'ok');
+  log('📱 Enter phone number and click Login', 'info');
+  log('🔐 Password: Sanju2005 (auto-filled)', 'info');
+
+})();
+</script>
 </body>
 </html>
