@@ -345,6 +345,16 @@ body:before{
   background: rgba(212,160,32,.08);
 }
 
+.menu-item.card-item {
+  border-color: rgba(255,215,0,.15);
+  background: rgba(255,215,0,.03);
+}
+
+.menu-item.card-item:hover {
+  border-color: rgba(255,215,0,.35);
+  background: rgba(255,215,0,.08);
+}
+
 /* ─── DYNAMIC CONTENT ────────────────────────────────────── */
 #dynamicContent {
   margin-top: 12px;
@@ -508,6 +518,14 @@ body:before{
 
 .btn-withdraw-btn:hover { transform: translateY(-1px); }
 
+.btn-card-add {
+  background: linear-gradient(135deg, #ff6b35, #e55a2b);
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-card-add:hover { transform: translateY(-1px); }
+
 .btn-block {
   width: 100%;
   padding: 10px;
@@ -548,17 +566,15 @@ body:before{
   50% { box-shadow: 0 0 40px rgba(212,160,32,0.4); }
 }
 
-.menu-item.auto-claim {
-  animation: pulse-gold 2s ease-in-out infinite;
+@keyframes pulse-card {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,107,53,0.2); }
+  50% { box-shadow: 0 0 40px rgba(255,107,53,0.4); }
 }
 
-.menu-item.deposit-item {
-  animation: pulse-deposit 2s ease-in-out infinite;
-}
-
-.menu-item.withdraw-item {
-  animation: pulse-withdraw 2s ease-in-out infinite;
-}
+.menu-item.auto-claim { animation: pulse-gold 2s ease-in-out infinite; }
+.menu-item.deposit-item { animation: pulse-deposit 2s ease-in-out infinite; }
+.menu-item.withdraw-item { animation: pulse-withdraw 2s ease-in-out infinite; }
+.menu-item.card-item { animation: pulse-card 2s ease-in-out infinite; }
 
 @media(max-width:430px){
   .page{padding:12px 9px 20px}
@@ -657,6 +673,11 @@ body:before{
           <div class="title">Launch Games</div>
           <div class="desc">Fan Tan, Chicken Road</div>
         </div>
+        <div class="menu-item card-item" data-action="addcard">
+          <span class="icon">💳</span>
+          <div class="title">Add Bank Card</div>
+          <div class="desc">Add new card</div>
+        </div>
         <div class="menu-item auto-claim" data-action="autoclaim">
           <span class="icon">⚡</span>
           <div class="title">Auto Claim</div>
@@ -724,7 +745,8 @@ body:before{
     selectedPayment: null,
     isAutoClaiming: false,
     withdrawCards: [],
-    selectedCard: null
+    selectedCard: null,
+    cardList: []
   };
 
   // ─── DOM REFS ──────────────────────────────────────
@@ -1295,6 +1317,7 @@ body:before{
         if (data.code === 0) {
           const cards = data.data || [];
           state.withdrawCards = Array.isArray(cards) ? cards : (cards.list || []);
+          state.cardList = state.withdrawCards;
           return state.withdrawCards;
         }
       }
@@ -1302,6 +1325,107 @@ body:before{
     } catch (error) {
       log(`⚠️ Cards error: ${error.message}`, 'warn');
       return null;
+    }
+  }
+
+  // ─── ADD CARD FUNCTIONS ──────────────────────────────
+  async function apiAddCard(name, number, ifsc, email) {
+    if (!state.token) return { success: false, msg: 'Not logged in' };
+
+    try {
+      const req_date = Date.now();
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        cardName: name,
+        cardNumber: number,
+        email: email || '',
+        ifsCode: ifsc,
+        smsCode: '',
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+        versionCode: '999'
+      };
+
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh2255.xyz/app/card/add', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0 || data.success === true) {
+          return { success: true, data: data };
+        } else {
+          return { success: false, msg: data.msg || 'Add card failed' };
+        }
+      }
+      return { success: false, msg: 'Network error' };
+    } catch (error) {
+      return { success: false, msg: error.message };
+    }
+  }
+
+  async function apiDeleteCard(cardId) {
+    if (!state.token) return { success: false, msg: 'Not logged in' };
+
+    try {
+      const req_date = Date.now();
+
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        id: parseInt(cardId),
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36',
+        versionCode: '999'
+      };
+
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'token': state.token,
+        'packageid': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh2255.xyz/app/card/del', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0 || data.success === true) {
+          return { success: true };
+        } else {
+          return { success: false, msg: data.msg || 'Delete failed' };
+        }
+      }
+      return { success: false, msg: 'Network error' };
+    } catch (error) {
+      return { success: false, msg: error.message };
     }
   }
 
@@ -1647,6 +1771,113 @@ body:before{
     });
   }
 
+  // ─── ADD CARD RENDER ──────────────────────────────
+  async function renderAddCard() {
+    // First get existing cards
+    await getWithdrawCards();
+
+    let cardListHtml = '';
+    if (state.cardList && state.cardList.length > 0) {
+      cardListHtml = '<div style="margin-bottom:10px;color:#68a9ff;font-size:12px;font-weight:600;">📋 Your Cards:</div>';
+      for (const card of state.cardList) {
+        const id = card.id || card.cardId || '?';
+        const holder = card.accountName || card.holderName || card.name || 'Unknown';
+        const bank = card.bankName || card.bank || 'Bank';
+        const acc = card.accountNumber || card.cardNumber || card.cardNo || '';
+        cardListHtml += `
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);padding:8px 12px;border-radius:8px;margin-bottom:4px;">
+            <div style="font-size:12px;">
+              <span style="color:#ffd700;">${bank}</span> - ${holder}
+              <div style="color:#6a7a9a;font-size:10px;">${acc ? '****' + acc.slice(-4) : 'No account'}</div>
+            </div>
+            <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;">🗑️</button>
+          </div>
+        `;
+      }
+    } else {
+      cardListHtml = '<div style="color:#6a7a9a;font-size:12px;margin-bottom:10px;">No cards added yet</div>';
+    }
+
+    dynamicContent.innerHTML = `
+      <div class="dynamic-card">
+        <div class="title">💳 Add Bank Card</div>
+        ${cardListHtml}
+        <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
+          <div class="input-group" style="margin-bottom:8px;">
+            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">👤 Account Holder Name</label>
+            <input id="cardNameInput" placeholder="Full Name" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
+          </div>
+          <div class="input-group" style="margin-bottom:8px;">
+            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">💳 Account Number</label>
+            <input id="cardNumberInput" placeholder="1234567890" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
+          </div>
+          <div class="input-group" style="margin-bottom:8px;">
+            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">🏛️ IFSC Code</label>
+            <input id="ifscInput" placeholder="MAHB0002009" value="MAHB0002009" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
+          </div>
+          <div class="input-group" style="margin-bottom:8px;">
+            <label style="color:#7a8aaa;font-size:10px;font-weight:600;">📧 Email (optional)</label>
+            <input id="cardEmailInput" placeholder="email@gmail.com" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
+          </div>
+          <button class="btn-sm btn-card-add btn-block" id="addCardSubmitBtn">➕ Add Card</button>
+          <div id="addCardResult" class="mt-10"></div>
+        </div>
+      </div>
+    `;
+
+    // Delete card handlers
+    document.querySelectorAll('.delete-card-btn').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const cardId = this.dataset.id;
+        if (!confirm(`Delete card ID: ${cardId}?`)) return;
+        log(`🗑️ Deleting card ${cardId}...`, 'info');
+        const result = await apiDeleteCard(cardId);
+        if (result.success) {
+          log('✅ Card deleted!', 'ok');
+          renderAddCard();
+          await getWithdrawCards();
+        } else {
+          log(`❌ Delete failed: ${result.msg}`, 'error');
+        }
+      });
+    });
+
+    document.getElementById('addCardSubmitBtn').addEventListener('click', async function() {
+      const name = document.getElementById('cardNameInput').value.trim();
+      const number = document.getElementById('cardNumberInput').value.trim().replace(/\s/g, '');
+      const ifsc = document.getElementById('ifscInput').value.trim().toUpperCase();
+      const email = document.getElementById('cardEmailInput').value.trim();
+
+      if (!name || !number || !ifsc) {
+        log('❌ Name, Account Number and IFSC are required!', 'error');
+        return;
+      }
+
+      this.disabled = true;
+      this.textContent = '⏳ Adding...';
+
+      const result = await apiAddCard(name, number, ifsc, email);
+
+      this.disabled = false;
+      this.textContent = '➕ Add Card';
+
+      const resultDiv = document.getElementById('addCardResult');
+      if (result.success) {
+        resultDiv.innerHTML = `<div style="color:#5df0ae;font-size:12px;">✅ Card added successfully!</div>`;
+        log('✅ Card added!', 'ok');
+        document.getElementById('cardNameInput').value = '';
+        document.getElementById('cardNumberInput').value = '';
+        document.getElementById('ifscInput').value = 'MAHB0002009';
+        document.getElementById('cardEmailInput').value = '';
+        setTimeout(() => renderAddCard(), 1000);
+        await getWithdrawCards();
+      } else {
+        resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ ${result.msg || 'Failed to add card'}</div>`;
+        log(`❌ Add card failed: ${result.msg}`, 'error');
+      }
+    });
+  }
+
   async function renderWithdraw() {
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
@@ -1840,6 +2071,7 @@ body:before{
     state.depositAmounts = [];
     state.paymentMethods = [];
     state.withdrawCards = [];
+    state.cardList = [];
     state.selectedCard = null;
     loginSection.classList.remove('hidden');
     menuSection.classList.add('hidden');
@@ -1858,6 +2090,7 @@ body:before{
       switch(action) {
         case 'deposit': renderDeposit(); break;
         case 'games': renderGames(); break;
+        case 'addcard': renderAddCard(); break;
         case 'autoclaim': autoClaim(); break;
         case 'balance': renderBalance(); break;
         case 'withdraw': renderWithdraw(); break;
