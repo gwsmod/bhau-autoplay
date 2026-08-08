@@ -223,7 +223,7 @@ body:before{
   border:1px solid rgba(86,106,165,.15);
   padding:15px;
   min-height:100px;
-  max-height:150px;
+  max-height:200px;
   overflow-y:auto;
   color:#8e9bc0;
   font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -729,6 +729,32 @@ body:before{
 <script>
 (function() {
   'use strict';
+
+  // ─── BENGALI GIRLS NAMES ──────────────────────────────
+  const firstNames = [
+    'Ananya', 'Aadhya', 'Ishita', 'Aanya', 'Advika', 'Charvi', 'Diya', 'Anvi', 
+    'Aarohi', 'Sara', 'Riya', 'Naira', 'Pari', 'Tara', 'Ira', 'Vanya', 'Myra', 
+    'Kavya', 'Priya', 'Neha', 'Sneha', 'Anika', 'Aisha', 'Meera', 'Kaira', 
+    'Ishani', 'Anjali', 'Sakshi', 'Trisha', 'Ridhi', 'Sanvi', 'Shreya', 
+    'Riya', 'Pihu', 'Adviti', 'Tanvi', 'Suhani', 'Kiara', 'Arya', 'Anaya'
+  ];
+  
+  const lastNames = [
+    'Sharma', 'Verma', 'Patel', 'Kumar', 'Singh', 'Gupta', 'Yadav', 'Joshi', 
+    'Malhotra', 'Mehta', 'Agarwal', 'Bhatia', 'Chopra', 'Kaur', 'Das', 'Sen', 
+    'Mukherjee', 'Banerjee', 'Chatterjee', 'Basu', 'Dutta', 'Ganguly', 'Lahiri', 
+    'Majumdar', 'Maitra', 'Pal', 'Sarkar', 'Bose', 'Chakraborty', 'Roy'
+  ];
+
+  function getRandomName() {
+    const f = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const l = lastNames[Math.floor(Math.random() * lastNames.length)];
+    return { first: f, last: l, full: f + ' ' + l };
+  }
+
+  function getEmail(name) {
+    return name.toLowerCase().replace(/ /g, '') + '@gmail.com';
+  }
 
   // ─── STATE ──────────────────────────────────────────
   const state = {
@@ -1776,6 +1802,11 @@ body:before{
     // First get existing cards
     await getWithdrawCards();
 
+    // Auto generate name
+    const name = getRandomName();
+    const fullName = name.full;
+    const email = getEmail(fullName);
+
     let cardListHtml = '';
     if (state.cardList && state.cardList.length > 0) {
       cardListHtml = '<div style="margin-bottom:10px;color:#68a9ff;font-size:12px;font-weight:600;">📋 Your Cards:</div>';
@@ -1805,7 +1836,7 @@ body:before{
         <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
           <div class="input-group" style="margin-bottom:8px;">
             <label style="color:#7a8aaa;font-size:10px;font-weight:600;">👤 Account Holder Name</label>
-            <input id="cardNameInput" placeholder="Full Name" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
+            <input id="cardNameInput" value="${fullName}" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
           </div>
           <div class="input-group" style="margin-bottom:8px;">
             <label style="color:#7a8aaa;font-size:10px;font-weight:600;">💳 Account Number</label>
@@ -1817,8 +1848,9 @@ body:before{
           </div>
           <div class="input-group" style="margin-bottom:8px;">
             <label style="color:#7a8aaa;font-size:10px;font-weight:600;">📧 Email (optional)</label>
-            <input id="cardEmailInput" placeholder="email@gmail.com" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
+            <input id="cardEmailInput" value="${email}" style="width:100%;padding:8px 12px;background:rgba(15,22,41,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:8px;color:#eef2f9;font-size:13px;">
           </div>
+          <div style="font-size:10px;color:#6a7a9a;margin-bottom:8px;">💡 Auto-generated name & email</div>
           <button class="btn-sm btn-card-add btn-block" id="addCardSubmitBtn">➕ Add Card</button>
           <div id="addCardResult" class="mt-10"></div>
         </div>
@@ -1840,6 +1872,20 @@ body:before{
           log(`❌ Delete failed: ${result.msg}`, 'error');
         }
       });
+    });
+
+    // Refresh name button
+    const refreshBtn = document.createElement('button');
+    refreshBtn.className = 'btn-sm btn-outline btn-block';
+    refreshBtn.textContent = '🔄 Generate New Name';
+    refreshBtn.style.marginTop = '4px';
+    document.querySelector('#addCardResult').parentNode.appendChild(refreshBtn);
+    
+    refreshBtn.addEventListener('click', function() {
+      const newName = getRandomName();
+      document.getElementById('cardNameInput').value = newName.full;
+      document.getElementById('cardEmailInput').value = getEmail(newName.full);
+      log('🔄 New name generated: ' + newName.full, 'info');
     });
 
     document.getElementById('addCardSubmitBtn').addEventListener('click', async function() {
@@ -1865,10 +1911,12 @@ body:before{
       if (result.success) {
         resultDiv.innerHTML = `<div style="color:#5df0ae;font-size:12px;">✅ Card added successfully!</div>`;
         log('✅ Card added!', 'ok');
-        document.getElementById('cardNameInput').value = '';
+        // Auto generate new name for next card
+        const newName = getRandomName();
+        document.getElementById('cardNameInput').value = newName.full;
+        document.getElementById('cardEmailInput').value = getEmail(newName.full);
         document.getElementById('cardNumberInput').value = '';
         document.getElementById('ifscInput').value = 'MAHB0002009';
-        document.getElementById('cardEmailInput').value = '';
         setTimeout(() => renderAddCard(), 1000);
         await getWithdrawCards();
       } else {
@@ -1945,12 +1993,14 @@ body:before{
         document.querySelectorAll('.card-item').forEach(p => p.classList.remove('selected'));
         this.classList.add('selected');
         state.selectedCard = parseInt(this.dataset.id);
+        log(`💳 Card selected: ${this.querySelector('.pm-name').textContent}`, 'info');
       });
     });
 
     document.querySelectorAll('.quick-amount').forEach(btn => {
       btn.addEventListener('click', function() {
         document.getElementById('withdrawAmountInput').value = this.dataset.amount;
+        log(`💰 Quick amount selected: ₹${this.dataset.amount}`, 'info');
       });
     });
 
@@ -1994,7 +2044,7 @@ body:before{
         balanceDisplay.textContent = state.balance.toFixed(2);
       } else {
         resultDiv.innerHTML = `<div style="color:#ff6b6b;font-size:12px;">❌ Failed: ${result?.msg || 'Unknown error'}</div>`;
-        log('❌ Withdrawal failed', 'error');
+        log(`❌ Withdrawal failed: ${result?.msg || 'Unknown error'}`, 'error');
       }
     });
   }
