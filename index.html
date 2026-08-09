@@ -309,6 +309,7 @@
     .menu-item.auto-claim { border-color: rgba(255, 215, 0, 0.15); background: rgba(255, 215, 0, 0.03); animation: pulseGold 2.4s infinite; }
     .menu-item.logout-item { border-color: rgba(255, 107, 107, 0.1); }
     .menu-item.logout-item:hover { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.06); }
+    .menu-item.refer-item { border-color: rgba(0, 200, 255, 0.15); background: rgba(0, 200, 255, 0.04); }
 
     @keyframes pulseGold {
       0%,100% { box-shadow: 0 0 6px rgba(255,215,0,0.1); }
@@ -403,6 +404,7 @@
     .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.08); color: #8a9aaa; }
     .btn-danger { background: rgba(255, 70, 70, 0.15); color: #ff6b6b; border: 1px solid rgba(255,70,70,0.1); }
     .btn-info { background: rgba(30, 144, 255, 0.2); color: #68a9ff; border: 1px solid rgba(30, 144, 255, 0.15); }
+    .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; }
 
     .mt-10 { margin-top: 10px; }
     .mb-10 { margin-bottom: 10px; }
@@ -486,11 +488,85 @@
       50% { transform: translateY(-6px); }
     }
 
+    .refer-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .refer-stat-box {
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .refer-stat-box .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffd700;
+    }
+    .refer-stat-box .stat-label {
+      font-size: 10px;
+      color: #6a7a9a;
+      margin-top: 2px;
+    }
+
+    .refer-level-card {
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      border-left: 3px solid #00b4d8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .refer-level-card .level-info {
+      font-size: 12px;
+    }
+    .refer-level-card .level-info .level-name {
+      font-weight: 700;
+      color: #eef2f9;
+    }
+    .refer-level-card .level-info .level-detail {
+      color: #6a7a9a;
+      font-size: 10px;
+    }
+    .refer-level-card .level-status {
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .refer-level-card .level-status.completed { color: #5df0ae; }
+    .refer-level-card .level-status.pending { color: #ffd45d; }
+    .refer-level-card .level-status.locked { color: #6a7a9a; }
+
+    .refer-user-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-size: 12px;
+    }
+    .refer-user-item .user-phone {
+      color: #eef2f9;
+      font-weight: 500;
+    }
+    .refer-user-item .user-time {
+      color: #6a7a9a;
+      font-size: 10px;
+    }
+    .refer-user-item .user-status {
+      color: #5df0ae;
+      font-size: 10px;
+    }
+
     @media (max-width: 440px) {
       .page { padding: 0 4px; }
       .glass { padding: 18px 12px; }
       .menu-grid { gap: 8px; }
       .amount-grid { grid-template-columns: repeat(3,1fr); }
+      .refer-stats { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -583,6 +659,11 @@
           <span class="icon">📋</span>
           <div class="title">Transactions</div>
           <div class="desc">Deposit & Withdraw history</div>
+        </div>
+        <div class="menu-item refer-item" data-action="refer">
+          <span class="icon">👥</span>
+          <div class="title">Refer & Earn</div>
+          <div class="desc">Referral history & rewards</div>
         </div>
         <div class="menu-item logout-item" data-action="logout">
           <span class="icon">🚪</span>
@@ -781,7 +862,110 @@
     }
   }
 
-  // ---- TRANSACTION HISTORY (FIXED - using correct API endpoints) ----
+  // ---- REFERRAL API CALLS ----
+  async function getReferralStats() {
+    if (!state.token) return null;
+    try {
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+      const res = await fetch('https://api.bh2255.xyz/app/inviteTask/getUserTotal', {
+        method: 'GET',
+        headers
+      });
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.code === 0) {
+          return data.data || { bonusAmountTotal: 0, invitedNumberTotal: 0 };
+        }
+      }
+      return null;
+    } catch (e) {
+      log(`⚠️ Referral stats error: ${e.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function getReferralLevels() {
+    if (!state.token) return null;
+    try {
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+      const res = await fetch('https://api.bh2255.xyz/app/inviteTask/getUserList', {
+        method: 'GET',
+        headers
+      });
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.code === 0) {
+          return data;
+        }
+      }
+      return null;
+    } catch (e) {
+      log(`⚠️ Referral levels error: ${e.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function getReferralHistory(pageNo = 1) {
+    if (!state.token) return null;
+    try {
+      const req_date = Date.now();
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        versionCode: '999',
+        pageNo: pageNo,
+        pageSize: 20,
+        startTime: '',
+        endTime: ''
+      };
+
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'PackageId': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const res = await fetch('https://api.bh2255.xyz/app/inviteTask/getRecordList', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.code === 0) {
+          return data.data?.content || [];
+        }
+      }
+      return null;
+    } catch (e) {
+      log(`⚠️ Referral history error: ${e.message}`, 'warn');
+      return null;
+    }
+  }
+
+  // ---- TRANSACTION HISTORY ----
   async function getDepositHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
@@ -812,7 +996,7 @@
 
       const response = await fetch('https://api.bh2266.xyz/app/user/balance', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
 
@@ -859,7 +1043,7 @@
 
       const response = await fetch('https://api.bh2266.xyz/app/pay/paid/log', {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
 
@@ -1405,7 +1589,143 @@
     state.isAutoClaiming = false;
   }
 
-  // ---- TRANSACTIONS (FIXED - shows both deposit and withdraw) ----
+  // ---- REFERRAL RENDER ----
+  async function renderReferral() {
+    const loadingHtml = `
+      <div class="dynamic-card">
+        <div class="title">👥 Refer & Earn</div>
+        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading referral data...</div>
+      </div>
+    `;
+    dynamicContent.innerHTML = loadingHtml;
+
+    const [stats, levelsData, history] = await Promise.all([
+      getReferralStats(),
+      getReferralLevels(),
+      getReferralHistory(1)
+    ]);
+
+    let html = `
+      <div class="dynamic-card">
+        <div class="title">👥 Refer & Earn</div>
+    `;
+
+    // Stats
+    const bonusTotal = stats?.bonusAmountTotal || 0;
+    const invitedTotal = stats?.invitedNumberTotal || 0;
+    html += `
+      <div class="refer-stats">
+        <div class="refer-stat-box">
+          <div class="stat-value">₹${bonusTotal.toFixed(2)}</div>
+          <div class="stat-label">💰 Total Bonus Earned</div>
+        </div>
+        <div class="refer-stat-box">
+          <div class="stat-value">${invitedTotal}</div>
+          <div class="stat-label">👥 Total Invites</div>
+        </div>
+      </div>
+    `;
+
+    // Level progress
+    html += `<div style="margin-bottom:12px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📊 Referral Levels</div>`;
+    if (levelsData && levelsData.data && levelsData.data.length > 0) {
+      for (const level of levelsData.data) {
+        const statusText = level.status === 1 ? '✅ Completed' : level.status === 0 ? '🔒 Locked' : '⏳ Pending';
+        const statusClass = level.status === 1 ? 'completed' : level.status === 0 ? 'locked' : 'pending';
+        html += `
+          <div class="refer-level-card">
+            <div class="level-info">
+              <div class="level-name">Level ${level.level} · ₹${level.bonusAmount}</div>
+              <div class="level-detail">Invite ${level.inviteNumber} users · Deposit ₹${level.depositAmount}</div>
+              <div class="level-detail">Progress: ${level.completedNumber || 0}/${level.inviteNumber}</div>
+            </div>
+            <div class="level-status ${statusClass}">${statusText}</div>
+          </div>
+        `;
+      }
+    } else {
+      html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:8px;">No referral levels available</div>`;
+    }
+    html += `</div>`;
+
+    // Referral history
+    html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
+      <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
+      <div style="max-height:200px;overflow-y:auto;">`;
+    if (history && history.length > 0) {
+      for (const ref of history) {
+        const date = new Date(ref.createTime);
+        const timeStr = date.toLocaleString();
+        const avatar = ref.userAvatar ? ref.userAvatar.replace(/\\/g, '') : 'https://cdn.cloudstaticfile.com/avatar/avatar0.png';
+        html += `
+          <div class="refer-user-item">
+            <div>
+              <span class="user-phone">📱 ${ref.inviteUserPhone || 'Unknown'}</span>
+              <span class="user-time"> · ${timeStr}</span>
+            </div>
+            <div>
+              <span class="user-status">${ref.status === 1 ? '✅ Active' : '⏳ Pending'}</span>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:8px;">No referral history yet</div>`;
+    }
+    html += `</div></div>`;
+
+    // Share button
+    html += `
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn-sm btn-refer btn-block" id="shareReferralBtn">📤 Share Referral Link</button>
+      </div>
+      <div id="shareResult" class="mt-10"></div>
+    `;
+
+    html += `</div>`;
+    dynamicContent.innerHTML = html;
+
+    document.getElementById('shareReferralBtn').addEventListener('click', async function() {
+      try {
+        const headers = {
+          'Accept': 'application/json, text/plain, */*',
+          'Token': state.token,
+          'Visitor': state.visitor,
+          'Origin': 'https://playbhau.com',
+          'Referer': 'https://playbhau.com/'
+        };
+        const res = await fetch('https://api.bh2255.xyz/app/share/getShareInfo', {
+          method: 'GET',
+          headers
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          if (data.code === 0) {
+            const shareData = data.data || {};
+            const shareUrl = shareData.shareUrl || 'https://playbhau.com/';
+            const shareText = shareData.shareText || 'Join Bhau Lottery and win big! 🎰';
+            const resultDiv = document.getElementById('shareResult');
+            resultDiv.innerHTML = `
+              <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                <div style="color:#5df0ae;font-weight:600;">✅ Share link ready!</div>
+                <div style="font-size:11px;color:#8a9aaa;word-break:break-all;margin:6px 0;">🔗 ${shareUrl}</div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}')">📋 Copy Link</button>
+                  <button class="btn-sm btn-warning" onclick="window.open('${shareUrl}','_blank')">🌐 Open</button>
+                </div>
+                ${shareText ? `<div style="font-size:10px;color:#6a7a9a;margin-top:4px;">📝 ${shareText}</div>` : ''}
+              </div>
+            `;
+            log('✅ Share info loaded', 'ok');
+          }
+        }
+      } catch (e) {
+        log(`❌ Share error: ${e.message}`, 'error');
+      }
+    });
+  }
+
+  // ---- TRANSACTIONS ----
   async function renderTransactions() {
     const loadingHtml = `
       <div class="dynamic-card">
@@ -1422,7 +1742,6 @@
 
     let allTxns = [];
 
-    // Process deposits
     if (deposits && deposits.length > 0) {
       for (const txn of deposits) {
         allTxns.push({
@@ -1440,7 +1759,6 @@
       }
     }
 
-    // Process withdrawals
     if (withdraws && withdraws.length > 0) {
       for (const txn of withdraws) {
         allTxns.push({
@@ -1457,7 +1775,6 @@
       }
     }
 
-    // Sort by date (newest first)
     allTxns.sort((a, b) => (b.appDate || 0) - (a.appDate || 0));
 
     let html = `
@@ -1514,7 +1831,6 @@
     html += `</div></div>`;
     dynamicContent.innerHTML = html;
 
-    // Filter buttons
     const filterMap = {
       'txnAll': 'all',
       'txnDeposit': 'deposit',
@@ -1922,6 +2238,7 @@
         case 'balance': renderBalance(); break;
         case 'withdraw': renderWithdraw(); break;
         case 'transactions': renderTransactions(); break;
+        case 'refer': renderReferral(); break;
         case 'logout': handleLogout(); break;
         default: renderWelcome();
       }
