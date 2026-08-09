@@ -181,10 +181,19 @@
     }
     .welcome-text h1 {
       font-size: 28px;
+      margin-bottom: 2px;
     }
     .welcome-text h1 span {
       color: #bd57ff;
       text-shadow: 0 0 20px rgba(189, 87, 255, 0.3);
+    }
+    .welcome-text .sub-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffd700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
     }
     .welcome-text p {
       color: #9299b8;
@@ -296,6 +305,63 @@
       opacity: 0.4;
       cursor: not-allowed;
       transform: none;
+    }
+
+    /* Telegram Sections - Login Page Only */
+    .telegram-section {
+      background: rgba(3, 7, 20, 0.4);
+      border: 1px solid rgba(0, 200, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-top: 12px;
+      transition: 0.2s;
+    }
+    .telegram-section:hover {
+      border-color: rgba(0, 200, 255, 0.2);
+    }
+    .telegram-section .tg-title {
+      font-weight: 700;
+      color: #68a9ff;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .telegram-section .tg-text {
+      color: #8a9aaa;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .telegram-section .tg-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: linear-gradient(135deg, #0088cc, #006699);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+    .telegram-section .tg-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 25px rgba(0, 136, 204, 0.3);
+    }
+    .telegram-section .tg-btn:active {
+      transform: scale(0.96);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 18px;
+      padding: 10px 0;
+      color: #6a7a9a;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .dashboard {
@@ -763,6 +829,7 @@
       .save-number-panel .input-group .save-btn { width: 100%; }
       .logout-confirm-popup { padding: 24px 16px 20px; }
       .logout-confirm-popup .popup-title { font-size: 19px; }
+      .welcome-text .sub-title { font-size: 17px; }
     }
   </style>
 </head>
@@ -786,13 +853,14 @@
       </div>
     </div>
 
-    <!-- LOGIN -->
+    <!-- LOGIN SECTION -->
     <div id="loginSection" class="login-section">
       <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
-        <h1>Hello, <span>Sanju!</span> 👑</h1>
+        <div class="sub-title">BHAU LOTTERY PANNEL</div>
         <p>Login to continue your journey</p>
       </div>
+
       <form id="loginForm">
         <div class="form-group">
           <label class="label">📱 PHONE NUMBER</label>
@@ -812,9 +880,25 @@
         <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →</button>
         <button type="button" class="autopaste-btn" id="autopasteBtn">📋 AUTOPASTE</button>
       </form>
+
+      <!-- Telegram Section 1: Referral & Number -->
+      <div class="telegram-section">
+        <div class="tg-title">📱 Need Referral &amp; Number?</div>
+        <div class="tg-text">Join our Telegram channel to get referral and number information.</div>
+        <a href="https://t.me/annareferbypass" target="_blank" class="tg-btn">📲 JOIN TELEGRAM</a>
+      </div>
+
+      <!-- Telegram Section 2: Withdrawal Information -->
+      <div class="telegram-section">
+        <div class="tg-title">💸 Need Withdrawal Information?</div>
+        <div class="tg-text">Join our Telegram channel for withdrawal-related information.</div>
+        <a href="https://t.me/bhauwithdraldata" target="_blank" class="tg-btn">📲 JOIN TELEGRAM</a>
+      </div>
+
+      <div class="login-footer">BY SANJU</div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD SECTION -->
     <div id="dashboard" class="dashboard">
       <div class="user-badge">
         <span class="phone">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
@@ -1976,7 +2060,6 @@
     
     let defaultPayment = null;
     if (upiPayments.length > 0) {
-      // Try to find UPI01, UPI02, UPI06 in order
       const preferred = ['UPI01', 'UPI02', 'UPI06'];
       for (const pref of preferred) {
         const found = upiPayments.find(m => m.payName && m.payName.toUpperCase().includes(pref));
@@ -1990,27 +2073,22 @@
       }
     }
     
-    // If no UPI found, use first available payment
     if (!defaultPayment && state.paymentMethods.length > 0) {
       defaultPayment = state.paymentMethods[0];
     }
     
-    // Set default selected payment
     if (defaultPayment) {
       state.selectedPayment = { id: defaultPayment.id, tag: defaultPayment.payTag };
     }
     
-    // Default amount is always ₹200
     state.selectedAmount = 200;
     
-    // Build deposit UI
     let html = `
       <div class="dynamic-card">
         <div class="title">💰 Deposit <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div id="depositContent">
     `;
     
-    // Amount selection
     html += `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Amount</div>
       <div class="amount-grid" id="amountGrid">`;
     
@@ -2021,16 +2099,13 @@
         html += `<button class="amount-btn ${active}" data-amount="${amt}" data-balanceid="${item.id}">₹${amt}</button>`;
       }
     }
-    // Custom amount button
     html += `<button class="amount-btn custom-amount-btn" id="customAmountBtn">✏️ Custom</button>`;
     html += `</div></div>`;
     
-    // Custom amount input (hidden by default)
     html += `<div id="customAmountInput" style="display:none;margin-bottom:8px;">
       <input type="number" id="customAmountField" placeholder="Enter custom amount" min="1" style="width:100%;padding:10px 14px;background:rgba(15,22,41,0.7);border:1px solid rgba(255,255,255,0.05);border-radius:12px;color:#eef2f9;font-size:14px;outline:none;">
     </div>`;
     
-    // Payment methods
     html += `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Payment</div>
       <div id="paymentMethodsList">`;
     
@@ -2054,22 +2129,17 @@
     
     showPanel(html);
     
-    // ---- Event listeners ----
-    // Amount buttons
     document.querySelectorAll('.amount-btn:not(.custom-amount-btn)').forEach(b => {
       b.addEventListener('click', function() {
         document.querySelectorAll('.amount-btn').forEach(x => x.classList.remove('active'));
         this.classList.add('active');
         state.selectedAmount = parseFloat(this.dataset.amount);
-        // Hide custom input
         document.getElementById('customAmountInput').style.display = 'none';
         document.getElementById('customAmountField').value = '';
-        // Deselect custom button
         document.getElementById('customAmountBtn').classList.remove('active');
       });
     });
     
-    // Custom amount button
     document.getElementById('customAmountBtn').addEventListener('click', function() {
       document.querySelectorAll('.amount-btn').forEach(x => x.classList.remove('active'));
       this.classList.add('active');
@@ -2079,7 +2149,6 @@
       state.selectedAmount = null;
     });
     
-    // Custom amount field
     document.getElementById('customAmountField').addEventListener('input', function() {
       const val = parseFloat(this.value);
       if (!isNaN(val) && val > 0) {
@@ -2089,7 +2158,6 @@
       }
     });
     
-    // Payment method selection
     document.querySelectorAll('.payment-method').forEach(el => {
       el.addEventListener('click', function() {
         document.querySelectorAll('.payment-method').forEach(x => x.classList.remove('selected'));
@@ -2098,7 +2166,6 @@
       });
     });
     
-    // Submit deposit
     document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
       if (!state.selectedAmount) {
         showToast('Please select or enter an amount.', 'warning');
@@ -2109,7 +2176,6 @@
         return;
       }
       
-      // Find balance ID for amount
       let balanceId = null;
       for (const item of state.depositAmounts) {
         if (parseFloat(item.balance) === parseFloat(state.selectedAmount)) {
@@ -2118,9 +2184,7 @@
         }
       }
       
-      // If custom amount, find closest balance ID or use first available
       if (!balanceId && state.depositAmounts.length > 0) {
-        // Try to find exact match or use first
         for (const item of state.depositAmounts) {
           if (parseFloat(item.balance) === parseFloat(state.selectedAmount)) {
             balanceId = String(item.id);
