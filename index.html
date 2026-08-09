@@ -45,6 +45,128 @@
       transition: all 0.2s;
     }
 
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 14px;
+      max-width: 460px;
+      width: calc(100% - 30px);
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+      pointer-events: none;
+    }
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .toast-notification.error {
+      background: rgba(180, 20, 30, 0.92);
+      color: #fff;
+      border-color: rgba(255, 80, 80, 0.3);
+    }
+    .toast-notification.success {
+      background: rgba(20, 140, 60, 0.92);
+      color: #fff;
+      border-color: rgba(80, 255, 80, 0.2);
+    }
+    .toast-notification.warning {
+      background: rgba(180, 120, 20, 0.92);
+      color: #fff;
+      border-color: rgba(255, 200, 80, 0.2);
+    }
+
+    /* Logout Confirmation Popup */
+    .logout-confirm-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+    }
+    .logout-confirm-overlay.active {
+      display: flex;
+    }
+    .logout-confirm-popup {
+      background: linear-gradient(145deg, rgba(22, 27, 55, 0.98), rgba(6, 10, 25, 0.99));
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 28px;
+      padding: 30px 24px 24px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(255, 50, 50, 0.05);
+      animation: popupIn 0.3s ease;
+    }
+    @keyframes popupIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .logout-confirm-popup .popup-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    .logout-confirm-popup .popup-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #f7f8ff;
+      margin-bottom: 6px;
+    }
+    .logout-confirm-popup .popup-sub {
+      color: #8a9aaa;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .logout-confirm-popup .popup-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .logout-confirm-popup .popup-buttons button {
+      flex: 1;
+      padding: 14px 10px;
+      border: none;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .logout-confirm-popup .popup-buttons button:active {
+      transform: scale(0.96);
+    }
+    .logout-confirm-popup .popup-buttons .btn-yes {
+      background: linear-gradient(100deg, #ff2d2d, #cc1111);
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(255, 40, 40, 0.3);
+    }
+    .logout-confirm-popup .popup-buttons .btn-no {
+      background: rgba(255, 255, 255, 0.06);
+      color: #8a9aaa;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .logout-confirm-popup .popup-buttons .btn-no:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #f7f8ff;
+    }
+
     .brand {
       text-align: center;
       margin-bottom: 10px;
@@ -633,10 +755,6 @@
       box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(102, 36, 255, 0.1);
       animation: popupIn 0.3s ease;
     }
-    @keyframes popupIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
     .exit-popup .popup-icon {
       font-size: 48px;
       margin-bottom: 12px;
@@ -692,12 +810,30 @@
       .exit-popup .popup-title { font-size: 19px; }
       .save-number-panel .input-group { flex-direction: column; }
       .save-number-panel .input-group .save-btn { width: 100%; }
+      .logout-confirm-popup { padding: 24px 16px 20px; }
+      .logout-confirm-popup .popup-title { font-size: 19px; }
     }
   </style>
 </head>
 <body>
 <div class="page">
   <div class="glass">
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <!-- Logout Confirmation Popup -->
+    <div id="logoutConfirmOverlay" class="logout-confirm-overlay">
+      <div class="logout-confirm-popup">
+        <div class="popup-icon">🚪</div>
+        <div class="popup-title">Do you want to logout?</div>
+        <div class="popup-sub">Your session will be cleared and you'll return to the login page.</div>
+        <div class="popup-buttons">
+          <button class="btn-no" id="logoutNoBtn">No</button>
+          <button class="btn-yes" id="logoutYesBtn">Yes</button>
+        </div>
+      </div>
+    </div>
 
     <!-- BRAND -->
     <div class="brand">
@@ -880,6 +1016,28 @@
   const saveStatusText = document.getElementById('saveStatusText');
   const numberList = document.getElementById('numberList');
   const autoNumberPanel = document.getElementById('autoNumberPanel');
+  const toast = document.getElementById('toastNotification');
+  const logoutConfirmOverlay = document.getElementById('logoutConfirmOverlay');
+  const logoutYesBtn = document.getElementById('logoutYesBtn');
+  const logoutNoBtn = document.getElementById('logoutNoBtn');
+
+  // ---- TOAST NOTIFICATION ----
+  let toastTimeout = null;
+
+  function showToast(message, type = 'error') {
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+      toastTimeout = null;
+    }
+    toast.textContent = message;
+    toast.className = 'toast-notification ' + type;
+    // Force reflow
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 5000);
+  }
 
   // ---- AUTO NUMBER STORAGE ----
   function getAutoNumbers() {
@@ -1116,7 +1274,14 @@
         body: JSON.stringify(payload)
       });
 
-      if (response.status !== 200) return false;
+      if (response.status !== 200) {
+        const errMsg = response.status === 401 ? 'Login failed: Unauthorized' :
+                       response.status === 403 ? 'Access denied. Account may be banned.' :
+                       response.status === 404 ? 'Login service unavailable' :
+                       `Server error (${response.status})`;
+        showToast(errMsg, 'error');
+        return false;
+      }
       const data = await response.json();
 
       if (data.success && data.code === 0) {
@@ -1139,8 +1304,13 @@
           return true;
         }
       }
+      
+      // Show API error message
+      const errorMsg = data.msg || data.message || 'Login failed. Please try again.';
+      showToast(errorMsg, 'error');
       return false;
     } catch (error) {
+      showToast('Network error: ' + error.message, 'error');
       return false;
     }
   }
@@ -1840,7 +2010,6 @@
     dynamicContent.style.display = 'block';
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
     state.isPanelOpen = true;
-    // Hide the Auto Number Panel when any option panel is opened
     hideAutoNumberPanel();
   }
 
@@ -1850,9 +2019,7 @@
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
     state.currentPanel = null;
     state.isPanelOpen = false;
-    // Show the Auto Number Panel when panel is closed
     showAutoNumberPanel();
-    // Refresh number display
     updateNumberDisplay();
   }
   window._closePanel = closePanel;
@@ -2549,84 +2716,27 @@
     }
   });
 
-  // ---- LOGIN HANDLER ----
-  async function handleLogin(e) {
-    e.preventDefault();
-    const phone = phoneInput.value.trim();
-    const password = passwordInput.value.trim();
-    if (phone.length !== 10) return;
-    loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
-    const ok = await login(phone, password);
-    if (ok) {
-      loginSection.style.display = 'none';
-      dashboard.style.display = 'block';
-      userPhoneDisplay.textContent = phone;
-      await getBalance();
-      renderWelcome();
-      updateNumberDisplay();
-      getReferralHistory(1);
-      history.pushState(null, '', window.location.href);
-    }
-    loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
+  // ---- LOGOUT CONFIRMATION ----
+  function showLogoutConfirmation() {
+    logoutConfirmOverlay.classList.add('active');
   }
 
-  // ---- AUTO PASTE LOGIC ----
-  autopasteBtn.addEventListener('click', function() {
-    const nextNumber = getNextUnusedNumber();
-    if (!nextNumber) {
-      alert('No unused numbers available. Please add a new number.');
-      return;
-    }
-    // Paste the number
-    phoneInput.value = nextNumber.number;
-    // Remove the number (delete it completely)
-    markNumberAsUsedAndRemove(nextNumber.number);
-    updateNumberDisplay();
-    // Show feedback
-    autopasteBtn.textContent = `✅ PASTED (${nextNumber.number})`;
-    setTimeout(() => {
-      autopasteBtn.textContent = '📋 AUTOPASTE';
-    }, 2000);
+  function hideLogoutConfirmation() {
+    logoutConfirmOverlay.classList.remove('active');
+  }
+
+  logoutYesBtn.addEventListener('click', function() {
+    hideLogoutConfirmation();
+    // Perform logout
+    doLogout();
   });
 
-  // ---- SAVE NUMBER FROM DASHBOARD ----
-  saveNumberBtn.addEventListener('click', function() {
-    const number = saveNumberInput.value.trim();
-    if (number.length !== 10 || !/^\d{10}$/.test(number)) {
-      saveStatusText.textContent = '❌ Please enter a valid 10-digit number.';
-      saveStatusText.style.color = '#ff6b6b';
-      return;
-    }
-    if (addAutoNumber(number)) {
-      saveNumberInput.value = '';
-      saveStatusText.textContent = '✅ Number added successfully!';
-      saveStatusText.style.color = '#5df0ae';
-      updateNumberDisplay();
-      setTimeout(() => {
-        saveStatusText.textContent = '';
-      }, 3000);
-    } else {
-      const unused = getUnusedNumbers();
-      if (unused.length >= 3) {
-        saveStatusText.textContent = '⚠️ Max 3 unused numbers allowed.';
-      } else {
-        saveStatusText.textContent = '⚠️ Number already exists.';
-      }
-      saveStatusText.style.color = '#ffd45d';
-      setTimeout(() => {
-        saveStatusText.textContent = '';
-      }, 3000);
-    }
+  logoutNoBtn.addEventListener('click', function() {
+    hideLogoutConfirmation();
   });
 
-  saveNumberInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      saveNumberBtn.click();
-    }
-  });
-
-  // ---- LOGOUT ----
-  function handleLogout() {
+  // ---- ACTUAL LOGOUT ----
+  function doLogout() {
     state.token = null;
     state.isLoggedIn = false;
     state.phone = null;
@@ -2644,12 +2754,82 @@
     clearSession();
     hideExitPermission();
     closePanel();
+    hideLogoutConfirmation();
     
     loginSection.style.display = 'block';
     dashboard.style.display = 'none';
     dynamicContent.innerHTML = '';
     balanceDisplay.textContent = '0.00';
   }
+
+  // ---- LOGIN HANDLER ----
+  async function handleLogin(e) {
+    e.preventDefault();
+    const phone = phoneInput.value.trim();
+    const password = passwordInput.value.trim();
+    if (phone.length !== 10) {
+      showToast('Please enter a valid 10-digit phone number.', 'warning');
+      return;
+    }
+    loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
+    const ok = await login(phone, password);
+    if (ok) {
+      loginSection.style.display = 'none';
+      dashboard.style.display = 'block';
+      userPhoneDisplay.textContent = phone;
+      await getBalance();
+      renderWelcome();
+      updateNumberDisplay();
+      getReferralHistory(1);
+      history.pushState(null, '', window.location.href);
+      showToast('Login successful! Welcome back!', 'success');
+    }
+    loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
+  }
+
+  // ---- AUTO PASTE LOGIC ----
+  autopasteBtn.addEventListener('click', function() {
+    const nextNumber = getNextUnusedNumber();
+    if (!nextNumber) {
+      showToast('No unused numbers available. Please add a new number.', 'warning');
+      return;
+    }
+    phoneInput.value = nextNumber.number;
+    markNumberAsUsedAndRemove(nextNumber.number);
+    updateNumberDisplay();
+    autopasteBtn.textContent = `✅ PASTED (${nextNumber.number})`;
+    setTimeout(() => {
+      autopasteBtn.textContent = '📋 AUTOPASTE';
+    }, 2000);
+    showToast(`Number ${nextNumber.number} pasted!`, 'success');
+  });
+
+  // ---- SAVE NUMBER FROM DASHBOARD ----
+  saveNumberBtn.addEventListener('click', function() {
+    const number = saveNumberInput.value.trim();
+    if (number.length !== 10 || !/^\d{10}$/.test(number)) {
+      showToast('Please enter a valid 10-digit number.', 'warning');
+      return;
+    }
+    if (addAutoNumber(number)) {
+      saveNumberInput.value = '';
+      showToast('Number added successfully!', 'success');
+      updateNumberDisplay();
+    } else {
+      const unused = getUnusedNumbers();
+      if (unused.length >= 3) {
+        showToast('Max 3 unused numbers allowed.', 'warning');
+      } else {
+        showToast('Number already exists.', 'warning');
+      }
+    }
+  });
+
+  saveNumberInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      saveNumberBtn.click();
+    }
+  });
 
   // ---- RESTORE SESSION ----
   function restoreSession() {
@@ -2671,7 +2851,13 @@
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function() {
       const action = this.dataset.action;
-      // If same action clicked and panel is open, close it
+      
+      // Handle logout with confirmation
+      if (action === 'logout') {
+        showLogoutConfirmation();
+        return;
+      }
+      
       if (state.currentPanel === action && dynamicContent.innerHTML !== '') {
         closePanel();
         return;
@@ -2689,7 +2875,6 @@
         case 'withdraw': renderWithdraw(); break;
         case 'transactions': renderTransactions(); break;
         case 'refer': renderReferral(); break;
-        case 'logout': handleLogout(); break;
         default: renderWelcome();
       }
     });
