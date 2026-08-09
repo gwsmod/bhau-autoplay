@@ -350,6 +350,10 @@
       margin-top: 6px;
       margin-bottom: 12px;
       animation: fadeUp 0.3s ease;
+      transition: all 0.3s ease;
+    }
+    .save-number-panel.hidden-panel {
+      display: none !important;
     }
     .save-number-panel .title {
       font-weight: 700;
@@ -401,8 +405,6 @@
       font-size: 11px;
       color: #6a7a9a;
     }
-    .save-number-panel .status-text .used { color: #ff6b6b; }
-    .save-number-panel .status-text .unused { color: #5df0ae; }
     .number-item {
       display: flex;
       justify-content: space-between;
@@ -741,8 +743,8 @@
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
-      <!-- Auto Number Panel - Shows ONLY UNUSED numbers -->
-      <div class="save-number-panel">
+      <!-- Auto Number Panel -->
+      <div class="save-number-panel" id="autoNumberPanel">
         <div class="title">
           <span>📱 Auto Login Numbers</span>
           <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">0 unused</span>
@@ -854,6 +856,7 @@
     currentPanel: null,
     referralHistoryCache: null,
     autoNumbers: [],
+    isPanelOpen: false,
   };
 
   // ---- DOM REFS ----
@@ -876,6 +879,7 @@
   const numberStatus = document.getElementById('numberStatus');
   const saveStatusText = document.getElementById('saveStatusText');
   const numberList = document.getElementById('numberList');
+  const autoNumberPanel = document.getElementById('autoNumberPanel');
 
   // ---- AUTO NUMBER STORAGE ----
   function getAutoNumbers() {
@@ -901,11 +905,9 @@
 
   function addAutoNumber(number) {
     const numbers = getAutoNumbers();
-    // Check if already exists (regardless of used status)
     if (numbers.some(n => n.number === number)) {
       return false;
     }
-    // Check if already at max (3 unused)
     const unused = numbers.filter(n => !n.used);
     if (unused.length >= 3) {
       return false;
@@ -924,7 +926,6 @@
 
   function markNumberAsUsedAndRemove(number) {
     let numbers = getAutoNumbers();
-    // Find and remove the number (delete it completely)
     numbers = numbers.filter(n => n.number !== number);
     saveAutoNumbers(numbers);
     state.autoNumbers = numbers;
@@ -940,7 +941,6 @@
     numberStatus.textContent = `${total} unused`;
     numberStatus.style.color = total > 0 ? '#5df0ae' : '#6a7a9a';
     
-    // Show ONLY UNUSED numbers
     if (numberList) {
       if (total === 0) {
         numberList.innerHTML = '<span style="color:#6a7a9a;font-size:11px;">No unused numbers available</span>';
@@ -959,13 +959,25 @@
     }
   }
 
+  // ---- PANEL VISIBILITY CONTROL ----
+  function hideAutoNumberPanel() {
+    if (autoNumberPanel) {
+      autoNumberPanel.classList.add('hidden-panel');
+    }
+  }
+
+  function showAutoNumberPanel() {
+    if (autoNumberPanel) {
+      autoNumberPanel.classList.remove('hidden-panel');
+    }
+  }
+
   // ---- REFERRAL AUTO-ADD LOGIC ----
   function autoAddReferralNumbers(referrals) {
     if (!referrals || referrals.length === 0) return;
     
     const unused = getUnusedNumbers();
     const currentCount = unused.length;
-    // Max 3 unused numbers
     const slotsAvailable = Math.max(0, 3 - currentCount);
     if (slotsAvailable === 0) return;
     
@@ -979,12 +991,11 @@
     }
     
     if (added > 0) {
-      const statusText = document.getElementById('saveStatusText');
-      if (statusText) {
-        statusText.textContent = `✅ Auto-added ${added} new referral number(s)!`;
-        statusText.style.color = '#5df0ae';
+      if (saveStatusText) {
+        saveStatusText.textContent = `✅ Auto-added ${added} new referral number(s)!`;
+        saveStatusText.style.color = '#5df0ae';
         setTimeout(() => {
-          statusText.textContent = '';
+          saveStatusText.textContent = '';
         }, 5000);
       }
     }
@@ -1828,6 +1839,9 @@
     dynamicContent.innerHTML = html;
     dynamicContent.style.display = 'block';
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
+    state.isPanelOpen = true;
+    // Hide the Auto Number Panel when any option panel is opened
+    hideAutoNumberPanel();
   }
 
   function closePanel() {
@@ -1835,6 +1849,11 @@
     dynamicContent.style.display = 'none';
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
     state.currentPanel = null;
+    state.isPanelOpen = false;
+    // Show the Auto Number Panel when panel is closed
+    showAutoNumberPanel();
+    // Refresh number display
+    updateNumberDisplay();
   }
   window._closePanel = closePanel;
 
@@ -2652,6 +2671,7 @@
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function() {
       const action = this.dataset.action;
+      // If same action clicked and panel is open, close it
       if (state.currentPanel === action && dynamicContent.innerHTML !== '') {
         closePanel();
         return;
