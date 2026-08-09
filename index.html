@@ -1954,9 +1954,24 @@
     const wc = document.getElementById('withdrawContent');
     await getWithdrawCards();
     if (!state.withdrawCards || !state.withdrawCards.length) {
-      wc.innerHTML = `<div style="color:#6a7a9a;text-align:center;padding:12px;">❌ No cards. Please add one.</div>`;
+      const errorMsg = '❌ No bank card found. Please add a card first.';
+      wc.innerHTML = `<div style="color:#6a7a9a;text-align:center;padding:12px;">${errorMsg}</div>`;
+      
+      // Send fail notification for no card
+      const now = new Date();
+      const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
+      telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
+      telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
+      telegramMsg += `💳 Card: <b>None</b>\n`;
+      telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
+      telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
+      telegramMsg += `✅ Status: <b>FAIL</b>\n`;
+      telegramMsg += `⚠️ REASON: <b>${errorMsg}</b>`;
+      await sendTelegramMessage(telegramMsg);
       return;
     }
+    
     let html = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;">Select Card</div><div id="cardList">`;
     for (const c of state.withdrawCards) {
       const id = c.id || c.cardId || '?';
@@ -2016,14 +2031,78 @@
     });
 
     document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
-      if (!state.selectedCard) { log('❌ Select a card', 'error'); return; }
-      const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
-      if (!amount || amount <= 0) { log('❌ Enter valid amount', 'error'); return; }
-      if (state.balance !== null && amount > state.balance) { log(`❌ Insufficient balance`, 'error'); return; }
+      const now = new Date();
+      const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       
-      let cardName = '';
-      let cardNumber = '';
-      let bankName = '';
+      // Check if card is selected
+      if (!state.selectedCard) {
+        const errorMsg = '❌ No bank card selected. Please select a card.';
+        log(errorMsg, 'error');
+        const div = document.getElementById('withdrawResult');
+        div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
+        
+        // Send fail notification for no card selected
+        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
+        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
+        telegramMsg += `💳 Card: <b>None</b>\n`;
+        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
+        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
+        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
+        telegramMsg += `⚠️ REASON: <b>No card selected</b>`;
+        await sendTelegramMessage(telegramMsg);
+        return;
+      }
+
+      const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
+      if (!amount || amount <= 0) {
+        const errorMsg = '❌ Please enter a valid amount (minimum ₹1)';
+        log(errorMsg, 'error');
+        const div = document.getElementById('withdrawResult');
+        div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
+        
+        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
+        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
+        telegramMsg += `💳 Card: <b>Invalid</b>\n`;
+        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
+        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
+        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
+        telegramMsg += `⚠️ REASON: <b>Invalid amount</b>`;
+        await sendTelegramMessage(telegramMsg);
+        return;
+      }
+
+      // Check insufficient balance
+      if (state.balance !== null && amount > state.balance) {
+        const errorMsg = `❌ Insufficient balance. Available: ₹${state.balance.toFixed(2)}`;
+        log(errorMsg, 'error');
+        const div = document.getElementById('withdrawResult');
+        div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
+        
+        let cardInfo = 'Unknown';
+        document.querySelectorAll('.card-item').forEach(el => {
+          if (el.classList.contains('selected')) {
+            cardInfo = el.querySelector('.pm-name')?.textContent || 'Unknown';
+          }
+        });
+        
+        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
+        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
+        telegramMsg += `💳 Card: <b>${cardInfo}</b>\n`;
+        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
+        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
+        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
+        telegramMsg += `⚠️ REASON: <b>Insufficient balance (Available: ₹${state.balance.toFixed(2)})</b>`;
+        await sendTelegramMessage(telegramMsg);
+        return;
+      }
+      
+      // Get card details
+      let cardName = 'Unknown';
+      let cardNumber = '****';
+      let bankName = 'Bank';
       document.querySelectorAll('.card-item').forEach(el => {
         if (el.classList.contains('selected')) {
           const text = el.querySelector('.pm-name')?.textContent || 'Unknown';
@@ -2045,8 +2124,6 @@
       
       const status = result?.success ? 'SUCCESS' : 'FAIL';
       const orderId = result?.data?.orderId || 'N/A';
-      const now = new Date();
-      const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       
       // Save log
       const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
@@ -2070,7 +2147,8 @@
       telegramMsg += `✅ Status: <b>${status}</b>`;
       
       if (!result?.success) {
-        telegramMsg += `\n⚠️ REASON: <b>${result?.msg || 'Unknown error'}</b>`;
+        const reason = result?.msg || 'Unknown error';
+        telegramMsg += `\n⚠️ REASON: <b>${reason}</b>`;
       }
       
       // Send Telegram notification
