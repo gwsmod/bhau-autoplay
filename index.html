@@ -167,60 +167,6 @@
       color: #f7f8ff;
     }
 
-    .brand {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .crown {
-      font-size: 40px;
-      filter: drop-shadow(0 0 18px rgba(255, 185, 37, 0.6));
-      animation: floatCrown 3s ease-in-out infinite;
-    }
-    .logo {
-      font-size: clamp(48px, 14vw, 78px);
-      font-weight: 1000;
-      letter-spacing: -4px;
-      background: linear-gradient(180deg, #fff9d4 10%, #ffd84e 40%, #ff9d0a 75%, #b85b00 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      line-height: 0.9;
-      margin-top: -6px;
-      filter: drop-shadow(0 6px 18px rgba(255, 156, 0, 0.25));
-    }
-    .lottery {
-      font-size: clamp(22px, 6vw, 38px);
-      font-weight: 1000;
-      letter-spacing: 4px;
-      background: linear-gradient(180deg, #fff, #b9bfff 40%, #713dff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-top: 2px;
-    }
-    .sanju-badge {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 6px 28px;
-      border: 1px solid rgba(255, 194, 42, 0.6);
-      border-radius: 60px;
-      font-weight: 900;
-      font-size: 18px;
-      letter-spacing: 5px;
-      color: #ffd34b;
-      background: rgba(118, 47, 255, 0.15);
-      box-shadow: 0 0 24px rgba(149, 48, 255, 0.2);
-      backdrop-filter: blur(4px);
-    }
-    .tagline {
-      margin-top: 10px;
-      color: #b9a5ff;
-      font-size: 11px;
-      letter-spacing: 3px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
     .login-section {
       margin-top: 8px;
     }
@@ -835,16 +781,7 @@
       </div>
     </div>
 
-    <!-- BRAND -->
-    <div class="brand">
-      <div class="crown">♛</div>
-      <div class="logo">BHAU</div>
-      <div class="lottery">LOTTERY</div>
-      <div class="sanju-badge">✦ SANJU ✦</div>
-      <div class="tagline">BY SANJU · PLAY SMART · WIN BIG</div>
-    </div>
-
-    <!-- LOGIN -->
+    <!-- LOGIN (No header) -->
     <div id="loginSection" class="login-section">
       <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
@@ -872,7 +809,7 @@
       </form>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (No header) -->
     <div id="dashboard" class="dashboard">
       <div class="user-badge">
         <span class="phone">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
@@ -1031,7 +968,6 @@
     }
     toast.textContent = message;
     toast.className = 'toast-notification ' + type;
-    // Force reflow
     void toast.offsetWidth;
     toast.classList.add('show');
     toastTimeout = setTimeout(() => {
@@ -1305,7 +1241,6 @@
         }
       }
       
-      // Show API error message
       const errorMsg = data.msg || data.message || 'Login failed. Please try again.';
       showToast(errorMsg, 'error');
       return false;
@@ -2727,7 +2662,6 @@
 
   logoutYesBtn.addEventListener('click', function() {
     hideLogoutConfirmation();
-    // Perform logout
     doLogout();
   });
 
@@ -2735,7 +2669,6 @@
     hideLogoutConfirmation();
   });
 
-  // ---- ACTUAL LOGOUT ----
   function doLogout() {
     state.token = null;
     state.isLoggedIn = false;
@@ -2852,7 +2785,6 @@
     item.addEventListener('click', function() {
       const action = this.dataset.action;
       
-      // Handle logout with confirmation
       if (action === 'logout') {
         showLogoutConfirmation();
         return;
