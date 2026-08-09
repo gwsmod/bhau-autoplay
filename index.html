@@ -232,12 +232,31 @@
       border: 1px solid rgba(255, 215, 0, 0.15);
     }
 
+    /* Dashboard Option Panel - Position above menu */
+    #dynamicContent {
+      margin-bottom: 6px;
+      transition: all 0.3s ease;
+      order: -1;
+    }
+
+    .dashboard-content-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
     .menu-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 16px;
+      transition: all 0.3s ease;
     }
+
+    /* When panel is open, menu stays below */
+    .dashboard-content-wrapper.has-panel .menu-grid {
+      margin-top: 0;
+    }
+
     .menu-item {
       background: rgba(3, 7, 20, 0.45);
       border: 1px solid rgba(255, 255, 255, 0.05);
@@ -293,6 +312,10 @@
     .menu-item.logout-item { border-color: rgba(255, 107, 107, 0.1); }
     .menu-item.logout-item:hover { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.06); }
     .menu-item.refer-item { border-color: rgba(0, 200, 255, 0.15); background: rgba(0, 200, 255, 0.04); }
+    .menu-item.active-option {
+      border-color: rgba(151, 119, 255, 0.5);
+      background: rgba(151, 119, 255, 0.1);
+    }
 
     @keyframes pulseGold {
       0%,100% { box-shadow: 0 0 6px rgba(255,215,0,0.1); }
@@ -306,6 +329,7 @@
       padding: 16px;
       margin-top: 6px;
       animation: fadeUp 0.3s ease;
+      transition: all 0.3s ease;
     }
     @keyframes fadeUp {
       0% { opacity: 0; transform: translateY(10px); }
@@ -388,6 +412,21 @@
     .btn-danger { background: rgba(255, 70, 70, 0.15); color: #ff6b6b; border: 1px solid rgba(255,70,70,0.1); }
     .btn-info { background: rgba(30, 144, 255, 0.2); color: #68a9ff; border: 1px solid rgba(30, 144, 255, 0.15); }
     .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; }
+    .btn-close-panel {
+      background: rgba(255, 255, 255, 0.05);
+      color: #8a9aaa;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 4px 12px;
+      font-size: 11px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+      float: right;
+    }
+    .btn-close-panel:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f7f8ff;
+    }
 
     .mt-10 { margin-top: 10px; }
     .mb-10 { margin-bottom: 10px; }
@@ -597,58 +636,62 @@
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
-      <div class="menu-grid">
-        <div class="menu-item deposit-item" data-action="deposit">
-          <span class="icon">💰</span>
-          <div class="title">Deposit</div>
-          <div class="desc">Add funds to account</div>
-        </div>
-        <div class="menu-item" data-action="games">
-          <span class="icon">🎮</span>
-          <div class="title">Launch Games</div>
-          <div class="desc">Fan Tan, Chicken Road</div>
-        </div>
-        <div class="menu-item card-item" data-action="addcard">
-          <span class="icon">💳</span>
-          <div class="title">Add Bank Card</div>
-          <div class="desc">Add new card</div>
-        </div>
-        <div class="menu-item auto-claim" data-action="autoclaim">
-          <span class="icon">⚡</span>
-          <div class="title">Auto Claim</div>
-          <div class="desc">VIP Reward + 2 Spins</div>
-        </div>
-        <div class="menu-item" data-action="balance">
-          <span class="icon">📊</span>
-          <div class="title">Show Balance</div>
-          <div class="desc">Check balance</div>
-        </div>
-        <div class="menu-item withdraw-item" data-action="withdraw">
-          <span class="icon">💸</span>
-          <div class="title">Withdraw</div>
-          <div class="desc">Withdraw funds</div>
-        </div>
-        <div class="menu-item" data-action="transactions">
-          <span class="icon">📋</span>
-          <div class="title">Transactions</div>
-          <div class="desc">Deposit & Withdraw history</div>
-        </div>
-        <div class="menu-item refer-item" data-action="refer">
-          <span class="icon">👥</span>
-          <div class="title">Refer & Earn</div>
-          <div class="desc">Referral history & rewards</div>
-        </div>
-        <div class="menu-item logout-item" data-action="logout">
-          <span class="icon">🚪</span>
-          <div class="title">Logout</div>
-          <div class="desc">Exit & reset</div>
+      <!-- Content wrapper for proper ordering -->
+      <div class="dashboard-content-wrapper" id="dashboardWrapper">
+        <!-- Dynamic content panel (appears above menu) -->
+        <div id="dynamicContent"></div>
+        
+        <!-- Option Menu -->
+        <div class="menu-grid" id="menuGrid">
+          <div class="menu-item deposit-item" data-action="deposit">
+            <span class="icon">💰</span>
+            <div class="title">Deposit</div>
+            <div class="desc">Add funds to account</div>
+          </div>
+          <div class="menu-item" data-action="games">
+            <span class="icon">🎮</span>
+            <div class="title">Launch Games</div>
+            <div class="desc">Fan Tan, Chicken Road</div>
+          </div>
+          <div class="menu-item card-item" data-action="addcard">
+            <span class="icon">💳</span>
+            <div class="title">Add Bank Card</div>
+            <div class="desc">Add new card</div>
+          </div>
+          <div class="menu-item auto-claim" data-action="autoclaim">
+            <span class="icon">⚡</span>
+            <div class="title">Auto Claim</div>
+            <div class="desc">VIP Reward + 2 Spins</div>
+          </div>
+          <div class="menu-item" data-action="balance">
+            <span class="icon">📊</span>
+            <div class="title">Show Balance</div>
+            <div class="desc">Check balance</div>
+          </div>
+          <div class="menu-item withdraw-item" data-action="withdraw">
+            <span class="icon">💸</span>
+            <div class="title">Withdraw</div>
+            <div class="desc">Withdraw funds</div>
+          </div>
+          <div class="menu-item" data-action="transactions">
+            <span class="icon">📋</span>
+            <div class="title">Transactions</div>
+            <div class="desc">Deposit & Withdraw history</div>
+          </div>
+          <div class="menu-item refer-item" data-action="refer">
+            <span class="icon">👥</span>
+            <div class="title">Refer & Earn</div>
+            <div class="desc">Referral history & rewards</div>
+          </div>
+          <div class="menu-item logout-item" data-action="logout">
+            <span class="icon">🚪</span>
+            <div class="title">Logout</div>
+            <div class="desc">Exit & reset</div>
+          </div>
         </div>
       </div>
-
-      <div id="dynamicContent"></div>
     </div>
 
-    <!-- SECURITY FOOTER REMOVED - Full dashboard border style -->
   </div>
 </div>
 
@@ -690,6 +733,7 @@
     isAutoClaiming: false,
     transactionPage: 1,
     transactionYearMonth: null,
+    currentPanel: null,
   };
 
   // ---- DOM REFS ----
@@ -702,6 +746,7 @@
   const balanceDisplay = document.getElementById('balanceDisplay');
   const showPassBtn = document.getElementById('showPassBtn');
   const dynamicContent = document.getElementById('dynamicContent');
+  const menuGrid = document.getElementById('menuGrid');
   const exitOverlay = document.getElementById('exitOverlay');
   const exitStayBtn = document.getElementById('exitStayBtn');
   const exitLeaveBtn = document.getElementById('exitLeaveBtn');
@@ -1482,12 +1527,13 @@
     if (!confirm('⚡ Start Auto Claim?\n\n1st Spin → VIP Reward → wait 3s → 2nd Spin')) return;
     
     state.isAutoClaiming = true;
-    dynamicContent.innerHTML = `
+    showPanel(`
       <div class="dynamic-card">
         <div class="title">⚡ Auto Claim Progress</div>
         <div id="autoClaimProgress" style="font-size:12px;color:#8a9aaa;"></div>
+        <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button>
       </div>
-    `;
+    `);
     const progressDiv = document.getElementById('autoClaimProgress');
     let results = [];
     try {
@@ -1534,11 +1580,28 @@
     state.isAutoClaiming = false;
   }
 
+  // ---- PANEL MANAGEMENT ----
+  function showPanel(html) {
+    dynamicContent.innerHTML = html;
+    dynamicContent.style.display = 'block';
+    // Highlight active menu item
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
+  }
+
+  function closePanel() {
+    dynamicContent.innerHTML = '';
+    dynamicContent.style.display = 'none';
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
+    state.currentPanel = null;
+  }
+  window._closePanel = closePanel;
+
   // ---- RENDER FUNCTIONS ----
   function renderGames() {
-    dynamicContent.innerHTML = `
+    state.currentPanel = 'games';
+    showPanel(`
       <div class="dynamic-card">
-        <div class="title">🎮 Launch Games</div>
+        <div class="title">🎮 Launch Games <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button class="btn-sm btn-success btn-block" id="launchFanTan">🎯 Fan Tan</button>
           <button class="btn-sm btn-warning btn-block" id="launchChicken">🐔 Chicken Road 2</button>
@@ -1546,7 +1609,7 @@
         </div>
         <div id="gameResult" class="mt-10"></div>
       </div>
-    `;
+    `);
     document.getElementById('launchFanTan').addEventListener('click', async () => {
       const res = await getFanTanUrl();
       if (res && res.success) { window.open(res.game_url, '_blank');
@@ -1567,7 +1630,13 @@
   }
 
   async function renderDeposit() {
-    dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💰 Deposit</div><div id="depositContent">Loading...</div></div>`;
+    state.currentPanel = 'deposit';
+    showPanel(`
+      <div class="dynamic-card">
+        <div class="title">💰 Deposit <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+        <div id="depositContent">Loading...</div>
+      </div>
+    `);
     const depContent = document.getElementById('depositContent');
     await getDepositAmounts();
     await getPaymentMethods();
@@ -1638,6 +1707,7 @@
   }
 
   async function renderAddCard() {
+    state.currentPanel = 'addcard';
     await getWithdrawCards();
     const firstNames = ['Ananya','Aadhya','Ishita','Aanya','Advika','Charvi','Diya','Anvi','Aarohi','Sara','Riya','Naira','Pari','Tara','Ira','Vanya','Myra','Kavya','Priya','Neha','Sneha','Anika','Aisha','Meera','Kaira','Ishani','Anjali','Sakshi','Trisha','Ridhi','Sanvi','Shreya','Pihu','Adviti','Tanvi','Suhani','Kiara','Arya','Anaya'];
     const lastNames = ['Sharma','Verma','Patel','Kumar','Singh','Gupta','Yadav','Joshi','Malhotra','Mehta','Agarwal','Bhatia','Chopra','Kaur','Das','Sen','Mukherjee','Banerjee','Chatterjee','Basu','Dutta','Ganguly','Lahiri','Majumdar','Maitra','Pal','Sarkar','Bose','Chakraborty','Roy'];
@@ -1659,9 +1729,9 @@
     } else cardHtml = '<div style="color:#6a7a9a;font-size:12px;margin-bottom:10px;">No cards added</div>';
 
     const autoName = randName();
-    dynamicContent.innerHTML = `
+    showPanel(`
       <div class="dynamic-card">
-        <div class="title">💳 Add Bank Card</div>
+        <div class="title">💳 Add Bank Card <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         ${cardHtml}
         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
           <div class="input-group"><label>👤 Account Holder</label><input id="cardNameInput" value="${autoName}"></div>
@@ -1672,7 +1742,7 @@
           <div id="addCardResult" class="mt-10"></div>
         </div>
       </div>
-    `;
+    `);
 
     document.querySelectorAll('.delete-card-btn').forEach(b => {
       b.addEventListener('click', async function() {
@@ -1708,7 +1778,13 @@
   }
 
   async function renderWithdraw() {
-    dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💸 Withdraw Funds</div><div id="withdrawContent">Loading...</div></div>`;
+    state.currentPanel = 'withdraw';
+    showPanel(`
+      <div class="dynamic-card">
+        <div class="title">💸 Withdraw Funds <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+        <div id="withdrawContent">Loading...</div>
+      </div>
+    `);
     const wc = document.getElementById('withdrawContent');
     await getWithdrawCards();
     if (!state.withdrawCards || !state.withdrawCards.length) {
@@ -1935,26 +2011,28 @@
   }
 
   async function renderBalance() {
+    state.currentPanel = 'balance';
     await getBalance();
-    dynamicContent.innerHTML = `
+    showPanel(`
       <div class="dynamic-card">
-        <div class="title">📊 Balance</div>
+        <div class="title">📊 Balance <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div style="text-align:center;padding:15px;">
           <div style="font-size:32px;font-weight:800;color:#5df0ae;">₹${state.balance.toFixed(2)}</div>
           <div style="color:#6a7a9a;font-size:12px;">Available Balance</div>
         </div>
       </div>
-    `;
+    `);
   }
 
   async function renderTransactions() {
+    state.currentPanel = 'transactions';
     const loadingHtml = `
       <div class="dynamic-card">
-        <div class="title">📋 Transaction History</div>
+        <div class="title">📋 Transaction History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading transactions...</div>
       </div>
     `;
-    dynamicContent.innerHTML = loadingHtml;
+    showPanel(loadingHtml);
 
     const [deposits, withdraws] = await Promise.all([
       getDepositHistory(1),
@@ -2000,7 +2078,7 @@
 
     let html = `
       <div class="dynamic-card">
-        <div class="title">📋 Transaction History (${allTxns.length})</div>
+        <div class="title">📋 Transaction History (${allTxns.length}) <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
           <button class="btn-sm btn-info" id="txnAll" style="flex:1;">All</button>
           <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
@@ -2050,7 +2128,7 @@
     }
 
     html += `</div></div>`;
-    dynamicContent.innerHTML = html;
+    showPanel(html);
 
     const filterMap = {
       'txnAll': 'all',
@@ -2077,19 +2155,20 @@
   }
 
   async function renderReferral() {
+    state.currentPanel = 'refer';
     const loadingHtml = `
       <div class="dynamic-card">
-        <div class="title">👥 Referral History</div>
+        <div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading referral data...</div>
       </div>
     `;
-    dynamicContent.innerHTML = loadingHtml;
+    showPanel(loadingHtml);
 
     const history = await getReferralHistory(1);
 
     let html = `
       <div class="dynamic-card">
-        <div class="title">👥 Referral History</div>
+        <div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
     `;
 
     html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
@@ -2124,7 +2203,7 @@
     `;
 
     html += `</div>`;
-    dynamicContent.innerHTML = html;
+    showPanel(html);
 
     document.getElementById('shareReferralBtn').addEventListener('click', async function() {
       try {
@@ -2164,7 +2243,7 @@
   }
 
   function renderWelcome() {
-    dynamicContent.innerHTML = `<div class="dynamic-card"><div style="color:#6a7a9a;text-align:center;padding:12px 0;">👋 Welcome! Select an option.</div></div>`;
+    closePanel();
   }
 
   // ---- EXIT PERMISSION LOGIC ----
@@ -2191,6 +2270,8 @@
 
   window.addEventListener('popstate', function(e) {
     if (state.isLoggedIn) {
+      // Close any open panel first
+      closePanel();
       showExitPermission();
       history.pushState(null, '', window.location.href);
     }
@@ -2265,6 +2346,7 @@
     
     clearSession();
     hideExitPermission();
+    closePanel();
     
     loginSection.style.display = 'block';
     dashboard.style.display = 'none';
@@ -2290,8 +2372,15 @@
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function() {
       const action = this.dataset.action;
-      document.querySelectorAll('.menu-item').forEach(i => i.style.borderColor = 'rgba(255,255,255,0.06)');
-      this.style.borderColor = 'rgba(151,119,255,0.35)';
+      // If same action clicked and panel is open, close it
+      if (state.currentPanel === action && dynamicContent.innerHTML !== '') {
+        closePanel();
+        return;
+      }
+      
+      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active-option'));
+      this.classList.add('active-option');
+      
       switch(action) {
         case 'deposit': renderDeposit(); break;
         case 'games': renderGames(); break;
@@ -2321,6 +2410,7 @@
   
   window.addEventListener('popstate', function(e) {
     if (state.isLoggedIn) {
+      closePanel();
       showExitPermission();
       history.pushState(null, '', window.location.href);
     }
