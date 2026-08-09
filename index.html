@@ -262,7 +262,6 @@
       border: 1px solid rgba(255, 215, 0, 0.15);
     }
 
-    /* Dashboard Option Panel - Position above menu */
     #dynamicContent {
       margin-bottom: 6px;
       transition: all 0.3s ease;
@@ -342,7 +341,7 @@
       background: rgba(151, 119, 255, 0.1);
     }
 
-    /* Save Number Panel */
+    /* Auto Number Panel */
     .save-number-panel {
       background: rgba(3, 7, 20, 0.5);
       border: 1px solid rgba(255, 215, 0, 0.12);
@@ -495,7 +494,6 @@
     .btn-danger { background: rgba(255, 70, 70, 0.15); color: #ff6b6b; border: 1px solid rgba(255,70,70,0.1); }
     .btn-info { background: rgba(30, 144, 255, 0.2); color: #68a9ff; border: 1px solid rgba(30, 144, 255, 0.15); }
     .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; }
-    .btn-copy-referrals { background: linear-gradient(135deg, #7b2ff7, #5b1fa3); color: #fff; }
     .btn-close-panel {
       background: rgba(255, 255, 255, 0.05);
       color: #8a9aaa;
@@ -585,7 +583,6 @@
       font-size: 10px;
     }
 
-    /* Exit Permission Popup */
     .exit-overlay {
       display: none;
       position: fixed;
@@ -723,17 +720,18 @@
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
-      <!-- Save Number Panel -->
+      <!-- Auto Number Panel -->
       <div class="save-number-panel">
         <div class="title">
-          <span>📱 Auto Login Number</span>
-          <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">No number saved</span>
+          <span>📱 Auto Login Numbers</span>
+          <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">No numbers</span>
         </div>
         <div class="input-group">
           <input type="tel" id="saveNumberInput" maxlength="10" placeholder="Enter 10-digit number" inputmode="numeric">
-          <button class="save-btn" id="saveNumberBtn">💾 Save (UNUSED)</button>
+          <button class="save-btn" id="saveNumberBtn">💾 Add Number</button>
         </div>
         <div class="status-text" id="saveStatusText"></div>
+        <div id="numberList" style="margin-top:8px;font-size:11px;color:#8a9aaa;"></div>
       </div>
 
       <!-- Content wrapper -->
@@ -834,6 +832,7 @@
     transactionYearMonth: null,
     currentPanel: null,
     referralHistoryCache: null,
+    autoNumbers: [],
   };
 
   // ---- DOM REFS ----
@@ -855,40 +854,115 @@
   const saveNumberBtn = document.getElementById('saveNumberBtn');
   const numberStatus = document.getElementById('numberStatus');
   const saveStatusText = document.getElementById('saveStatusText');
+  const numberList = document.getElementById('numberList');
 
   // ---- AUTO NUMBER STORAGE ----
-  function getStoredNumber() {
+  function getAutoNumbers() {
     try {
-      const data = localStorage.getItem('bhau_autonumber');
+      const data = localStorage.getItem('bhau_autonumbers');
       if (data) {
         return JSON.parse(data);
       }
     } catch (e) {}
-    return null;
+    return [];
   }
 
-  function saveStoredNumber(number, used = false) {
+  function saveAutoNumbers(numbers) {
     try {
-      localStorage.setItem('bhau_autonumber', JSON.stringify({ number, used }));
+      localStorage.setItem('bhau_autonumbers', JSON.stringify(numbers));
     } catch (e) {}
   }
 
-  function clearStoredNumber() {
-    try {
-      localStorage.removeItem('bhau_autonumber');
-    } catch (e) {}
+  function addAutoNumber(number) {
+    const numbers = getAutoNumbers();
+    // Check if already exists
+    if (numbers.some(n => n.number === number)) {
+      return false;
+    }
+    numbers.push({ number, used: false });
+    saveAutoNumbers(numbers);
+    state.autoNumbers = numbers;
+    updateNumberStatus();
+    return true;
+  }
+
+  function getNextUnusedNumber() {
+    const numbers = getAutoNumbers();
+    const unused = numbers.find(n => !n.used);
+    return unused || null;
+  }
+
+  function markNumberAsUsed(number) {
+    const numbers = getAutoNumbers();
+    const found = numbers.find(n => n.number === number);
+    if (found) {
+      found.used = true;
+      saveAutoNumbers(numbers);
+      state.autoNumbers = numbers;
+      updateNumberStatus();
+      return true;
+    }
+    return false;
   }
 
   function updateNumberStatus() {
-    const data = getStoredNumber();
-    if (!data) {
-      numberStatus.textContent = 'No number saved';
+    const numbers = getAutoNumbers();
+    state.autoNumbers = numbers;
+    const total = numbers.length;
+    const unused = numbers.filter(n => !n.used).length;
+    
+    if (total === 0) {
+      numberStatus.textContent = 'No numbers saved';
       numberStatus.style.color = '#6a7a9a';
-      return;
+    } else {
+      numberStatus.textContent = `${unused} unused / ${total} total`;
+      numberStatus.style.color = unused > 0 ? '#5df0ae' : '#ff6b6b';
     }
-    const status = data.used ? '🔴 USED' : '🟢 UNUSED';
-    numberStatus.textContent = `${data.number} · ${status}`;
-    numberStatus.style.color = data.used ? '#ff6b6b' : '#5df0ae';
+    
+    // Update list
+    if (numberList) {
+      if (numbers.length === 0) {
+        numberList.innerHTML = '<span style="color:#6a7a9a;">No numbers added yet</span>';
+      } else {
+        let html = '';
+        numbers.forEach(n => {
+          const status = n.used ? '🔴 USED' : '🟢 UNUSED';
+          const color = n.used ? '#ff6b6b' : '#5df0ae';
+          html += `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+            <span>${n.number}</span>
+            <span style="color:${color};font-size:10px;">${status}</span>
+          </div>`;
+        });
+        numberList.innerHTML = html;
+      }
+    }
+  }
+
+  // ---- REFERRAL AUTO-ADD LOGIC ----
+  function autoAddReferralNumbers(referrals) {
+    if (!referrals || referrals.length === 0) return;
+    
+    const count = Math.min(referrals.length, 3);
+    const numbers = referrals.slice(0, count).map(r => r.inviteUserPhone).filter(p => p && p.length === 10);
+    
+    let added = 0;
+    for (const num of numbers) {
+      if (addAutoNumber(num)) {
+        added++;
+      }
+    }
+    
+    if (added > 0) {
+      const statusText = document.getElementById('saveStatusText');
+      if (statusText) {
+        statusText.textContent = `✅ Auto-added ${added} referral number(s) to Auto Login list!`;
+        statusText.style.color = '#5df0ae';
+        setTimeout(() => {
+          statusText.textContent = '';
+        }, 5000);
+      }
+    }
+    updateNumberStatus();
   }
 
   // ---- SESSION MANAGEMENT ----
@@ -1121,6 +1195,8 @@
         const data = await res.json();
         if (data.code === 0) {
           state.referralHistoryCache = data.data?.content || [];
+          // Auto-add referral numbers to Auto Login list
+          autoAddReferralNumbers(state.referralHistoryCache);
           return state.referralHistoryCache;
         }
       }
@@ -1737,53 +1813,6 @@
   }
   window._closePanel = closePanel;
 
-  // ---- REFERRAL COPY FUNCTION ----
-  function copyReferralNumbers() {
-    if (!state.referralHistoryCache || state.referralHistoryCache.length === 0) {
-      alert('No referral history found.');
-      return;
-    }
-    
-    // Get first 1-3 referrals (always from beginning)
-    const count = Math.min(state.referralHistoryCache.length, 3);
-    const referrals = state.referralHistoryCache.slice(0, count);
-    const numbers = referrals.map(r => r.inviteUserPhone).filter(p => p && p.length > 0);
-    
-    if (numbers.length === 0) {
-      alert('No valid phone numbers found in referrals.');
-      return;
-    }
-    
-    const textToCopy = numbers.join('\n');
-    
-    // Copy to clipboard
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert(`✅ Copied ${numbers.length} referral number(s)!`);
-      }).catch(() => {
-        fallbackCopy(textToCopy);
-      });
-    } else {
-      fallbackCopy(textToCopy);
-    }
-  }
-  
-  function fallbackCopy(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      document.execCommand('copy');
-      alert('✅ Copied referral numbers!');
-    } catch (e) {
-      alert('❌ Failed to copy. Please copy manually.');
-    }
-    document.body.removeChild(textarea);
-  }
-
   // ---- RENDER FUNCTIONS ----
   function renderGames() {
     state.currentPanel = 'games';
@@ -2363,7 +2392,6 @@
       <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
       <div style="max-height:350px;overflow-y:auto;">`;
     if (history && history.length > 0) {
-      // Show first 3 referrals with count indicator
       const displayCount = Math.min(history.length, 3);
       const displayReferrals = history.slice(0, displayCount);
       
@@ -2383,15 +2411,12 @@
         `;
       }
       
-      // Show copy button with count
       html += `
         <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
-          <button class="btn-sm btn-copy-referrals btn-block" id="copyReferralsBtn">
-            📋 Copy First ${displayCount} Referral${displayCount > 1 ? 's' : ''}
-          </button>
-          <div style="font-size:9px;color:#6a7a9a;margin-top:4px;text-align:center;">
-            ${history.length > 3 ? `(Showing first ${displayCount} of ${history.length} total referrals)` : ''}
+          <div style="font-size:10px;color:#5df0ae;text-align:center;">
+            ✅ ${displayCount} referral number(s) auto-added to Auto Login list
           </div>
+          ${history.length > 3 ? `<div style="font-size:9px;color:#6a7a9a;text-align:center;margin-top:2px;">(First ${displayCount} of ${history.length} total referrals)</div>` : ''}
         </div>
       `;
     } else {
@@ -2408,12 +2433,6 @@
 
     html += `</div>`;
     showPanel(html);
-
-    // Copy Referrals button
-    const copyBtn = document.getElementById('copyReferralsBtn');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', copyReferralNumbers);
-    }
 
     document.getElementById('shareReferralBtn').addEventListener('click', async function() {
       try {
@@ -2501,7 +2520,7 @@
       await getBalance();
       renderWelcome();
       updateNumberStatus();
-      // Fetch referral history on login
+      // Fetch referral history which will auto-add numbers
       getReferralHistory(1);
       history.pushState(null, '', window.location.href);
     }
@@ -2510,22 +2529,18 @@
 
   // ---- AUTO PASTE LOGIC ----
   autopasteBtn.addEventListener('click', function() {
-    const data = getStoredNumber();
-    if (!data) {
-      alert('No number saved! Please save a number in the dashboard first.');
-      return;
-    }
-    if (data.used) {
-      alert('This number has already been used. Please save a new number.');
+    const nextNumber = getNextUnusedNumber();
+    if (!nextNumber) {
+      alert('No unused numbers available. Please add a new number.');
       return;
     }
     // Paste the number
-    phoneInput.value = data.number;
+    phoneInput.value = nextNumber.number;
     // Mark as used
-    saveStoredNumber(data.number, true);
+    markNumberAsUsed(nextNumber.number);
     updateNumberStatus();
     // Show feedback
-    autopasteBtn.textContent = '✅ PASTED';
+    autopasteBtn.textContent = `✅ PASTED (${nextNumber.number})`;
     setTimeout(() => {
       autopasteBtn.textContent = '📋 AUTOPASTE';
     }, 2000);
@@ -2539,18 +2554,23 @@
       saveStatusText.style.color = '#ff6b6b';
       return;
     }
-    // Save as UNUSED
-    saveStoredNumber(number, false);
-    saveNumberInput.value = '';
-    saveStatusText.textContent = '✅ Number saved successfully! (UNUSED)';
-    saveStatusText.style.color = '#5df0ae';
-    updateNumberStatus();
-    setTimeout(() => {
-      saveStatusText.textContent = '';
-    }, 3000);
+    if (addAutoNumber(number)) {
+      saveNumberInput.value = '';
+      saveStatusText.textContent = '✅ Number added successfully! (UNUSED)';
+      saveStatusText.style.color = '#5df0ae';
+      updateNumberStatus();
+      setTimeout(() => {
+        saveStatusText.textContent = '';
+      }, 3000);
+    } else {
+      saveStatusText.textContent = '⚠️ Number already exists in the list.';
+      saveStatusText.style.color = '#ffd45d';
+      setTimeout(() => {
+        saveStatusText.textContent = '';
+      }, 3000);
+    }
   });
 
-  // Also allow Enter key on input
   saveNumberInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       saveNumberBtn.click();
@@ -2592,7 +2612,6 @@
       updateNumberStatus();
       getBalance().then(() => {
         renderWelcome();
-        // Fetch referral history on session restore
         getReferralHistory(1);
       });
       return true;
@@ -2634,7 +2653,6 @@
   });
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
-  // Phone input only digits
   phoneInput.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').slice(0, 10);
   });
