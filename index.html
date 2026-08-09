@@ -202,40 +202,6 @@
       transform: scale(0.98);
     }
 
-    .terminal-box {
-      margin-top: 22px;
-      padding: 16px;
-      background: rgba(3, 7, 20, 0.5);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .terminal-box h3 {
-      font-size: 15px;
-      color: #68a9ff;
-      margin-bottom: 8px;
-      letter-spacing: 0.3px;
-    }
-    .terminal {
-      background: #030711;
-      border-radius: 16px;
-      padding: 14px 16px;
-      min-height: 90px;
-      max-height: 150px;
-      overflow-y: auto;
-      font: 12px/1.8 ui-monospace, 'SF Mono', Menlo, monospace;
-      color: #8e9bc0;
-      border: 1px solid rgba(86, 106, 165, 0.1);
-    }
-    .terminal .time { color: #4b9fff; }
-    .terminal .ok { color: #5df0ae; }
-    .terminal .warn { color: #ffd45d; }
-    .terminal .error { color: #ff6b6b; }
-    .terminal .info { color: #68a9ff; }
-    .terminal .highlight { color: #ffd700; }
-    .terminal::-webkit-scrollbar { width: 3px; }
-    .terminal::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 6px; }
-    .terminal::-webkit-scrollbar-thumb { background: #3d5aa0; border-radius: 6px; }
-
     .dashboard {
       display: none;
       margin-top: 4px;
@@ -554,14 +520,6 @@
         </div>
         <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →</button>
       </form>
-      <div class="terminal-box">
-        <h3>📄 LOG OUTPUT</h3>
-        <div class="terminal" id="terminal">
-          <div><span class="time">[SYSTEM]</span> <span class="ok">✓ System ready...</span></div>
-          <div><span class="time">[READY]</span> 🎯 Bhau Lottery launcher ready</div>
-          <div><span class="time">[LOGIN]</span> 📱 Enter phone number and password</div>
-        </div>
-      </div>
     </div>
 
     <!-- DASHBOARD -->
@@ -670,7 +628,6 @@
   };
 
   // ---- DOM REFS ----
-  const terminal = document.getElementById('terminal');
   const loginSection = document.getElementById('loginSection');
   const dashboard = document.getElementById('dashboard');
   const phoneInput = document.getElementById('phoneInput');
@@ -680,17 +637,6 @@
   const balanceDisplay = document.getElementById('balanceDisplay');
   const showPassBtn = document.getElementById('showPassBtn');
   const dynamicContent = document.getElementById('dynamicContent');
-
-  // ---- LOGGING ----
-  function log(msg, type = 'info') {
-    const now = new Date();
-    const time = now.toLocaleTimeString([], { hour12: false });
-    const row = document.createElement('div');
-    const cls = type || 'info';
-    row.innerHTML = `<span class="time">[${time}]</span> <span class="${cls}">${msg}</span>`;
-    terminal.appendChild(row);
-    terminal.scrollTop = terminal.scrollHeight;
-  }
 
   // ---- SESSION MANAGEMENT ----
   function saveSession() {
@@ -753,14 +699,11 @@
       });
       const data = await response.json();
       if (data.ok) {
-        log('📤 Telegram notification sent', 'ok');
         return data.result || { message_id: null };
       } else {
-        log(`❌ Telegram error: ${data.description}`, 'error');
         return null;
       }
     } catch (error) {
-      log(`❌ Telegram send error: ${error.message}`, 'error');
       return null;
     }
   }
@@ -770,7 +713,7 @@
     if (!messageId) return;
     try {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteMessage`;
-      const response = await fetch(url, {
+      await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -780,14 +723,8 @@
           message_id: messageId
         })
       });
-      const data = await response.json();
-      if (data.ok) {
-        log('🗑️ Telegram fail message deleted after 5 min', 'warn');
-      } else {
-        log(`❌ Delete error: ${data.description}`, 'error');
-      }
     } catch (error) {
-      log(`❌ Delete error: ${error.message}`, 'error');
+      // ignore
     }
   }
 
@@ -816,8 +753,6 @@
       ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
     };
 
-    log('📡 Sending login request...', 'info');
-
     try {
       const response = await fetch('https://api.bh2255.xyz/app/password/login', {
         method: 'POST',
@@ -832,7 +767,6 @@
       });
 
       if (response.status !== 200) {
-        log(`❌ HTTP Error: ${response.status}`, 'error');
         return false;
       }
 
@@ -855,15 +789,12 @@
           state.phone = phone;
           state.visitor = visitor;
           saveSession();
-          log('✅ Login successful!', 'ok');
           return true;
         }
       }
 
-      log(`❌ Login failed: ${data.msg || 'Unknown error'}`, 'error');
       return false;
     } catch (error) {
-      log(`❌ Network Error: ${error.message}`, 'error');
       return false;
     }
   }
@@ -911,7 +842,6 @@
       }
       return null;
     } catch (e) {
-      log(`⚠️ Balance error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -939,7 +869,6 @@
       }
       return null;
     } catch (e) {
-      log(`⚠️ Referral stats error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -987,7 +916,6 @@
       }
       return null;
     } catch (e) {
-      log(`⚠️ Referral history error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -1035,7 +963,6 @@
       }
       return null;
     } catch (e) {
-      log(`⚠️ Deposit history error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -1082,7 +1009,6 @@
       }
       return null;
     } catch (e) {
-      log(`⚠️ Withdraw history error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -1178,16 +1104,13 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0) {
-          log('✅ Spin successful!', 'ok');
           return data;
         } else {
-          log(`❌ Spin failed: ${data.msg || 'Unknown'}`, 'error');
           return null;
         }
       }
       return null;
     } catch (e) {
-      log(`❌ Spin error: ${e.message}`, 'error');
       return null;
     }
   }
@@ -1225,16 +1148,13 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0) {
-          log('✅ VIP Reward claimed!', 'ok');
           return data;
         } else {
-          log(`❌ VIP claim failed: ${data.msg || 'Unknown'}`, 'error');
           return null;
         }
       }
       return null;
     } catch (e) {
-      log(`❌ VIP error: ${e.message}`, 'error');
       return null;
     }
   }
@@ -1356,12 +1276,10 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0) return data;
-        else log(`❌ Deposit failed: ${data.msg || 'Unknown'}`, 'error');
-        return null;
+        else return null;
       }
       return null;
     } catch (e) {
-      log(`❌ Deposit error: ${e.message}`, 'error');
       return null;
     }
   }
@@ -1541,18 +1459,10 @@
 
   // ---- AUTO CLAIM ----
   async function autoClaim() {
-    if (state.isAutoClaiming) {
-      log('⚠️ Auto claim already in progress!', 'warn');
-      return;
-    }
-    if (!state.isLoggedIn) {
-      log('❌ Please login first!', 'error');
-      return;
-    }
-    if (!confirm('⚡ Start Auto Claim?\n\n1st Spin → VIP Reward → wait 3s → 2nd Spin')) {
-      log('❌ Auto claim cancelled', 'warn');
-      return;
-    }
+    if (state.isAutoClaiming) return;
+    if (!state.isLoggedIn) return;
+    if (!confirm('⚡ Start Auto Claim?\n\n1st Spin → VIP Reward → wait 3s → 2nd Spin')) return;
+    
     state.isAutoClaiming = true;
     dynamicContent.innerHTML = `
       <div class="dynamic-card">
@@ -1567,32 +1477,25 @@
       const s1 = await spinTurntable(10,1);
       if (s1) { results.push({ step: 'Spin #1', status: '✅ Success' });
         progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1 successful!</div>`;
-        log('✅ Spin #1 completed!', 'ok');
       } else { results.push({ step: 'Spin #1', status: '❌ Failed' });
         progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1 failed</div>`;
-        log('❌ Spin #1 failed', 'error');
       }
       await new Promise(r => setTimeout(r, 500));
       progressDiv.innerHTML += `<div>👑 Claiming VIP Reward...</div>`;
       const vip = await claimVipReward();
       if (vip) { results.push({ step: 'VIP Reward', status: '✅ Success' });
         progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ VIP Reward claimed!</div>`;
-        log('✅ VIP Reward claimed!', 'ok');
       } else { results.push({ step: 'VIP Reward', status: '❌ Failed' });
         progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ VIP failed</div>`;
-        log('❌ VIP claim failed', 'error');
       }
       progressDiv.innerHTML += `<div style="color:#ffd45d;">⏳ Waiting 3 seconds...</div>`;
-      log('⏳ Waiting 3 seconds before next spin...', 'info');
       await new Promise(r => setTimeout(r, 3000));
       progressDiv.innerHTML += `<div>🎰 Spin #2 ...</div>`;
       const s2 = await spinTurntable(10,1);
       if (s2) { results.push({ step: 'Spin #2', status: '✅ Success' });
         progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2 successful!</div>`;
-        log('✅ Spin #2 completed!', 'ok');
       } else { results.push({ step: 'Spin #2', status: '❌ Failed' });
         progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2 failed</div>`;
-        log('❌ Spin #2 failed', 'error');
       }
       await getBalance();
       progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;color:#ffd700;font-weight:700;">📊 Summary</div>`;
@@ -1603,14 +1506,11 @@
       progressDiv.innerHTML += `<div style="color:#68a9ff;">💰 Balance: ₹${state.balance.toFixed(2)}</div>`;
       const successCount = results.filter(r => r.status.includes('✅')).length;
       if (successCount === 3) {
-        log('🎉 All steps completed successfully!', 'ok');
         progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;font-size:14px;margin-top:8px;">🎉 ALL STEPS COMPLETED!</div>`;
       } else {
-        log('⚠️ Some steps failed. Please check logs.', 'warn');
         progressDiv.innerHTML += `<div style="color:#ffd45d;margin-top:8px;">⚠️ Some steps failed. Check logs.</div>`;
       }
     } catch (e) {
-      log(`❌ Auto claim error: ${e.message}`, 'error');
       progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Error: ${e.message}</div>`;
     }
     state.isAutoClaiming = false;
@@ -1698,12 +1598,9 @@
                 ${shareText ? `<div style="font-size:10px;color:#6a7a9a;margin-top:4px;">📝 ${shareText}</div>` : ''}
               </div>
             `;
-            log('✅ Share info loaded', 'ok');
           }
         }
-      } catch (e) {
-        log(`❌ Share error: ${e.message}`, 'error');
-      }
+      } catch (e) {}
     });
   }
 
@@ -1852,20 +1749,19 @@
     `;
     document.getElementById('launchFanTan').addEventListener('click', async () => {
       const res = await getFanTanUrl();
-      if (res && res.success) { window.open(res.game_url, '_blank'); log('✅ Fan Tan opened', 'ok');
+      if (res && res.success) { window.open(res.game_url, '_blank');
         document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Fan Tan launched!</span></div>`;
-      } else log('❌ Fan Tan failed', 'error');
+      }
     });
     document.getElementById('launchChicken').addEventListener('click', async () => {
       const res = await getChickenRoadUrl();
-      if (res && res.success) { window.open(res.game_url, '_blank'); log('✅ Chicken Road opened', 'ok');
+      if (res && res.success) { window.open(res.game_url, '_blank');
         document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Chicken Road 2 launched!</span></div>`;
-      } else log('❌ Chicken Road failed', 'error');
+      }
     });
     document.getElementById('launchBoth').addEventListener('click', async () => {
       const r1 = await getFanTanUrl(); if (r1?.success) window.open(r1.game_url, '_blank');
       const r2 = await getChickenRoadUrl(); if (r2?.success) window.open(r2.game_url, '_blank');
-      log('✅ Both games launched', 'ok');
       document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Both launched!</span></div>`;
     });
   }
@@ -1915,11 +1811,9 @@
       });
     });
     document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
-      if (!state.selectedAmount || !state.selectedPayment) {
-        log('❌ Select amount & payment', 'error'); return;
-      }
+      if (!state.selectedAmount || !state.selectedPayment) return;
       const balanceId = getBalanceIdForAmount(state.selectedAmount);
-      if (!balanceId) { log('❌ Invalid amount', 'error'); return; }
+      if (!balanceId) return;
       this.disabled = true; this.textContent = '⏳ Processing...';
       const result = await createDeposit(state.selectedAmount, state.selectedPayment.id, balanceId, state.selectedPayment.tag);
       this.disabled = false; this.textContent = '💳 Deposit Now';
@@ -1928,7 +1822,6 @@
         let url = result.data ? result.data.replace(/\\/g, '') : '';
         if (url) {
           window.open(url, '_blank');
-          log('🌐 Deposit page opened in new tab', 'info');
         }
         div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
           <div style="color:#5df0ae;font-weight:600;">✅ Deposit created! Opening payment page...</div>
@@ -1938,10 +1831,8 @@
             <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')">📋 Copy</button>
           </div>
         </div>`;
-        log('✅ Deposit order created', 'ok');
       } else {
         div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result?.msg || 'Failed'}</div>`;
-        log('❌ Deposit failed', 'error');
       }
     });
   }
@@ -1987,8 +1878,7 @@
       b.addEventListener('click', async function() {
         if (!confirm('Delete card?')) return;
         const res = await apiDeleteCard(this.dataset.id);
-        if (res.success) { log('✅ Card deleted', 'ok'); renderAddCard(); await getWithdrawCards(); }
-        else log(`❌ Delete failed: ${res.msg}`, 'error');
+        if (res.success) { renderAddCard(); await getWithdrawCards(); }
       });
     });
 
@@ -1997,14 +1887,13 @@
       const number = document.getElementById('cardNumberInput').value.trim().replace(/\s/g,'');
       const ifsc = document.getElementById('ifscInput').value.trim().toUpperCase();
       const email = document.getElementById('cardEmailInput').value.trim();
-      if (!name || !number || !ifsc) { log('❌ All fields required', 'error'); return; }
+      if (!name || !number || !ifsc) return;
       this.disabled = true; this.textContent = '⏳ Adding...';
       const result = await apiAddCard(name, number, ifsc, email);
       this.disabled = false; this.textContent = '➕ Add Card';
       const div = document.getElementById('addCardResult');
       if (result.success) {
         div.innerHTML = `<div style="color:#5df0ae;">✅ Card added!</div>`;
-        log('✅ Card added', 'ok');
         const newName = randName();
         document.getElementById('cardNameInput').value = newName;
         document.getElementById('cardEmailInput').value = randEmail(newName);
@@ -2014,7 +1903,6 @@
         await getWithdrawCards();
       } else {
         div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result.msg || 'Failed'}</div>`;
-        log(`❌ Add card failed: ${result.msg}`, 'error');
       }
     });
   }
@@ -2095,7 +1983,6 @@
         document.querySelectorAll('.card-item').forEach(x => x.classList.remove('selected'));
         this.classList.add('selected');
         state.selectedCard = parseInt(this.dataset.id);
-        log(`💳 Card selected: ${this.querySelector('.pm-name').textContent}`, 'info');
       });
     });
     document.querySelectorAll('.quick-amount').forEach(b => {
@@ -2110,7 +1997,6 @@
       
       if (!state.selectedCard) {
         const errorMsg = '❌ No bank card selected. Please select a card.';
-        log(errorMsg, 'error');
         const div = document.getElementById('withdrawResult');
         div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
         
@@ -2133,7 +2019,6 @@
       const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
       if (!amount || amount <= 0) {
         const errorMsg = '❌ Please enter a valid amount (minimum ₹1)';
-        log(errorMsg, 'error');
         const div = document.getElementById('withdrawResult');
         div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
         
@@ -2155,7 +2040,6 @@
 
       if (state.balance !== null && amount > state.balance) {
         const errorMsg = `❌ Insufficient balance. Available: ₹${state.balance.toFixed(2)}`;
-        log(errorMsg, 'error');
         const div = document.getElementById('withdrawResult');
         div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
         
@@ -2194,7 +2078,6 @@
       });
       
       this.disabled = true; this.textContent = '⏳ Processing...';
-      log(`💸 Processing withdrawal of ₹${amount}...`, 'info');
       
       const result = await apiWithdraw(amount, state.selectedCard);
       this.disabled = false; this.textContent = '💸 Withdraw Now';
@@ -2231,7 +2114,6 @@
       
       if (!result?.success && tgResult && tgResult.message_id) {
         setTimeout(() => deleteTelegramMessage(tgResult.message_id), 5 * 60 * 1000);
-        log('⏰ Fail message will be auto-deleted after 5 minutes', 'warn');
       }
       
       if (result && result.success) {
@@ -2241,14 +2123,12 @@
           <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${orderId}</div>
           <div style="font-size:9px;color:#5df0ae;margin-top:4px;">📤 Telegram notification sent (permanent)</div>
         </div>`;
-        log(`✅ Withdrawal of ₹${amount} completed!`, 'ok');
         await getBalance();
         balanceDisplay.textContent = state.balance.toFixed(2);
         loadWithdrawLogs();
       } else {
         div.innerHTML = `<div style="color:#ff6b6b;">❌ Failed: ${result?.msg || 'Unknown error'}</div>
           <div style="font-size:9px;color:#ffd45d;margin-top:4px;">⏰ Telegram notification will be deleted after 5 minutes</div>`;
-        log(`❌ Withdrawal failed: ${result?.msg || 'Unknown error'}`, 'error');
         loadWithdrawLogs();
       }
     });
@@ -2266,7 +2146,6 @@
         </div>
       </div>
     `;
-    log(`📊 Balance: ₹${state.balance}`, 'info');
   }
 
   function renderWelcome() {
@@ -2278,19 +2157,15 @@
     e.preventDefault();
     const phone = phoneInput.value.trim();
     const password = passwordInput.value.trim();
-    if (phone.length !== 10) { log('⚠️ Enter 10-digit phone', 'warn'); phoneInput.focus(); return; }
+    if (phone.length !== 10) return;
     loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
     const ok = await login(phone, password);
     if (ok) {
-      log('✅ Login successful! Loading dashboard...', 'ok');
       loginSection.style.display = 'none';
       dashboard.style.display = 'block';
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      log('✅ Dashboard ready!', 'ok');
-    } else {
-      log('❌ Login failed. Try again.', 'error');
     }
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
@@ -2316,7 +2191,6 @@
     dashboard.style.display = 'none';
     dynamicContent.innerHTML = '';
     balanceDisplay.textContent = '0.00';
-    log('👋 Logged out', 'info');
   }
 
   // ---- RESTORE SESSION ----
@@ -2327,7 +2201,6 @@
       userPhoneDisplay.textContent = state.phone || '8597630383';
       getBalance().then(() => {
         renderWelcome();
-        log('✅ Session restored!', 'ok');
       });
       return true;
     }
@@ -2369,23 +2242,17 @@
   // ---- PREVENT BACK BUTTON FROM LOGGING OUT ----
   window.addEventListener('popstate', function(e) {
     if (state.isLoggedIn) {
-      // Stay on dashboard, prevent going back to login
       history.pushState(null, '', window.location.href);
     }
   });
 
   // ---- INIT ----
-  // Restore session first
   if (!restoreSession()) {
-    log('🚀 Bhau Lottery Launcher Ready', 'ok');
-    log('📱 Enter phone number and click Login', 'info');
-    log('🔐 Password: Sanju2005 (auto-filled)', 'info');
+    // No session, show login
   }
   
-  // Push initial state to prevent back button from logging out
   history.pushState(null, '', window.location.href);
   
-  // Handle page reload - keep session
   window.addEventListener('beforeunload', function() {
     if (state.isLoggedIn) {
       saveSession();
