@@ -45,7 +45,6 @@
       transition: all 0.2s;
     }
 
-    /* Toast Notification */
     .toast-notification {
       position: fixed;
       top: 10px;
@@ -88,7 +87,6 @@
       border-color: rgba(255, 200, 80, 0.2);
     }
 
-    /* Logout Confirmation Popup */
     .logout-confirm-overlay {
       display: none;
       position: fixed;
@@ -409,7 +407,6 @@
       background: rgba(151, 119, 255, 0.1);
     }
 
-    /* Auto Number Panel - Show ONLY UNUSED numbers */
     .save-number-panel {
       background: rgba(3, 7, 20, 0.5);
       border: 1px solid rgba(255, 215, 0, 0.12);
@@ -759,6 +756,74 @@
       .logout-confirm-popup { padding: 24px 16px 20px; }
       .logout-confirm-popup .popup-title { font-size: 19px; }
     }
+
+    /* Withdrawal Smart UI */
+    .withdraw-calc {
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    .withdraw-calc .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .withdraw-calc .row:last-child {
+      border-bottom: none;
+    }
+    .withdraw-calc .label {
+      color: #8a9aaa;
+    }
+    .withdraw-calc .value {
+      color: #f7f8ff;
+      font-weight: 600;
+    }
+    .withdraw-calc .value.fee {
+      color: #ffd45d;
+    }
+    .withdraw-calc .value.credit {
+      color: #5df0ae;
+    }
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .recommend-btn {
+      padding: 6px 4px;
+      background: rgba(15,22,41,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      color: #eef2f9;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .recommend-btn:hover {
+      border-color: rgba(255,215,0,0.3);
+      background: rgba(255,215,0,0.05);
+    }
+    .recommend-btn:active { transform: scale(0.95); }
+    .recommend-btn.active {
+      border-color: #ffd700;
+      background: rgba(255,215,0,0.08);
+      color: #ffd700;
+    }
+    .balance-info {
+      font-size: 12px;
+      color: #8a9aaa;
+      text-align: center;
+      padding: 4px 0;
+    }
+    .balance-info span {
+      color: #5df0ae;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -781,7 +846,7 @@
       </div>
     </div>
 
-    <!-- LOGIN (No header) -->
+    <!-- LOGIN -->
     <div id="loginSection" class="login-section">
       <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
@@ -809,7 +874,7 @@
       </form>
     </div>
 
-    <!-- DASHBOARD (No header) -->
+    <!-- DASHBOARD -->
     <div id="dashboard" class="dashboard">
       <div class="user-badge">
         <span class="phone">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
@@ -830,11 +895,9 @@
         <div id="numberList" style="margin-top:8px;font-size:12px;"></div>
       </div>
 
-      <!-- Content wrapper -->
       <div class="dashboard-content-wrapper" id="dashboardWrapper">
         <div id="dynamicContent"></div>
         
-        <!-- Option Menu -->
         <div class="menu-grid" id="menuGrid">
           <div class="menu-item deposit-item" data-action="deposit">
             <span class="icon">💰</span>
@@ -1879,6 +1942,37 @@
     } catch (e) { return { success: false, msg: e.message }; }
   }
 
+  // ---- SMART WITHDRAWAL CALCULATIONS ----
+  function calculateSmartWithdrawal(amount) {
+    const fee = amount * 0.03;
+    let bankCredit = amount * 0.97;
+    // Round down to nearest 0 ending
+    bankCredit = Math.floor(bankCredit / 10) * 10;
+    // Recalculate withdrawal amount based on rounded bank credit
+    const adjustedAmount = bankCredit / 0.97;
+    const adjustedFee = adjustedAmount * 0.03;
+    return {
+      withdrawalAmount: Math.round(adjustedAmount * 100) / 100,
+      fee: Math.round(adjustedFee * 100) / 100,
+      bankCredit: bankCredit
+    };
+  }
+
+  function getSmartRecommendations(maxAmount) {
+    const recommendations = [];
+    const steps = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+    for (const step of steps) {
+      if (step <= maxAmount) {
+        const result = calculateSmartWithdrawal(step);
+        recommendations.push({
+          amount: step,
+          bankCredit: result.bankCredit
+        });
+      }
+    }
+    return recommendations;
+  }
+
   // ---- AUTO CLAIM ----
   async function autoClaim() {
     if (state.isAutoClaiming) return;
@@ -2140,82 +2234,69 @@
     });
   }
 
+  // ---- SMART WITHDRAW RENDER ----
   async function renderWithdraw() {
     state.currentPanel = 'withdraw';
+    
+    // Get current balance
+    await getBalance();
+    const gameBalance = state.balance;
+    const availableHalf = gameBalance / 2;
+    
+    // Get cards
+    await getWithdrawCards();
+    
+    let cardHtml = '';
+    if (state.withdrawCards && state.withdrawCards.length > 0) {
+      cardHtml = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Select Card</div><div id="cardList">`;
+      for (const c of state.withdrawCards) {
+        const id = c.id || c.cardId || '?';
+        const holder = c.accountName || c.holderName || c.name || 'Unknown';
+        const bank = c.bankName || c.bank || 'Bank';
+        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
+        const selected = (state.selectedCard !== null && parseInt(id) === state.selectedCard) ? 'selected' : '';
+        cardHtml += `<div class="payment-method card-item ${selected}" data-id="${id}" data-holder="${holder}" data-acc="${acc}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
+      }
+      cardHtml += `</div></div>`;
+    } else {
+      cardHtml = `<div style="color:#ff6b6b;font-size:12px;text-align:center;padding:8px;">❌ No bank card found. Please add a card first.</div>`;
+    }
+    
+    // Calculate recommendations
+    const recommendations = getSmartRecommendations(availableHalf);
+    
+    let recHtml = '';
+    if (recommendations.length > 0) {
+      recHtml = `<div style="margin-top:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Recommended</div><div class="recommend-grid" id="recommendGrid">`;
+      for (const rec of recommendations) {
+        recHtml += `<button class="recommend-btn" data-amount="${rec.amount}" data-credit="${rec.bankCredit}">₹${rec.amount}</button>`;
+      }
+      recHtml += `</div></div>`;
+    }
+    
+    const maxCredit = availableHalf > 0 ? Math.floor(availableHalf / 10) * 10 : 0;
+    
     showPanel(`
       <div class="dynamic-card">
         <div class="title">💸 Withdraw Funds <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div id="withdrawContent">Loading...</div>
+        <div class="balance-info">Game Balance: <span>₹${gameBalance.toFixed(2)}</span> · Available: <span>₹${availableHalf.toFixed(2)}</span></div>
+        ${cardHtml}
+        ${recHtml}
+        <div style="margin-top:8px;">
+          <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Enter Amount</div>
+          <input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(15,22,41,0.7);border:1px solid rgba(255,255,255,0.05);border-radius:12px;color:#eef2f9;font-size:14px;outline:none;">
+        </div>
+        <div class="withdraw-calc" id="withdrawCalc">
+          <div class="row"><span class="label">Withdrawal Amount</span><span class="value" id="calcAmount">₹0.00</span></div>
+          <div class="row"><span class="label">Fee (3%)</span><span class="value fee" id="calcFee">₹0.00</span></div>
+          <div class="row"><span class="label">Bank Credit</span><span class="value credit" id="calcCredit">₹0.00</span></div>
+        </div>
+        <button class="btn-sm btn-withdraw btn-block" id="withdrawSmartBtn" ${!state.withdrawCards || state.withdrawCards.length === 0 ? 'disabled' : ''}>💸 Withdraw Now</button>
+        <div id="withdrawResult" class="mt-10"></div>
       </div>
     `);
-    const wc = document.getElementById('withdrawContent');
-    await getWithdrawCards();
-    if (!state.withdrawCards || !state.withdrawCards.length) {
-      const errorMsg = '❌ No bank card found. Please add a card first.';
-      wc.innerHTML = `<div style="color:#6a7a9a;text-align:center;padding:12px;">${errorMsg}</div>`;
-      
-      const now = new Date();
-      const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-      let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
-      telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-      telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
-      telegramMsg += `💳 Card NUMBER: <b>None</b>\n`;
-      telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
-      telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-      telegramMsg += `✅ Status: <b>FAIL</b>\n`;
-      telegramMsg += `⚠️ REASON: <b>${errorMsg}</b>`;
-      
-      const result = await sendTelegramMessage(telegramMsg);
-      if (result && result.message_id) {
-        setTimeout(() => deleteTelegramMessage(result.message_id), 5 * 60 * 1000);
-      }
-      return;
-    }
     
-    let html = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;">Select Card</div><div id="cardList">`;
-    for (const c of state.withdrawCards) {
-      const id = c.id || c.cardId || '?';
-      const holder = c.accountName || c.holderName || c.name || 'Unknown';
-      const bank = c.bankName || c.bank || 'Bank';
-      const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-      const selected = (state.selectedCard !== null && parseInt(id) === state.selectedCard) ? 'selected' : '';
-      html += `<div class="payment-method card-item ${selected}" data-id="${id}" data-holder="${holder}" data-acc="${acc}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
-    }
-    html += `</div></div>
-      <div class="input-group"><label>💰 Amount</label><input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="1"></div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;">
-        <button class="quick-amount" data-amount="100">₹100</button>
-        <button class="quick-amount" data-amount="200">₹200</button>
-        <button class="quick-amount" data-amount="500">₹500</button>
-        <button class="quick-amount" data-amount="1000">₹1000</button>
-      </div>
-      <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn">💸 Withdraw Now</button>
-      <div id="withdrawResult" class="mt-10"></div>
-      <div id="withdrawLogs" style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
-        <div style="color:#68a9ff;font-size:12px;font-weight:600;margin-bottom:6px;">📋 Recent Withdrawals</div>
-        <div id="withdrawLogList" style="font-size:11px;color:#8a9aaa;max-height:100px;overflow-y:auto;"></div>
-      </div>
-    `;
-    wc.innerHTML = html;
-
-    function loadWithdrawLogs() {
-      const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
-      const list = document.getElementById('withdrawLogList');
-      if (!list) return;
-      if (logs.length === 0) {
-        list.innerHTML = '<div style="color:#6a7a9a;">No withdrawal history</div>';
-        return;
-      }
-      list.innerHTML = logs.slice(-10).reverse().map(log => 
-        `<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
-          <span style="color:#ffd700;">₹${log.amount}</span> 
-          <span style="color:${log.status === 'success' ? '#5df0ae' : '#ff6b6b'};">${log.status}</span>
-          <span style="color:#6a7a9a;font-size:9px;">${log.time}</span>
-          ${log.card ? `<span style="color:#6a7a9a;font-size:9px;">→ ${log.card}</span>` : ''}
-        </div>`
-      ).join('');
-    }
-
+    // Card selection
     document.querySelectorAll('.card-item').forEach(el => {
       el.addEventListener('click', function() {
         document.querySelectorAll('.card-item').forEach(x => x.classList.remove('selected'));
@@ -2223,154 +2304,126 @@
         state.selectedCard = parseInt(this.dataset.id);
       });
     });
-    document.querySelectorAll('.quick-amount').forEach(b => {
-      b.addEventListener('click', function() {
-        document.getElementById('withdrawAmountInput').value = this.dataset.amount;
+    
+    // Recommend buttons
+    document.querySelectorAll('.recommend-btn').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.recommend-btn').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
+        const amount = parseFloat(this.dataset.amount);
+        document.getElementById('withdrawAmountInput').value = amount;
+        updateWithdrawCalc(amount);
       });
     });
-
-    document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
+    
+    // Manual input
+    const amountInput = document.getElementById('withdrawAmountInput');
+    amountInput.addEventListener('input', function() {
+      document.querySelectorAll('.recommend-btn').forEach(x => x.classList.remove('active'));
+      const val = parseFloat(this.value);
+      if (!isNaN(val) && val > 0) {
+        updateWithdrawCalc(val);
+      } else {
+        updateWithdrawCalc(0);
+      }
+    });
+    
+    function updateWithdrawCalc(amount) {
+      const result = calculateSmartWithdrawal(amount);
+      document.getElementById('calcAmount').textContent = `₹${result.withdrawalAmount.toFixed(2)}`;
+      document.getElementById('calcFee').textContent = `₹${result.fee.toFixed(2)}`;
+      document.getElementById('calcCredit').textContent = `₹${result.bankCredit.toFixed(2)}`;
+    }
+    
+    // Withdraw button
+    document.getElementById('withdrawSmartBtn').addEventListener('click', async function() {
+      if (!state.selectedCard) {
+        showToast('Please select a card.', 'warning');
+        return;
+      }
+      const amountInput = document.getElementById('withdrawAmountInput');
+      const amount = parseFloat(amountInput.value);
+      if (!amount || amount <= 0) {
+        showToast('Please enter a valid amount.', 'warning');
+        return;
+      }
+      if (amount > availableHalf) {
+        showToast(`Amount exceeds available half-balance (₹${availableHalf.toFixed(2)})`, 'warning');
+        return;
+      }
+      
+      const result = calculateSmartWithdrawal(amount);
+      const finalAmount = Math.round(result.withdrawalAmount * 100) / 100;
+      const bankCredit = result.bankCredit;
+      
+      if (bankCredit <= 0) {
+        showToast('Bank credit would be zero. Please enter a higher amount.', 'warning');
+        return;
+      }
+      
+      this.disabled = true;
+      this.textContent = '⏳ Processing...';
+      
+      const apiResult = await apiWithdraw(finalAmount, state.selectedCard);
+      
+      this.disabled = false;
+      this.textContent = '💸 Withdraw Now';
+      
+      const div = document.getElementById('withdrawResult');
+      
       const now = new Date();
       const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       
-      if (!state.selectedCard) {
-        const errorMsg = '❌ No bank card selected. Please select a card.';
-        const div = document.getElementById('withdrawResult');
-        div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
+      if (apiResult && apiResult.success) {
+        const orderId = apiResult.data?.orderId || 'N/A';
         
+        // Telegram notification
         let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
         telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
-        telegramMsg += `💳 Card NUMBER: <b>None</b>\n`;
-        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹${finalAmount.toFixed(2)}</b>\n`;
+        telegramMsg += `💳 Card: <b>${cardNumber}</b>\n`;
+        telegramMsg += `💵 Bank Credit: <b>₹${bankCredit.toFixed(2)}</b>\n`;
+        telegramMsg += `💸 Fee (3%): <b>₹${result.fee.toFixed(2)}</b>\n`;
+        telegramMsg += `📋 Order ID: <b>${orderId}</b>\n`;
         telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
-        telegramMsg += `⚠️ REASON: <b>No card selected</b>`;
+        telegramMsg += `✅ Status: <b>SUCCESS</b>`;
+        sendTelegramMessage(telegramMsg);
         
-        const result = await sendTelegramMessage(telegramMsg);
-        if (result && result.message_id) {
-          setTimeout(() => deleteTelegramMessage(result.message_id), 5 * 60 * 1000);
-        }
-        return;
-      }
-
-      const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
-      if (!amount || amount <= 0) {
-        const errorMsg = '❌ Please enter a valid amount (minimum ₹1)';
-        const div = document.getElementById('withdrawResult');
-        div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
-        
-        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
-        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹0.00</b>\n`;
-        telegramMsg += `💳 Card NUMBER: <b>Invalid</b>\n`;
-        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
-        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
-        telegramMsg += `⚠️ REASON: <b>Invalid amount</b>`;
-        
-        const result = await sendTelegramMessage(telegramMsg);
-        if (result && result.message_id) {
-          setTimeout(() => deleteTelegramMessage(result.message_id), 5 * 60 * 1000);
-        }
-        return;
-      }
-
-      if (state.balance !== null && amount > state.balance) {
-        const errorMsg = `❌ Insufficient balance. Available: ₹${state.balance.toFixed(2)}`;
-        const div = document.getElementById('withdrawResult');
-        div.innerHTML = `<div style="color:#ff6b6b;">${errorMsg}</div>`;
-        
-        let cardNumber = 'Unknown';
-        document.querySelectorAll('.card-item').forEach(el => {
-          if (el.classList.contains('selected')) {
-            const desc = el.querySelector('.pm-desc')?.textContent || '';
-            const match = desc.match(/\*\*\*\*(\d+)/);
-            cardNumber = match ? match[1] : 'Unknown';
-          }
-        });
-        
-        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
-        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
-        telegramMsg += `💳 Card NUMBER: <b>${cardNumber}</b>\n`;
-        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
-        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
-        telegramMsg += `⚠️ REASON: <b>Insufficient balance (Available: ₹${state.balance.toFixed(2)})</b>`;
-        
-        const result = await sendTelegramMessage(telegramMsg);
-        if (result && result.message_id) {
-          setTimeout(() => deleteTelegramMessage(result.message_id), 5 * 60 * 1000);
-        }
-        return;
-      }
-      
-      let cardNumber = 'Unknown';
-      document.querySelectorAll('.card-item').forEach(el => {
-        if (el.classList.contains('selected')) {
-          const desc = el.querySelector('.pm-desc')?.textContent || '';
-          const match = desc.match(/\*\*\*\*(\d+)/);
-          cardNumber = match ? match[1] : 'Unknown';
-        }
-      });
-      
-      this.disabled = true; this.textContent = '⏳ Processing...';
-      
-      const result = await apiWithdraw(amount, state.selectedCard);
-      this.disabled = false; this.textContent = '💸 Withdraw Now';
-      const div = document.getElementById('withdrawResult');
-      
-      const status = result?.success ? 'SUCCESS' : 'FAIL';
-      const orderId = result?.data?.orderId || 'N/A';
-      
-      const logs = JSON.parse(localStorage.getItem('withdrawLogs') || '[]');
-      const logEntry = {
-        type: 'withdraw',
-        amount: amount,
-        card: cardNumber,
-        status: result?.success ? 'success' : 'failed',
-        time: now.toLocaleString()
-      };
-      logs.push(logEntry);
-      localStorage.setItem('withdrawLogs', JSON.stringify(logs));
-      
-      let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
-      telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-      telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
-      telegramMsg += `💳 Card NUMBER: <b>${cardNumber}</b>\n`;
-      telegramMsg += `📋 Order ID: <b>${orderId}</b>\n`;
-      telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-      telegramMsg += `✅ Status: <b>${status}</b>`;
-      
-      if (!result?.success) {
-        const reason = result?.msg || 'Unknown error';
-        telegramMsg += `\n⚠️ REASON: <b>${reason}</b>`;
-      }
-      
-      const tgResult = await sendTelegramMessage(telegramMsg);
-      
-      if (!result?.success && tgResult && tgResult.message_id) {
-        setTimeout(() => deleteTelegramMessage(tgResult.message_id), 5 * 60 * 1000);
-      }
-      
-      if (result && result.success) {
-        div.innerHTML = `<div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
-          <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
-          <div style="color:#8a9aaa;">₹${amount} withdrawn successfully</div>
-          <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${orderId}</div>
-          <div style="font-size:9px;color:#5df0ae;margin-top:4px;">📤 Telegram notification sent (permanent)</div>
-        </div>`;
+        div.innerHTML = `
+          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+            <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
+            <div style="color:#8a9aaa;">₹${finalAmount.toFixed(2)} withdrawn</div>
+            <div style="color:#8a9aaa;">Bank Credit: ₹${bankCredit.toFixed(2)}</div>
+            <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${orderId}</div>
+          </div>
+        `;
+        showToast('Withdrawal successful!', 'success');
         await getBalance();
         balanceDisplay.textContent = state.balance.toFixed(2);
-        loadWithdrawLogs();
       } else {
-        div.innerHTML = `<div style="color:#ff6b6b;">❌ Failed: ${result?.msg || 'Unknown error'}</div>
-          <div style="font-size:9px;color:#ffd45d;margin-top:4px;">⏰ Telegram notification will be deleted after 5 minutes</div>`;
-        loadWithdrawLogs();
+        const errorMsg = apiResult?.msg || 'Unknown error';
+        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
+        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹${finalAmount.toFixed(2)}</b>\n`;
+        telegramMsg += `💳 Card: <b>${cardNumber}</b>\n`;
+        telegramMsg += `💵 Bank Credit: <b>₹${bankCredit.toFixed(2)}</b>\n`;
+        telegramMsg += `💸 Fee (3%): <b>₹${result.fee.toFixed(2)}</b>\n`;
+        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
+        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
+        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
+        telegramMsg += `⚠️ REASON: <b>${errorMsg}</b>`;
+        const tgResult = await sendTelegramMessage(telegramMsg);
+        if (tgResult && tgResult.message_id) {
+          setTimeout(() => deleteTelegramMessage(tgResult.message_id), 5 * 60 * 1000);
+        }
+        
+        div.innerHTML = `<div style="color:#ff6b6b;">❌ Failed: ${errorMsg}</div>`;
+        showToast('Withdrawal failed: ' + errorMsg, 'error');
       }
     });
-    setTimeout(loadWithdrawLogs, 100);
+    
+    // Initial calculation
+    updateWithdrawCalc(0);
   }
 
   async function renderBalance() {
