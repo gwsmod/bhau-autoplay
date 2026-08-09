@@ -511,41 +511,12 @@
       margin-top: 2px;
     }
 
-    .refer-level-card {
-      background: rgba(0,0,0,0.2);
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin-bottom: 6px;
-      border-left: 3px solid #00b4d8;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .refer-level-card .level-info {
-      font-size: 12px;
-    }
-    .refer-level-card .level-info .level-name {
-      font-weight: 700;
-      color: #eef2f9;
-    }
-    .refer-level-card .level-info .level-detail {
-      color: #6a7a9a;
-      font-size: 10px;
-    }
-    .refer-level-card .level-status {
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .refer-level-card .level-status.completed { color: #5df0ae; }
-    .refer-level-card .level-status.pending { color: #ffd45d; }
-    .refer-level-card .level-status.locked { color: #6a7a9a; }
-
     .refer-user-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
       font-size: 12px;
     }
     .refer-user-item .user-phone {
@@ -886,33 +857,6 @@
       return null;
     } catch (e) {
       log(`⚠️ Referral stats error: ${e.message}`, 'warn');
-      return null;
-    }
-  }
-
-  async function getReferralLevels() {
-    if (!state.token) return null;
-    try {
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/inviteTask/getUserList', {
-        method: 'GET',
-        headers
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          return data;
-        }
-      }
-      return null;
-    } catch (e) {
-      log(`⚠️ Referral levels error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -1589,25 +1533,24 @@
     state.isAutoClaiming = false;
   }
 
-  // ---- REFERRAL RENDER ----
+  // ---- REFERRAL RENDER (ONLY HISTORY) ----
   async function renderReferral() {
     const loadingHtml = `
       <div class="dynamic-card">
-        <div class="title">👥 Refer & Earn</div>
+        <div class="title">👥 Referral History</div>
         <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading referral data...</div>
       </div>
     `;
     dynamicContent.innerHTML = loadingHtml;
 
-    const [stats, levelsData, history] = await Promise.all([
+    const [stats, history] = await Promise.all([
       getReferralStats(),
-      getReferralLevels(),
       getReferralHistory(1)
     ]);
 
     let html = `
       <div class="dynamic-card">
-        <div class="title">👥 Refer & Earn</div>
+        <div class="title">👥 Referral History</div>
     `;
 
     // Stats
@@ -1626,37 +1569,14 @@
       </div>
     `;
 
-    // Level progress
-    html += `<div style="margin-bottom:12px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📊 Referral Levels</div>`;
-    if (levelsData && levelsData.data && levelsData.data.length > 0) {
-      for (const level of levelsData.data) {
-        const statusText = level.status === 1 ? '✅ Completed' : level.status === 0 ? '🔒 Locked' : '⏳ Pending';
-        const statusClass = level.status === 1 ? 'completed' : level.status === 0 ? 'locked' : 'pending';
-        html += `
-          <div class="refer-level-card">
-            <div class="level-info">
-              <div class="level-name">Level ${level.level} · ₹${level.bonusAmount}</div>
-              <div class="level-detail">Invite ${level.inviteNumber} users · Deposit ₹${level.depositAmount}</div>
-              <div class="level-detail">Progress: ${level.completedNumber || 0}/${level.inviteNumber}</div>
-            </div>
-            <div class="level-status ${statusClass}">${statusText}</div>
-          </div>
-        `;
-      }
-    } else {
-      html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:8px;">No referral levels available</div>`;
-    }
-    html += `</div>`;
-
-    // Referral history
+    // Referral history only
     html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
       <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
-      <div style="max-height:200px;overflow-y:auto;">`;
+      <div style="max-height:300px;overflow-y:auto;">`;
     if (history && history.length > 0) {
       for (const ref of history) {
         const date = new Date(ref.createTime);
         const timeStr = date.toLocaleString();
-        const avatar = ref.userAvatar ? ref.userAvatar.replace(/\\/g, '') : 'https://cdn.cloudstaticfile.com/avatar/avatar0.png';
         html += `
           <div class="refer-user-item">
             <div>
