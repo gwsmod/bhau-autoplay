@@ -342,7 +342,7 @@
       background: rgba(151, 119, 255, 0.1);
     }
 
-    /* Dashboard Save Number Panel */
+    /* Save Number Panel */
     .save-number-panel {
       background: rgba(3, 7, 20, 0.5);
       border: 1px solid rgba(255, 215, 0, 0.12);
@@ -495,6 +495,7 @@
     .btn-danger { background: rgba(255, 70, 70, 0.15); color: #ff6b6b; border: 1px solid rgba(255,70,70,0.1); }
     .btn-info { background: rgba(30, 144, 255, 0.2); color: #68a9ff; border: 1px solid rgba(30, 144, 255, 0.15); }
     .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; }
+    .btn-copy-referrals { background: linear-gradient(135deg, #7b2ff7, #5b1fa3); color: #fff; }
     .btn-close-panel {
       background: rgba(255, 255, 255, 0.05);
       color: #8a9aaa;
@@ -725,19 +726,18 @@
       <!-- Save Number Panel -->
       <div class="save-number-panel">
         <div class="title">
-          <span>📱 Auto Number</span>
+          <span>📱 Auto Login Number</span>
           <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">No number saved</span>
         </div>
         <div class="input-group">
           <input type="tel" id="saveNumberInput" maxlength="10" placeholder="Enter 10-digit number" inputmode="numeric">
-          <button class="save-btn" id="saveNumberBtn">💾 Save</button>
+          <button class="save-btn" id="saveNumberBtn">💾 Save (UNUSED)</button>
         </div>
         <div class="status-text" id="saveStatusText"></div>
       </div>
 
-      <!-- Content wrapper for proper ordering -->
+      <!-- Content wrapper -->
       <div class="dashboard-content-wrapper" id="dashboardWrapper">
-        <!-- Dynamic content panel (appears above menu) -->
         <div id="dynamicContent"></div>
         
         <!-- Option Menu -->
@@ -833,6 +833,7 @@
     transactionPage: 1,
     transactionYearMonth: null,
     currentPanel: null,
+    referralHistoryCache: null,
   };
 
   // ---- DOM REFS ----
@@ -1080,7 +1081,7 @@
     }
   }
 
-  // ---- TRANSACTION/REFERRAL HELPERS ----
+  // ---- REFERRAL API CALLS ----
   async function getReferralHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
@@ -1119,7 +1120,8 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0) {
-          return data.data?.content || [];
+          state.referralHistoryCache = data.data?.content || [];
+          return state.referralHistoryCache;
         }
       }
       return null;
@@ -1128,6 +1130,7 @@
     }
   }
 
+  // ---- TRANSACTION HISTORY ----
   async function getDepositHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
@@ -1734,6 +1737,53 @@
   }
   window._closePanel = closePanel;
 
+  // ---- REFERRAL COPY FUNCTION ----
+  function copyReferralNumbers() {
+    if (!state.referralHistoryCache || state.referralHistoryCache.length === 0) {
+      alert('No referral history found.');
+      return;
+    }
+    
+    // Get first 1-3 referrals
+    const count = Math.min(state.referralHistoryCache.length, 3);
+    const referrals = state.referralHistoryCache.slice(0, count);
+    const numbers = referrals.map(r => r.inviteUserPhone).filter(p => p);
+    
+    if (numbers.length === 0) {
+      alert('No phone numbers found in referrals.');
+      return;
+    }
+    
+    const textToCopy = numbers.join('\n');
+    
+    // Copy to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert(`✅ Copied ${numbers.length} referral number(s)!`);
+      }).catch(() => {
+        fallbackCopy(textToCopy);
+      });
+    } else {
+      fallbackCopy(textToCopy);
+    }
+  }
+  
+  function fallbackCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      alert('✅ Copied referral numbers!');
+    } catch (e) {
+      alert('❌ Failed to copy. Please copy manually.');
+    }
+    document.body.removeChild(textarea);
+  }
+
   // ---- RENDER FUNCTIONS ----
   function renderGames() {
     state.currentPanel = 'games';
@@ -2328,6 +2378,16 @@
           </div>
         `;
       }
+      
+      // Show copy button
+      const count = Math.min(history.length, 3);
+      html += `
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+          <button class="btn-sm btn-copy-referrals btn-block" id="copyReferralsBtn">
+            📋 Copy First ${count} Referral${count > 1 ? 's' : ''}
+          </button>
+        </div>
+      `;
     } else {
       html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:20px;">No referral history yet</div>`;
     }
@@ -2342,6 +2402,12 @@
 
     html += `</div>`;
     showPanel(html);
+
+    // Copy Referrals button
+    const copyBtn = document.getElementById('copyReferralsBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', copyReferralNumbers);
+    }
 
     document.getElementById('shareReferralBtn').addEventListener('click', async function() {
       try {
@@ -2497,6 +2563,7 @@
     state.withdrawCards = [];
     state.cardList = [];
     state.selectedCard = null;
+    state.referralHistoryCache = null;
     
     clearSession();
     hideExitPermission();
