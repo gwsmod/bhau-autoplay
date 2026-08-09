@@ -649,9 +649,7 @@
           isLoggedIn: true
         };
         localStorage.setItem('bhau_session', JSON.stringify(sessionData));
-      } catch (e) {
-        // ignore
-      }
+      } catch (e) {}
     }
   }
 
@@ -668,29 +666,23 @@
           return true;
         }
       }
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
     return false;
   }
 
   function clearSession() {
     try {
       localStorage.removeItem('bhau_session');
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   }
 
-  // ---- TELEGRAM SEND MESSAGE ----
+  // ---- TELEGRAM FUNCTIONS ----
   async function sendTelegramMessage(message) {
     try {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
       const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
           text: message,
@@ -700,32 +692,26 @@
       const data = await response.json();
       if (data.ok) {
         return data.result || { message_id: null };
-      } else {
-        return null;
       }
+      return null;
     } catch (error) {
       return null;
     }
   }
 
-  // ---- TELEGRAM DELETE MESSAGE ----
   async function deleteTelegramMessage(messageId) {
     if (!messageId) return;
     try {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteMessage`;
       await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
           message_id: messageId
         })
       });
-    } catch (error) {
-      // ignore
-    }
+    } catch (error) {}
   }
 
   // ---- API CALLS ----
@@ -766,10 +752,7 @@
         body: JSON.stringify(payload)
       });
 
-      if (response.status !== 200) {
-        return false;
-      }
-
+      if (response.status !== 200) return false;
       const data = await response.json();
 
       if (data.success && data.code === 0) {
@@ -792,7 +775,6 @@
           return true;
         }
       }
-
       return false;
     } catch (error) {
       return false;
@@ -846,33 +828,7 @@
     }
   }
 
-  // ---- REFERRAL API CALLS ----
-  async function getReferralStats() {
-    if (!state.token) return null;
-    try {
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/inviteTask/getUserTotal', {
-        method: 'GET',
-        headers
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          return data.data || { bonusAmountTotal: 0, invitedNumberTotal: 0 };
-        }
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
+  // ---- TRANSACTION/REFERRAL HELPERS ----
   async function getReferralHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
@@ -920,7 +876,6 @@
     }
   }
 
-  // ---- TRANSACTION HISTORY ----
   async function getDepositHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
@@ -1105,8 +1060,6 @@
         const data = await res.json();
         if (data.code === 0) {
           return data;
-        } else {
-          return null;
         }
       }
       return null;
@@ -1149,8 +1102,6 @@
         const data = await res.json();
         if (data.code === 0) {
           return data;
-        } else {
-          return null;
         }
       }
       return null;
@@ -1276,7 +1227,6 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0) return data;
-        else return null;
       }
       return null;
     } catch (e) {
@@ -1516,224 +1466,6 @@
     state.isAutoClaiming = false;
   }
 
-  // ---- REFERRAL RENDER ----
-  async function renderReferral() {
-    const loadingHtml = `
-      <div class="dynamic-card">
-        <div class="title">👥 Referral History</div>
-        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading referral data...</div>
-      </div>
-    `;
-    dynamicContent.innerHTML = loadingHtml;
-
-    const history = await getReferralHistory(1);
-
-    let html = `
-      <div class="dynamic-card">
-        <div class="title">👥 Referral History</div>
-    `;
-
-    html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
-      <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
-      <div style="max-height:350px;overflow-y:auto;">`;
-    if (history && history.length > 0) {
-      for (const ref of history) {
-        const date = new Date(ref.createTime);
-        const timeStr = date.toLocaleString();
-        html += `
-          <div class="refer-user-item">
-            <div>
-              <span class="user-phone">📱 ${ref.inviteUserPhone || 'Unknown'}</span>
-              <span class="user-time"> · ${timeStr}</span>
-            </div>
-            <div>
-              <span class="user-status">${ref.status === 1 ? '✅ Active' : '⏳ Pending'}</span>
-            </div>
-          </div>
-        `;
-      }
-    } else {
-      html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:20px;">No referral history yet</div>`;
-    }
-    html += `</div></div>`;
-
-    html += `
-      <div style="margin-top:12px;display:flex;gap:8px;">
-        <button class="btn-sm btn-refer btn-block" id="shareReferralBtn">📤 Share Referral Link</button>
-      </div>
-      <div id="shareResult" class="mt-10"></div>
-    `;
-
-    html += `</div>`;
-    dynamicContent.innerHTML = html;
-
-    document.getElementById('shareReferralBtn').addEventListener('click', async function() {
-      try {
-        const headers = {
-          'Accept': 'application/json, text/plain, */*',
-          'Token': state.token,
-          'Visitor': state.visitor,
-          'Origin': 'https://playbhau.com',
-          'Referer': 'https://playbhau.com/'
-        };
-        const res = await fetch('https://api.bh2255.xyz/app/share/getShareInfo', {
-          method: 'GET',
-          headers
-        });
-        if (res.status === 200) {
-          const data = await res.json();
-          if (data.code === 0) {
-            const shareData = data.data || {};
-            const shareUrl = shareData.shareUrl || 'https://playbhau.com/';
-            const shareText = shareData.shareText || 'Join Bhau Lottery and win big! 🎰';
-            const resultDiv = document.getElementById('shareResult');
-            resultDiv.innerHTML = `
-              <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
-                <div style="color:#5df0ae;font-weight:600;">✅ Share link ready!</div>
-                <div style="font-size:11px;color:#8a9aaa;word-break:break-all;margin:6px 0;">🔗 ${shareUrl}</div>
-                <div style="display:flex;gap:6px;">
-                  <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}')">📋 Copy Link</button>
-                  <button class="btn-sm btn-warning" onclick="window.open('${shareUrl}','_blank')">🌐 Open</button>
-                </div>
-                ${shareText ? `<div style="font-size:10px;color:#6a7a9a;margin-top:4px;">📝 ${shareText}</div>` : ''}
-              </div>
-            `;
-          }
-        }
-      } catch (e) {}
-    });
-  }
-
-  // ---- TRANSACTIONS ----
-  async function renderTransactions() {
-    const loadingHtml = `
-      <div class="dynamic-card">
-        <div class="title">📋 Transaction History</div>
-        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading transactions...</div>
-      </div>
-    `;
-    dynamicContent.innerHTML = loadingHtml;
-
-    const [deposits, withdraws] = await Promise.all([
-      getDepositHistory(1),
-      getWithdrawHistory(1)
-    ]);
-
-    let allTxns = [];
-
-    if (deposits && deposits.length > 0) {
-      for (const txn of deposits) {
-        allTxns.push({
-          type: 'deposit',
-          appDate: txn.appDate || txn.createTime || Date.now(),
-          amount: txn.paidAmount || txn.price || 0,
-          balance: txn.balance || 0,
-          orderNo: txn.orderNo || txn.order || '',
-          payTypeName: txn.payTypeName || 'Recharge',
-          channelName: txn.channelName || '',
-          status: txn.status || 'COMPLETE',
-          gameName: txn.gameName || '',
-          iconUrl: txn.iconUrl || ''
-        });
-      }
-    }
-
-    if (withdraws && withdraws.length > 0) {
-      for (const txn of withdraws) {
-        allTxns.push({
-          type: 'withdraw',
-          appDate: txn.createTime || Date.now(),
-          amount: txn.paidAmount || 0,
-          reward: txn.reward || 0,
-          orderNo: txn.orderNo || '',
-          bankName: txn.bankName || '',
-          userCardNumber: txn.userCardNumber || '',
-          status: txn.respCode === 2 ? 'COMPLETE' : 'PENDING',
-          channelName: txn.channelName || 'SYSTEM'
-        });
-      }
-    }
-
-    allTxns.sort((a, b) => (b.appDate || 0) - (a.appDate || 0));
-
-    let html = `
-      <div class="dynamic-card">
-        <div class="title">📋 Transaction History (${allTxns.length})</div>
-        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-          <button class="btn-sm btn-info" id="txnAll" style="flex:1;">All</button>
-          <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
-          <button class="btn-sm btn-withdraw" id="txnWithdraw" style="flex:1;">Withdrawals</button>
-        </div>
-        <div id="transactionList" style="max-height:350px;overflow-y:auto;font-size:12px;">
-    `;
-
-    if (allTxns.length === 0) {
-      html += `<div style="color:#6a7a9a;text-align:center;padding:20px;">No transactions found</div>`;
-    } else {
-      for (const txn of allTxns) {
-        const date = new Date(txn.appDate);
-        const timeStr = date.toLocaleString();
-        const isDeposit = txn.type === 'deposit';
-        const amount = parseFloat(txn.amount || 0).toFixed(2);
-        const balance = parseFloat(txn.balance || 0).toFixed(2);
-        const icon = isDeposit ? '💰' : '💸';
-        const typeLabel = isDeposit ? 'Deposit' : 'Withdraw';
-        const statusColor = txn.status === 'COMPLETE' ? '#5df0ae' : '#ffd45d';
-        const displayName = isDeposit ? (txn.channelName || txn.payTypeName || 'Recharge') : (txn.bankName || 'Bank');
-        const cardInfo = isDeposit ? '' : (txn.userCardNumber ? ` · ${txn.userCardNumber}` : '');
-
-        html += `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);" data-type="${txn.type}">
-            <div style="flex:1;">
-              <div>
-                <span>${icon} ${typeLabel}</span>
-                <span style="color:#ffd700;margin-left:8px;font-weight:600;">₹${amount}</span>
-                ${txn.gameName ? `<span style="color:#6a7a9a;font-size:10px;margin-left:6px;">🎮 ${txn.gameName}</span>` : ''}
-              </div>
-              <div style="color:#6a7a9a;font-size:9px;margin-top:2px;">
-                ${displayName}${cardInfo} · ${timeStr}
-                ${!isDeposit ? `<span style="color:#8a9aaa;margin-left:6px;">Fee: ₹${(txn.amount - (txn.reward || 0)).toFixed(2)}</span>` : ''}
-                <span style="color:#8a9aaa;margin-left:6px;">Bal: ₹${balance}</span>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div style="color:${isDeposit ? '#5df0ae' : '#ff6b6b'};font-size:10px;font-weight:600;">
-                ${isDeposit ? '+' : '-'}₹${amount}
-              </div>
-              <div style="color:${statusColor};font-size:9px;">${txn.status}</div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    html += `</div></div>`;
-    dynamicContent.innerHTML = html;
-
-    const filterMap = {
-      'txnAll': 'all',
-      'txnDeposit': 'deposit',
-      'txnWithdraw': 'withdraw'
-    };
-
-    Object.keys(filterMap).forEach(id => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.addEventListener('click', function() {
-          const filter = filterMap[id];
-          document.querySelectorAll('#transactionList > div').forEach(el => {
-            if (filter === 'all') {
-              el.style.display = 'flex';
-            } else {
-              const type = el.dataset.type || '';
-              el.style.display = type === filter ? 'flex' : 'none';
-            }
-          });
-        });
-      }
-    });
-  }
-
   // ---- RENDER FUNCTIONS ----
   function renderGames() {
     dynamicContent.innerHTML = `
@@ -1907,7 +1639,6 @@
     });
   }
 
-  // ---- WITHDRAW RENDER ----
   async function renderWithdraw() {
     dynamicContent.innerHTML = `<div class="dynamic-card"><div class="title">💸 Withdraw Funds</div><div id="withdrawContent">Loading...</div></div>`;
     const wc = document.getElementById('withdrawContent');
@@ -2148,6 +1879,222 @@
     `;
   }
 
+  async function renderTransactions() {
+    const loadingHtml = `
+      <div class="dynamic-card">
+        <div class="title">📋 Transaction History</div>
+        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading transactions...</div>
+      </div>
+    `;
+    dynamicContent.innerHTML = loadingHtml;
+
+    const [deposits, withdraws] = await Promise.all([
+      getDepositHistory(1),
+      getWithdrawHistory(1)
+    ]);
+
+    let allTxns = [];
+
+    if (deposits && deposits.length > 0) {
+      for (const txn of deposits) {
+        allTxns.push({
+          type: 'deposit',
+          appDate: txn.appDate || txn.createTime || Date.now(),
+          amount: txn.paidAmount || txn.price || 0,
+          balance: txn.balance || 0,
+          orderNo: txn.orderNo || txn.order || '',
+          payTypeName: txn.payTypeName || 'Recharge',
+          channelName: txn.channelName || '',
+          status: txn.status || 'COMPLETE',
+          gameName: txn.gameName || '',
+          iconUrl: txn.iconUrl || ''
+        });
+      }
+    }
+
+    if (withdraws && withdraws.length > 0) {
+      for (const txn of withdraws) {
+        allTxns.push({
+          type: 'withdraw',
+          appDate: txn.createTime || Date.now(),
+          amount: txn.paidAmount || 0,
+          reward: txn.reward || 0,
+          orderNo: txn.orderNo || '',
+          bankName: txn.bankName || '',
+          userCardNumber: txn.userCardNumber || '',
+          status: txn.respCode === 2 ? 'COMPLETE' : 'PENDING',
+          channelName: txn.channelName || 'SYSTEM'
+        });
+      }
+    }
+
+    allTxns.sort((a, b) => (b.appDate || 0) - (a.appDate || 0));
+
+    let html = `
+      <div class="dynamic-card">
+        <div class="title">📋 Transaction History (${allTxns.length})</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+          <button class="btn-sm btn-info" id="txnAll" style="flex:1;">All</button>
+          <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
+          <button class="btn-sm btn-withdraw" id="txnWithdraw" style="flex:1;">Withdrawals</button>
+        </div>
+        <div id="transactionList" style="max-height:350px;overflow-y:auto;font-size:12px;">
+    `;
+
+    if (allTxns.length === 0) {
+      html += `<div style="color:#6a7a9a;text-align:center;padding:20px;">No transactions found</div>`;
+    } else {
+      for (const txn of allTxns) {
+        const date = new Date(txn.appDate);
+        const timeStr = date.toLocaleString();
+        const isDeposit = txn.type === 'deposit';
+        const amount = parseFloat(txn.amount || 0).toFixed(2);
+        const balance = parseFloat(txn.balance || 0).toFixed(2);
+        const icon = isDeposit ? '💰' : '💸';
+        const typeLabel = isDeposit ? 'Deposit' : 'Withdraw';
+        const statusColor = txn.status === 'COMPLETE' ? '#5df0ae' : '#ffd45d';
+        const displayName = isDeposit ? (txn.channelName || txn.payTypeName || 'Recharge') : (txn.bankName || 'Bank');
+        const cardInfo = isDeposit ? '' : (txn.userCardNumber ? ` · ${txn.userCardNumber}` : '');
+
+        html += `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);" data-type="${txn.type}">
+            <div style="flex:1;">
+              <div>
+                <span>${icon} ${typeLabel}</span>
+                <span style="color:#ffd700;margin-left:8px;font-weight:600;">₹${amount}</span>
+                ${txn.gameName ? `<span style="color:#6a7a9a;font-size:10px;margin-left:6px;">🎮 ${txn.gameName}</span>` : ''}
+              </div>
+              <div style="color:#6a7a9a;font-size:9px;margin-top:2px;">
+                ${displayName}${cardInfo} · ${timeStr}
+                ${!isDeposit ? `<span style="color:#8a9aaa;margin-left:6px;">Fee: ₹${(txn.amount - (txn.reward || 0)).toFixed(2)}</span>` : ''}
+                <span style="color:#8a9aaa;margin-left:6px;">Bal: ₹${balance}</span>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="color:${isDeposit ? '#5df0ae' : '#ff6b6b'};font-size:10px;font-weight:600;">
+                ${isDeposit ? '+' : '-'}₹${amount}
+              </div>
+              <div style="color:${statusColor};font-size:9px;">${txn.status}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    html += `</div></div>`;
+    dynamicContent.innerHTML = html;
+
+    const filterMap = {
+      'txnAll': 'all',
+      'txnDeposit': 'deposit',
+      'txnWithdraw': 'withdraw'
+    };
+
+    Object.keys(filterMap).forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener('click', function() {
+          const filter = filterMap[id];
+          document.querySelectorAll('#transactionList > div').forEach(el => {
+            if (filter === 'all') {
+              el.style.display = 'flex';
+            } else {
+              const type = el.dataset.type || '';
+              el.style.display = type === filter ? 'flex' : 'none';
+            }
+          });
+        });
+      }
+    });
+  }
+
+  async function renderReferral() {
+    const loadingHtml = `
+      <div class="dynamic-card">
+        <div class="title">👥 Referral History</div>
+        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading referral data...</div>
+      </div>
+    `;
+    dynamicContent.innerHTML = loadingHtml;
+
+    const history = await getReferralHistory(1);
+
+    let html = `
+      <div class="dynamic-card">
+        <div class="title">👥 Referral History</div>
+    `;
+
+    html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
+      <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
+      <div style="max-height:350px;overflow-y:auto;">`;
+    if (history && history.length > 0) {
+      for (const ref of history) {
+        const date = new Date(ref.createTime);
+        const timeStr = date.toLocaleString();
+        html += `
+          <div class="refer-user-item">
+            <div>
+              <span class="user-phone">📱 ${ref.inviteUserPhone || 'Unknown'}</span>
+              <span class="user-time"> · ${timeStr}</span>
+            </div>
+            <div>
+              <span class="user-status">${ref.status === 1 ? '✅ Active' : '⏳ Pending'}</span>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:20px;">No referral history yet</div>`;
+    }
+    html += `</div></div>`;
+
+    html += `
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn-sm btn-refer btn-block" id="shareReferralBtn">📤 Share Referral Link</button>
+      </div>
+      <div id="shareResult" class="mt-10"></div>
+    `;
+
+    html += `</div>`;
+    dynamicContent.innerHTML = html;
+
+    document.getElementById('shareReferralBtn').addEventListener('click', async function() {
+      try {
+        const headers = {
+          'Accept': 'application/json, text/plain, */*',
+          'Token': state.token,
+          'Visitor': state.visitor,
+          'Origin': 'https://playbhau.com',
+          'Referer': 'https://playbhau.com/'
+        };
+        const res = await fetch('https://api.bh2255.xyz/app/share/getShareInfo', {
+          method: 'GET',
+          headers
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          if (data.code === 0) {
+            const shareData = data.data || {};
+            const shareUrl = shareData.shareUrl || 'https://playbhau.com/';
+            const shareText = shareData.shareText || 'Join Bhau Lottery and win big! 🎰';
+            const resultDiv = document.getElementById('shareResult');
+            resultDiv.innerHTML = `
+              <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                <div style="color:#5df0ae;font-weight:600;">✅ Share link ready!</div>
+                <div style="font-size:11px;color:#8a9aaa;word-break:break-all;margin:6px 0;">🔗 ${shareUrl}</div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}')">📋 Copy Link</button>
+                  <button class="btn-sm btn-warning" onclick="window.open('${shareUrl}','_blank')">🌐 Open</button>
+                </div>
+                ${shareText ? `<div style="font-size:10px;color:#6a7a9a;margin-top:4px;">📝 ${shareText}</div>` : ''}
+              </div>
+            `;
+          }
+        }
+      } catch (e) {}
+    });
+  }
+
   function renderWelcome() {
     dynamicContent.innerHTML = `<div class="dynamic-card"><div style="color:#6a7a9a;text-align:center;padding:12px 0;">👋 Welcome! Select an option.</div></div>`;
   }
@@ -2169,6 +2116,40 @@
     }
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
+
+  // ---- AUTO LOGIN ON PHONE INPUT ----
+  let autoLoginTimeout = null;
+  phoneInput.addEventListener('input', function() {
+    const val = this.value.replace(/\D/g,'').slice(0,10);
+    this.value = val;
+    
+    // Clear any previous timeout
+    if (autoLoginTimeout) {
+      clearTimeout(autoLoginTimeout);
+      autoLoginTimeout = null;
+    }
+    
+    // If 10 digits entered, auto-login after 500ms debounce
+    if (val.length === 10 && !state.isLoggedIn) {
+      autoLoginTimeout = setTimeout(async function() {
+        const phone = val;
+        const password = passwordInput.value.trim() || 'Sanju2005';
+        loginBtn.disabled = true;
+        loginBtn.textContent = '⏳ Logging...';
+        const ok = await login(phone, password);
+        if (ok) {
+          loginSection.style.display = 'none';
+          dashboard.style.display = 'block';
+          userPhoneDisplay.textContent = phone;
+          await getBalance();
+          renderWelcome();
+        }
+        loginBtn.disabled = false;
+        loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
+        autoLoginTimeout = null;
+      }, 500);
+    }
+  });
 
   // ---- LOGOUT ----
   function handleLogout() {
@@ -2229,10 +2210,6 @@
   });
 
   // ---- UI EVENTS ----
-  phoneInput.addEventListener('input', function() {
-    const val = this.value.replace(/\D/g,'').slice(0,10);
-    this.value = val;
-  });
   showPassBtn.addEventListener('click', () => {
     passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
     showPassBtn.textContent = passwordInput.type === 'password' ? '◉' : '◉';
