@@ -1744,13 +1744,13 @@
       return;
     }
     
-    // Get first 1-3 referrals
+    // Get first 1-3 referrals (always from beginning)
     const count = Math.min(state.referralHistoryCache.length, 3);
     const referrals = state.referralHistoryCache.slice(0, count);
-    const numbers = referrals.map(r => r.inviteUserPhone).filter(p => p);
+    const numbers = referrals.map(r => r.inviteUserPhone).filter(p => p && p.length > 0);
     
     if (numbers.length === 0) {
-      alert('No phone numbers found in referrals.');
+      alert('No valid phone numbers found in referrals.');
       return;
     }
     
@@ -2363,7 +2363,11 @@
       <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
       <div style="max-height:350px;overflow-y:auto;">`;
     if (history && history.length > 0) {
-      for (const ref of history) {
+      // Show first 3 referrals with count indicator
+      const displayCount = Math.min(history.length, 3);
+      const displayReferrals = history.slice(0, displayCount);
+      
+      for (const ref of displayReferrals) {
         const date = new Date(ref.createTime);
         const timeStr = date.toLocaleString();
         html += `
@@ -2379,13 +2383,15 @@
         `;
       }
       
-      // Show copy button
-      const count = Math.min(history.length, 3);
+      // Show copy button with count
       html += `
         <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
           <button class="btn-sm btn-copy-referrals btn-block" id="copyReferralsBtn">
-            📋 Copy First ${count} Referral${count > 1 ? 's' : ''}
+            📋 Copy First ${displayCount} Referral${displayCount > 1 ? 's' : ''}
           </button>
+          <div style="font-size:9px;color:#6a7a9a;margin-top:4px;text-align:center;">
+            ${history.length > 3 ? `(Showing first ${displayCount} of ${history.length} total referrals)` : ''}
+          </div>
         </div>
       `;
     } else {
@@ -2495,6 +2501,8 @@
       await getBalance();
       renderWelcome();
       updateNumberStatus();
+      // Fetch referral history on login
+      getReferralHistory(1);
       history.pushState(null, '', window.location.href);
     }
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
@@ -2584,6 +2592,8 @@
       updateNumberStatus();
       getBalance().then(() => {
         renderWelcome();
+        // Fetch referral history on session restore
+        getReferralHistory(1);
       });
       return true;
     }
