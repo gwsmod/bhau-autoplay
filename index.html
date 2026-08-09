@@ -781,14 +781,11 @@
     }
   }
 
-  // ---- TRANSACTION HISTORY (FIXED) ----
-  async function getTransactionHistory(pageNo = 1, yearMonth = null) {
+  // ---- TRANSACTION HISTORY (FIXED - using correct API endpoints) ----
+  async function getDepositHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
-      const now = new Date();
-      const ym = yearMonth || now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0');
       const req_date = Date.now();
-
       const payload = {
         channel: 'h5',
         channelId: 'Samsung',
@@ -800,9 +797,7 @@
         ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
         versionCode: '999',
         pageNo: pageNo,
-        pageSize: 20,
-        yearMonth: ym,
-        changeDesc: '0'
+        pageSize: 20
       };
 
       const headers = {
@@ -815,7 +810,7 @@
         'Referer': 'https://playbhau.com/'
       };
 
-      const response = await fetch('https://api.bh2255.xyz/app/user/balance', {
+      const response = await fetch('https://api.bh2266.xyz/app/user/balance', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(payload)
@@ -829,7 +824,54 @@
       }
       return null;
     } catch (e) {
-      log(`⚠️ Transaction error: ${e.message}`, 'warn');
+      log(`⚠️ Deposit history error: ${e.message}`, 'warn');
+      return null;
+    }
+  }
+
+  async function getWithdrawHistory(pageNo = 1) {
+    if (!state.token) return null;
+    try {
+      const req_date = Date.now();
+      const payload = {
+        channel: 'h5',
+        channelId: 'Samsung',
+        lang: 'en_US',
+        visitor: state.visitor,
+        packageId: 2,
+        packageInfo: 'com.resulta.checka',
+        reqDate: req_date,
+        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
+        versionCode: '999',
+        pageNo: pageNo,
+        pageSize: 20
+      };
+
+      const headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'Token': state.token,
+        'Visitor': state.visitor,
+        'PackageId': '2',
+        'Origin': 'https://playbhau.com',
+        'Referer': 'https://playbhau.com/'
+      };
+
+      const response = await fetch('https://api.bh2266.xyz/app/pay/paid/log', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        if (data.code === 0) {
+          return data.data || [];
+        }
+      }
+      return null;
+    } catch (e) {
+      log(`⚠️ Withdraw history error: ${e.message}`, 'warn');
       return null;
     }
   }
@@ -1363,7 +1405,7 @@
     state.isAutoClaiming = false;
   }
 
-  // ---- TRANSACTIONS (FIXED) ----
+  // ---- TRANSACTIONS (FIXED - shows both deposit and withdraw) ----
   async function renderTransactions() {
     const loadingHtml = `
       <div class="dynamic-card">
@@ -1373,70 +1415,96 @@
     `;
     dynamicContent.innerHTML = loadingHtml;
 
-    const transactions = await getTransactionHistory(1, null);
-    
+    const [deposits, withdraws] = await Promise.all([
+      getDepositHistory(1),
+      getWithdrawHistory(1)
+    ]);
+
+    let allTxns = [];
+
+    // Process deposits
+    if (deposits && deposits.length > 0) {
+      for (const txn of deposits) {
+        allTxns.push({
+          type: 'deposit',
+          appDate: txn.appDate || txn.createTime || Date.now(),
+          amount: txn.paidAmount || txn.price || 0,
+          balance: txn.balance || 0,
+          orderNo: txn.orderNo || txn.order || '',
+          payTypeName: txn.payTypeName || 'Recharge',
+          channelName: txn.channelName || '',
+          status: txn.status || 'COMPLETE',
+          gameName: txn.gameName || '',
+          iconUrl: txn.iconUrl || ''
+        });
+      }
+    }
+
+    // Process withdrawals
+    if (withdraws && withdraws.length > 0) {
+      for (const txn of withdraws) {
+        allTxns.push({
+          type: 'withdraw',
+          appDate: txn.createTime || Date.now(),
+          amount: txn.paidAmount || 0,
+          reward: txn.reward || 0,
+          orderNo: txn.orderNo || '',
+          bankName: txn.bankName || '',
+          userCardNumber: txn.userCardNumber || '',
+          status: txn.respCode === 2 ? 'COMPLETE' : 'PENDING',
+          channelName: txn.channelName || 'SYSTEM'
+        });
+      }
+    }
+
+    // Sort by date (newest first)
+    allTxns.sort((a, b) => (b.appDate || 0) - (a.appDate || 0));
+
     let html = `
       <div class="dynamic-card">
-        <div class="title">📋 Transaction History</div>
+        <div class="title">📋 Transaction History (${allTxns.length})</div>
         <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
           <button class="btn-sm btn-info" id="txnAll" style="flex:1;">All</button>
           <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
           <button class="btn-sm btn-withdraw" id="txnWithdraw" style="flex:1;">Withdrawals</button>
-          <button class="btn-sm btn-primary" id="txnBet" style="flex:1;">Bets</button>
-          <button class="btn-sm btn-gold" id="txnBonus" style="flex:1;">Bonus</button>
         </div>
         <div id="transactionList" style="max-height:350px;overflow-y:auto;font-size:12px;">
     `;
 
-    if (!transactions || transactions.length === 0) {
+    if (allTxns.length === 0) {
       html += `<div style="color:#6a7a9a;text-align:center;padding:20px;">No transactions found</div>`;
     } else {
-      for (const txn of transactions) {
+      for (const txn of allTxns) {
         const date = new Date(txn.appDate);
         const timeStr = date.toLocaleString();
-        const isDeposit = txn.changeType === 0 && (txn.payType === 106 || txn.payTypeName?.includes('Bonus'));
-        const isWithdraw = txn.changeType === 1 && txn.payType === 104;
-        const isBet = txn.changeType === 1 && (txn.payType === 105 || txn.payTypeName?.includes('Bet'));
-        const isBonus = txn.changeType === 0 && (txn.payType === 106 || txn.payTypeName?.includes('Bonus'));
-        
-        let typeLabel = 'Unknown';
-        let typeClass = 'info';
-        let icon = '📋';
-        if (isDeposit || isBonus) {
-          typeLabel = isBonus ? 'Bonus' : 'Deposit';
-          typeClass = 'success';
-          icon = '💰';
-        } else if (isWithdraw) {
-          typeLabel = 'Withdraw';
-          typeClass = 'withdraw';
-          icon = '💸';
-        } else if (isBet) {
-          typeLabel = 'Bet';
-          typeClass = 'warn';
-          icon = '🎰';
-        }
-        
-        const price = parseFloat(txn.price || 0).toFixed(2);
+        const isDeposit = txn.type === 'deposit';
+        const amount = parseFloat(txn.amount || 0).toFixed(2);
         const balance = parseFloat(txn.balance || 0).toFixed(2);
-        
+        const icon = isDeposit ? '💰' : '💸';
+        const typeLabel = isDeposit ? 'Deposit' : 'Withdraw';
+        const statusColor = txn.status === 'COMPLETE' ? '#5df0ae' : '#ffd45d';
+        const displayName = isDeposit ? (txn.channelName || txn.payTypeName || 'Recharge') : (txn.bankName || 'Bank');
+        const cardInfo = isDeposit ? '' : (txn.userCardNumber ? ` · ${txn.userCardNumber}` : '');
+
         html += `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);" data-type="${typeLabel.toLowerCase()}">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);" data-type="${txn.type}">
             <div style="flex:1;">
               <div>
                 <span>${icon} ${typeLabel}</span>
-                <span style="color:#ffd700;margin-left:8px;font-weight:600;">₹${price}</span>
+                <span style="color:#ffd700;margin-left:8px;font-weight:600;">₹${amount}</span>
                 ${txn.gameName ? `<span style="color:#6a7a9a;font-size:10px;margin-left:6px;">🎮 ${txn.gameName}</span>` : ''}
               </div>
               <div style="color:#6a7a9a;font-size:9px;margin-top:2px;">
-                ${txn.order || ''} · ${timeStr}
+                ${displayName}${cardInfo} · ${timeStr}
+                ${!isDeposit ? `<span style="color:#8a9aaa;margin-left:6px;">Fee: ₹${(txn.amount - (txn.reward || 0)).toFixed(2)}</span>` : ''}
                 <span style="color:#8a9aaa;margin-left:6px;">Bal: ₹${balance}</span>
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="color:${txn.changeType === 0 ? '#5df0ae' : '#ff6b6b'};font-size:10px;font-weight:600;">
-                ${txn.changeType === 0 ? '+' : '-'}₹${price}
+              <div style="color:${isDeposit ? '#5df0ae' : '#ff6b6b'};font-size:10px;font-weight:600;">
+                ${isDeposit ? '+' : '-'}₹${amount}
               </div>
-              <div style="color:#6a7a9a;font-size:9px;">${txn.payTypeName || ''}</div>
+              <div style="color:${statusColor};font-size:9px;">${txn.status}</div>
             </div>
           </div>
         `;
@@ -1450,9 +1518,7 @@
     const filterMap = {
       'txnAll': 'all',
       'txnDeposit': 'deposit',
-      'txnWithdraw': 'withdraw',
-      'txnBet': 'bet',
-      'txnBonus': 'bonus'
+      'txnWithdraw': 'withdraw'
     };
 
     Object.keys(filterMap).forEach(id => {
@@ -1562,9 +1628,6 @@
       const div = document.getElementById('depositResult');
       if (result && result.code === 0) {
         let url = result.data ? result.data.replace(/\\/g, '') : '';
-        const logs = JSON.parse(localStorage.getItem('depositLogs') || '[]');
-        logs.push({ type: 'deposit', amount: state.selectedAmount, status: 'success', time: new Date().toLocaleString() });
-        localStorage.setItem('depositLogs', JSON.stringify(logs));
         if (url) {
           window.open(url, '_blank');
           log('🌐 Deposit page opened in new tab', 'info');
@@ -1579,9 +1642,6 @@
         </div>`;
         log('✅ Deposit order created', 'ok');
       } else {
-        const logs = JSON.parse(localStorage.getItem('depositLogs') || '[]');
-        logs.push({ type: 'deposit', amount: state.selectedAmount, status: 'failed', time: new Date().toLocaleString() });
-        localStorage.setItem('depositLogs', JSON.stringify(logs));
         div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result?.msg || 'Failed'}</div>`;
         log('❌ Deposit failed', 'error');
       }
