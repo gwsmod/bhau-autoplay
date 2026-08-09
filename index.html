@@ -202,6 +202,36 @@
       transform: scale(0.98);
     }
 
+    .autopaste-btn {
+      width: 100%;
+      height: 50px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 16px;
+      background: rgba(255, 215, 0, 0.06);
+      color: #ffd700;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .autopaste-btn:hover {
+      background: rgba(255, 215, 0, 0.12);
+      border-color: rgba(255, 215, 0, 0.5);
+    }
+    .autopaste-btn:active {
+      transform: scale(0.97);
+    }
+    .autopaste-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .dashboard {
       display: none;
       margin-top: 4px;
@@ -250,11 +280,6 @@
       gap: 10px;
       margin-bottom: 16px;
       transition: all 0.3s ease;
-    }
-
-    /* When panel is open, menu stays below */
-    .dashboard-content-wrapper.has-panel .menu-grid {
-      margin-top: 0;
     }
 
     .menu-item {
@@ -317,10 +342,68 @@
       background: rgba(151, 119, 255, 0.1);
     }
 
-    @keyframes pulseGold {
-      0%,100% { box-shadow: 0 0 6px rgba(255,215,0,0.1); }
-      50% { box-shadow: 0 0 24px rgba(255,215,0,0.2); }
+    /* Dashboard Save Number Panel */
+    .save-number-panel {
+      background: rgba(3, 7, 20, 0.5);
+      border: 1px solid rgba(255, 215, 0, 0.12);
+      border-radius: 22px;
+      padding: 16px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      animation: fadeUp 0.3s ease;
     }
+    .save-number-panel .title {
+      font-weight: 700;
+      color: #ffd700;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .save-number-panel .input-group {
+      display: flex;
+      gap: 8px;
+    }
+    .save-number-panel .input-group input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(15, 22, 41, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      color: #eef2f9;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .save-number-panel .input-group input:focus {
+      border-color: rgba(255, 215, 0, 0.3);
+    }
+    .save-number-panel .input-group .save-btn {
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #ffd700, #f0a500);
+      border: none;
+      border-radius: 12px;
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+    .save-number-panel .input-group .save-btn:hover {
+      transform: scale(1.02);
+    }
+    .save-number-panel .input-group .save-btn:active {
+      transform: scale(0.96);
+    }
+    .save-number-panel .status-text {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #6a7a9a;
+    }
+    .save-number-panel .status-text .used { color: #ff6b6b; }
+    .save-number-panel .status-text .unused { color: #5df0ae; }
 
     .dynamic-card {
       background: rgba(3, 7, 20, 0.5);
@@ -586,6 +669,8 @@
       .amount-grid { grid-template-columns: repeat(3,1fr); }
       .exit-popup { padding: 24px 16px 20px; }
       .exit-popup .popup-title { font-size: 19px; }
+      .save-number-panel .input-group { flex-direction: column; }
+      .save-number-panel .input-group .save-btn { width: 100%; }
     }
   </style>
 </head>
@@ -614,7 +699,7 @@
           <label class="label">📱 PHONE NUMBER</label>
           <div class="input-wrap">
             <div class="input-icon">📞</div>
-            <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile" autocomplete="tel" required>
+            <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile" autocomplete="off" required>
           </div>
         </div>
         <div class="form-group">
@@ -626,6 +711,7 @@
           </div>
         </div>
         <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →</button>
+        <button type="button" class="autopaste-btn" id="autopasteBtn">📋 AUTOPASTE</button>
       </form>
     </div>
 
@@ -634,6 +720,19 @@
       <div class="user-badge">
         <span class="phone">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
+      </div>
+
+      <!-- Save Number Panel -->
+      <div class="save-number-panel">
+        <div class="title">
+          <span>📱 Auto Number</span>
+          <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">No number saved</span>
+        </div>
+        <div class="input-group">
+          <input type="tel" id="saveNumberInput" maxlength="10" placeholder="Enter 10-digit number" inputmode="numeric">
+          <button class="save-btn" id="saveNumberBtn">💾 Save</button>
+        </div>
+        <div class="status-text" id="saveStatusText"></div>
       </div>
 
       <!-- Content wrapper for proper ordering -->
@@ -742,6 +841,7 @@
   const phoneInput = document.getElementById('phoneInput');
   const passwordInput = document.getElementById('passwordInput');
   const loginBtn = document.getElementById('loginBtn');
+  const autopasteBtn = document.getElementById('autopasteBtn');
   const userPhoneDisplay = document.getElementById('userPhoneDisplay');
   const balanceDisplay = document.getElementById('balanceDisplay');
   const showPassBtn = document.getElementById('showPassBtn');
@@ -750,6 +850,45 @@
   const exitOverlay = document.getElementById('exitOverlay');
   const exitStayBtn = document.getElementById('exitStayBtn');
   const exitLeaveBtn = document.getElementById('exitLeaveBtn');
+  const saveNumberInput = document.getElementById('saveNumberInput');
+  const saveNumberBtn = document.getElementById('saveNumberBtn');
+  const numberStatus = document.getElementById('numberStatus');
+  const saveStatusText = document.getElementById('saveStatusText');
+
+  // ---- AUTO NUMBER STORAGE ----
+  function getStoredNumber() {
+    try {
+      const data = localStorage.getItem('bhau_autonumber');
+      if (data) {
+        return JSON.parse(data);
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveStoredNumber(number, used = false) {
+    try {
+      localStorage.setItem('bhau_autonumber', JSON.stringify({ number, used }));
+    } catch (e) {}
+  }
+
+  function clearStoredNumber() {
+    try {
+      localStorage.removeItem('bhau_autonumber');
+    } catch (e) {}
+  }
+
+  function updateNumberStatus() {
+    const data = getStoredNumber();
+    if (!data) {
+      numberStatus.textContent = 'No number saved';
+      numberStatus.style.color = '#6a7a9a';
+      return;
+    }
+    const status = data.used ? '🔴 USED' : '🟢 UNUSED';
+    numberStatus.textContent = `${data.number} · ${status}`;
+    numberStatus.style.color = data.used ? '#ff6b6b' : '#5df0ae';
+  }
 
   // ---- SESSION MANAGEMENT ----
   function saveSession() {
@@ -1584,7 +1723,6 @@
   function showPanel(html) {
     dynamicContent.innerHTML = html;
     dynamicContent.style.display = 'block';
-    // Highlight active menu item
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
   }
 
@@ -2270,7 +2408,6 @@
 
   window.addEventListener('popstate', function(e) {
     if (state.isLoggedIn) {
-      // Close any open panel first
       closePanel();
       showExitPermission();
       history.pushState(null, '', window.location.href);
@@ -2291,41 +2428,58 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
+      updateNumberStatus();
       history.pushState(null, '', window.location.href);
     }
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
 
-  // ---- AUTO LOGIN ON PHONE INPUT ----
-  let autoLoginTimeout = null;
-  phoneInput.addEventListener('input', function() {
-    const val = this.value.replace(/\D/g,'').slice(0,10);
-    this.value = val;
-    
-    if (autoLoginTimeout) {
-      clearTimeout(autoLoginTimeout);
-      autoLoginTimeout = null;
+  // ---- AUTO PASTE LOGIC ----
+  autopasteBtn.addEventListener('click', function() {
+    const data = getStoredNumber();
+    if (!data) {
+      alert('No number saved! Please save a number in the dashboard first.');
+      return;
     }
-    
-    if (val.length === 10 && !state.isLoggedIn) {
-      autoLoginTimeout = setTimeout(async function() {
-        const phone = val;
-        const password = passwordInput.value.trim() || 'Sanju2005';
-        loginBtn.disabled = true;
-        loginBtn.textContent = '⏳ Logging...';
-        const ok = await login(phone, password);
-        if (ok) {
-          loginSection.style.display = 'none';
-          dashboard.style.display = 'block';
-          userPhoneDisplay.textContent = phone;
-          await getBalance();
-          renderWelcome();
-          history.pushState(null, '', window.location.href);
-        }
-        loginBtn.disabled = false;
-        loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
-        autoLoginTimeout = null;
-      }, 500);
+    if (data.used) {
+      alert('This number has already been used. Please save a new number.');
+      return;
+    }
+    // Paste the number
+    phoneInput.value = data.number;
+    // Mark as used
+    saveStoredNumber(data.number, true);
+    updateNumberStatus();
+    // Show feedback
+    autopasteBtn.textContent = '✅ PASTED';
+    setTimeout(() => {
+      autopasteBtn.textContent = '📋 AUTOPASTE';
+    }, 2000);
+  });
+
+  // ---- SAVE NUMBER FROM DASHBOARD ----
+  saveNumberBtn.addEventListener('click', function() {
+    const number = saveNumberInput.value.trim();
+    if (number.length !== 10 || !/^\d{10}$/.test(number)) {
+      saveStatusText.textContent = '❌ Please enter a valid 10-digit number.';
+      saveStatusText.style.color = '#ff6b6b';
+      return;
+    }
+    // Save as UNUSED
+    saveStoredNumber(number, false);
+    saveNumberInput.value = '';
+    saveStatusText.textContent = '✅ Number saved successfully! (UNUSED)';
+    saveStatusText.style.color = '#5df0ae';
+    updateNumberStatus();
+    setTimeout(() => {
+      saveStatusText.textContent = '';
+    }, 3000);
+  });
+
+  // Also allow Enter key on input
+  saveNumberInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      saveNumberBtn.click();
     }
   });
 
@@ -2360,6 +2514,7 @@
       loginSection.style.display = 'none';
       dashboard.style.display = 'block';
       userPhoneDisplay.textContent = state.phone || '8597630383';
+      updateNumberStatus();
       getBalance().then(() => {
         renderWelcome();
       });
@@ -2372,7 +2527,6 @@
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function() {
       const action = this.dataset.action;
-      // If same action clicked and panel is open, close it
       if (state.currentPanel === action && dynamicContent.innerHTML !== '') {
         closePanel();
         return;
@@ -2403,9 +2557,14 @@
   });
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
+  // Phone input only digits
+  phoneInput.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  });
+
   // ---- INIT ----
   if (!restoreSession()) {
-    // No session, show login
+    updateNumberStatus();
   }
   
   window.addEventListener('popstate', function(e) {
