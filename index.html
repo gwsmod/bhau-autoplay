@@ -341,7 +341,7 @@
       background: rgba(151, 119, 255, 0.1);
     }
 
-    /* Auto Number Panel */
+    /* Auto Number Panel - Show ONLY UNUSED numbers */
     .save-number-panel {
       background: rgba(3, 7, 20, 0.5);
       border: 1px solid rgba(255, 215, 0, 0.12);
@@ -403,6 +403,27 @@
     }
     .save-number-panel .status-text .used { color: #ff6b6b; }
     .save-number-panel .status-text .unused { color: #5df0ae; }
+    .number-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      margin: 2px 0;
+      background: rgba(255, 215, 0, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 215, 0, 0.08);
+    }
+    .number-item .num {
+      color: #f7f8ff;
+      font-weight: 500;
+    }
+    .number-item .badge {
+      font-size: 9px;
+      color: #5df0ae;
+      background: rgba(93, 240, 174, 0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
 
     .dynamic-card {
       background: rgba(3, 7, 20, 0.5);
@@ -720,18 +741,18 @@
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
-      <!-- Auto Number Panel -->
+      <!-- Auto Number Panel - Shows ONLY UNUSED numbers -->
       <div class="save-number-panel">
         <div class="title">
           <span>📱 Auto Login Numbers</span>
-          <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">No numbers</span>
+          <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">0 unused</span>
         </div>
         <div class="input-group">
           <input type="tel" id="saveNumberInput" maxlength="10" placeholder="Enter 10-digit number" inputmode="numeric">
-          <button class="save-btn" id="saveNumberBtn">💾 Add Number</button>
+          <button class="save-btn" id="saveNumberBtn">➕ Add</button>
         </div>
         <div class="status-text" id="saveStatusText"></div>
-        <div id="numberList" style="margin-top:8px;font-size:11px;color:#8a9aaa;"></div>
+        <div id="numberList" style="margin-top:8px;font-size:12px;"></div>
       </div>
 
       <!-- Content wrapper -->
@@ -873,65 +894,65 @@
     } catch (e) {}
   }
 
+  function getUnusedNumbers() {
+    const all = getAutoNumbers();
+    return all.filter(n => !n.used);
+  }
+
   function addAutoNumber(number) {
     const numbers = getAutoNumbers();
-    // Check if already exists
+    // Check if already exists (regardless of used status)
     if (numbers.some(n => n.number === number)) {
+      return false;
+    }
+    // Check if already at max (3 unused)
+    const unused = numbers.filter(n => !n.used);
+    if (unused.length >= 3) {
       return false;
     }
     numbers.push({ number, used: false });
     saveAutoNumbers(numbers);
     state.autoNumbers = numbers;
-    updateNumberStatus();
+    updateNumberDisplay();
     return true;
   }
 
   function getNextUnusedNumber() {
-    const numbers = getAutoNumbers();
-    const unused = numbers.find(n => !n.used);
-    return unused || null;
+    const unused = getUnusedNumbers();
+    return unused.length > 0 ? unused[0] : null;
   }
 
-  function markNumberAsUsed(number) {
-    const numbers = getAutoNumbers();
-    const found = numbers.find(n => n.number === number);
-    if (found) {
-      found.used = true;
-      saveAutoNumbers(numbers);
-      state.autoNumbers = numbers;
-      updateNumberStatus();
-      return true;
-    }
-    return false;
-  }
-
-  function updateNumberStatus() {
-    const numbers = getAutoNumbers();
+  function markNumberAsUsedAndRemove(number) {
+    let numbers = getAutoNumbers();
+    // Find and remove the number (delete it completely)
+    numbers = numbers.filter(n => n.number !== number);
+    saveAutoNumbers(numbers);
     state.autoNumbers = numbers;
-    const total = numbers.length;
-    const unused = numbers.filter(n => !n.used).length;
+    updateNumberDisplay();
+    return true;
+  }
+
+  function updateNumberDisplay() {
+    const unused = getUnusedNumbers();
+    state.autoNumbers = getAutoNumbers();
     
-    if (total === 0) {
-      numberStatus.textContent = 'No numbers saved';
-      numberStatus.style.color = '#6a7a9a';
-    } else {
-      numberStatus.textContent = `${unused} unused / ${total} total`;
-      numberStatus.style.color = unused > 0 ? '#5df0ae' : '#ff6b6b';
-    }
+    const total = unused.length;
+    numberStatus.textContent = `${total} unused`;
+    numberStatus.style.color = total > 0 ? '#5df0ae' : '#6a7a9a';
     
-    // Update list
+    // Show ONLY UNUSED numbers
     if (numberList) {
-      if (numbers.length === 0) {
-        numberList.innerHTML = '<span style="color:#6a7a9a;">No numbers added yet</span>';
+      if (total === 0) {
+        numberList.innerHTML = '<span style="color:#6a7a9a;font-size:11px;">No unused numbers available</span>';
       } else {
         let html = '';
-        numbers.forEach(n => {
-          const status = n.used ? '🔴 USED' : '🟢 UNUSED';
-          const color = n.used ? '#ff6b6b' : '#5df0ae';
-          html += `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
-            <span>${n.number}</span>
-            <span style="color:${color};font-size:10px;">${status}</span>
-          </div>`;
+        unused.forEach(n => {
+          html += `
+            <div class="number-item">
+              <span class="num">📱 ${n.number}</span>
+              <span class="badge">UNUSED</span>
+            </div>
+          `;
         });
         numberList.innerHTML = html;
       }
@@ -942,11 +963,16 @@
   function autoAddReferralNumbers(referrals) {
     if (!referrals || referrals.length === 0) return;
     
-    const count = Math.min(referrals.length, 3);
-    const numbers = referrals.slice(0, count).map(r => r.inviteUserPhone).filter(p => p && p.length === 10);
+    const unused = getUnusedNumbers();
+    const currentCount = unused.length;
+    // Max 3 unused numbers
+    const slotsAvailable = Math.max(0, 3 - currentCount);
+    if (slotsAvailable === 0) return;
     
+    const numbers = referrals.slice(0, 3).map(r => r.inviteUserPhone).filter(p => p && p.length === 10);
     let added = 0;
     for (const num of numbers) {
+      if (added >= slotsAvailable) break;
       if (addAutoNumber(num)) {
         added++;
       }
@@ -955,14 +981,14 @@
     if (added > 0) {
       const statusText = document.getElementById('saveStatusText');
       if (statusText) {
-        statusText.textContent = `✅ Auto-added ${added} referral number(s) to Auto Login list!`;
+        statusText.textContent = `✅ Auto-added ${added} new referral number(s)!`;
         statusText.style.color = '#5df0ae';
         setTimeout(() => {
           statusText.textContent = '';
         }, 5000);
       }
     }
-    updateNumberStatus();
+    updateNumberDisplay();
   }
 
   // ---- SESSION MANAGEMENT ----
@@ -1195,7 +1221,6 @@
         const data = await res.json();
         if (data.code === 0) {
           state.referralHistoryCache = data.data?.content || [];
-          // Auto-add referral numbers to Auto Login list
           autoAddReferralNumbers(state.referralHistoryCache);
           return state.referralHistoryCache;
         }
@@ -2411,12 +2436,12 @@
         `;
       }
       
+      const unused = getUnusedNumbers();
       html += `
         <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
           <div style="font-size:10px;color:#5df0ae;text-align:center;">
-            ✅ ${displayCount} referral number(s) auto-added to Auto Login list
+            ✅ ${unused.length} unused number(s) available for AutoPaste
           </div>
-          ${history.length > 3 ? `<div style="font-size:9px;color:#6a7a9a;text-align:center;margin-top:2px;">(First ${displayCount} of ${history.length} total referrals)</div>` : ''}
         </div>
       `;
     } else {
@@ -2519,8 +2544,7 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      updateNumberStatus();
-      // Fetch referral history which will auto-add numbers
+      updateNumberDisplay();
       getReferralHistory(1);
       history.pushState(null, '', window.location.href);
     }
@@ -2536,9 +2560,9 @@
     }
     // Paste the number
     phoneInput.value = nextNumber.number;
-    // Mark as used
-    markNumberAsUsed(nextNumber.number);
-    updateNumberStatus();
+    // Remove the number (delete it completely)
+    markNumberAsUsedAndRemove(nextNumber.number);
+    updateNumberDisplay();
     // Show feedback
     autopasteBtn.textContent = `✅ PASTED (${nextNumber.number})`;
     setTimeout(() => {
@@ -2556,14 +2580,19 @@
     }
     if (addAutoNumber(number)) {
       saveNumberInput.value = '';
-      saveStatusText.textContent = '✅ Number added successfully! (UNUSED)';
+      saveStatusText.textContent = '✅ Number added successfully!';
       saveStatusText.style.color = '#5df0ae';
-      updateNumberStatus();
+      updateNumberDisplay();
       setTimeout(() => {
         saveStatusText.textContent = '';
       }, 3000);
     } else {
-      saveStatusText.textContent = '⚠️ Number already exists in the list.';
+      const unused = getUnusedNumbers();
+      if (unused.length >= 3) {
+        saveStatusText.textContent = '⚠️ Max 3 unused numbers allowed.';
+      } else {
+        saveStatusText.textContent = '⚠️ Number already exists.';
+      }
       saveStatusText.style.color = '#ffd45d';
       setTimeout(() => {
         saveStatusText.textContent = '';
@@ -2609,7 +2638,7 @@
       loginSection.style.display = 'none';
       dashboard.style.display = 'block';
       userPhoneDisplay.textContent = state.phone || '8597630383';
-      updateNumberStatus();
+      updateNumberDisplay();
       getBalance().then(() => {
         renderWelcome();
         getReferralHistory(1);
@@ -2659,7 +2688,7 @@
 
   // ---- INIT ----
   if (!restoreSession()) {
-    updateNumberStatus();
+    updateNumberDisplay();
   }
   
   window.addEventListener('popstate', function(e) {
