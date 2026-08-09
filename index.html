@@ -247,6 +247,23 @@
       cursor: pointer;
       transition: all 0.25s;
       backdrop-filter: blur(4px);
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(151, 119, 255, 0.03) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+    .menu-item:hover::before {
+      opacity: 1;
     }
     .menu-item:active { transform: scale(0.96); }
     .menu-item:hover {
@@ -424,36 +441,6 @@
       margin-top: 8px;
     }
 
-    .security-footer {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 4px;
-      margin-top: 22px;
-      padding: 12px 4px 4px;
-      text-align: center;
-    }
-    .security-footer .item {
-      font-size: 10px;
-      color: #aeb5d1;
-      font-weight: 700;
-    }
-    .security-footer .item .big-icon {
-      display: block;
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-    .security-footer .item .big-label {
-      display: block;
-      color: #fff;
-      font-size: 12px;
-      margin-bottom: 2px;
-    }
-
-    @keyframes floatCrown {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
     .refer-user-item {
       display: flex;
       justify-content: space-between;
@@ -567,6 +554,7 @@
 <div class="page">
   <div class="glass">
 
+    <!-- BRAND -->
     <div class="brand">
       <div class="crown">♛</div>
       <div class="logo">BHAU</div>
@@ -660,23 +648,7 @@
       <div id="dynamicContent"></div>
     </div>
 
-    <div class="security-footer">
-      <div class="item">
-        <span class="big-icon">🛡️</span>
-        <span class="big-label">100% SECURE</span>
-        Protected
-      </div>
-      <div class="item">
-        <span class="big-icon">♛</span>
-        <span class="big-label">SANJU STYLE</span>
-        Premium UI
-      </div>
-      <div class="item">
-        <span class="big-icon">⚡</span>
-        <span class="big-label">FAST &amp; STABLE</span>
-        Smooth
-      </div>
-    </div>
+    <!-- SECURITY FOOTER REMOVED - Full dashboard border style -->
   </div>
 </div>
 
@@ -2206,26 +2178,20 @@
 
   exitStayBtn.addEventListener('click', function() {
     hideExitPermission();
-    // Push state again to ensure back button works next time
     history.pushState(null, '', window.location.href);
   });
 
   exitLeaveBtn.addEventListener('click', function() {
     hideExitPermission();
-    // Allow exit - navigate away without logging out
-    // Go to blank page or let browser handle
     window.location.href = 'about:blank';
   });
 
   // ---- INTERCEPT BACK BUTTON ----
-  // Push initial state on load
   history.pushState(null, '', window.location.href);
 
   window.addEventListener('popstate', function(e) {
     if (state.isLoggedIn) {
-      // Show exit permission popup
       showExitPermission();
-      // Push state back to keep user on dashboard
       history.pushState(null, '', window.location.href);
     }
   });
@@ -2244,7 +2210,6 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      // Push state for back button handling
       history.pushState(null, '', window.location.href);
     }
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
@@ -2354,7 +2319,6 @@
     // No session, show login
   }
   
-  // Ensure popstate is handled even after navigation within page
   window.addEventListener('popstate', function(e) {
     if (state.isLoggedIn) {
       showExitPermission();
