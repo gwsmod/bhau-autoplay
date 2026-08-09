@@ -475,11 +475,91 @@
       font-size: 10px;
     }
 
+    /* Exit Permission Popup */
+    .exit-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .exit-overlay.active {
+      display: flex;
+    }
+    .exit-popup {
+      background: linear-gradient(145deg, rgba(22, 27, 55, 0.95), rgba(6, 10, 25, 0.98));
+      border: 1px solid rgba(151, 119, 255, 0.3);
+      border-radius: 28px;
+      padding: 30px 24px 24px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(102, 36, 255, 0.1);
+      animation: popupIn 0.3s ease;
+    }
+    @keyframes popupIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .exit-popup .popup-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    .exit-popup .popup-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #f7f8ff;
+      margin-bottom: 6px;
+    }
+    .exit-popup .popup-sub {
+      color: #8a9aaa;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .exit-popup .popup-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .exit-popup .popup-buttons button {
+      flex: 1;
+      padding: 14px 10px;
+      border: none;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .exit-popup .popup-buttons button:active {
+      transform: scale(0.96);
+    }
+    .exit-popup .popup-buttons .btn-stay {
+      background: linear-gradient(100deg, #126aff, #6124e9 60%, #b22cff);
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(73, 46, 255, 0.3);
+    }
+    .exit-popup .popup-buttons .btn-exit {
+      background: rgba(255, 70, 70, 0.15);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 70, 70, 0.2);
+    }
+    .exit-popup .popup-buttons .btn-exit:hover {
+      background: rgba(255, 70, 70, 0.25);
+    }
+
     @media (max-width: 440px) {
       .page { padding: 0 4px; }
       .glass { padding: 18px 12px; }
       .menu-grid { gap: 8px; }
       .amount-grid { grid-template-columns: repeat(3,1fr); }
+      .exit-popup { padding: 24px 16px 20px; }
+      .exit-popup .popup-title { font-size: 19px; }
     }
   </style>
 </head>
@@ -600,6 +680,19 @@
   </div>
 </div>
 
+<!-- Exit Permission Popup -->
+<div id="exitOverlay" class="exit-overlay">
+  <div class="exit-popup">
+    <div class="popup-icon">🚪</div>
+    <div class="popup-title">Exit Dashboard?</div>
+    <div class="popup-sub">Are you sure you want to leave? Your session will remain active.</div>
+    <div class="popup-buttons">
+      <button class="btn-stay" id="exitStayBtn">🔒 Stay</button>
+      <button class="btn-exit" id="exitLeaveBtn">🚪 Exit</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   'use strict';
@@ -625,6 +718,8 @@
     isAutoClaiming: false,
     transactionPage: 1,
     transactionYearMonth: null,
+    // Exit permission: only show once per session
+    exitPermissionShown: false,
   };
 
   // ---- DOM REFS ----
@@ -637,6 +732,9 @@
   const balanceDisplay = document.getElementById('balanceDisplay');
   const showPassBtn = document.getElementById('showPassBtn');
   const dynamicContent = document.getElementById('dynamicContent');
+  const exitOverlay = document.getElementById('exitOverlay');
+  const exitStayBtn = document.getElementById('exitStayBtn');
+  const exitLeaveBtn = document.getElementById('exitLeaveBtn');
 
   // ---- SESSION MANAGEMENT ----
   function saveSession() {
@@ -646,7 +744,8 @@
           token: state.token,
           phone: state.phone,
           visitor: state.visitor,
-          isLoggedIn: true
+          isLoggedIn: true,
+          exitPermissionShown: false // Reset on new session
         };
         localStorage.setItem('bhau_session', JSON.stringify(sessionData));
       } catch (e) {}
@@ -663,6 +762,7 @@
           state.phone = data.phone || '8597630383';
           state.visitor = data.visitor || '0bcbcd2bea0bde4737e38d0e23bbf654dfc9';
           state.isLoggedIn = true;
+          state.exitPermissionShown = false;
           return true;
         }
       }
@@ -771,6 +871,7 @@
           state.isLoggedIn = true;
           state.phone = phone;
           state.visitor = visitor;
+          state.exitPermissionShown = false;
           saveSession();
           return true;
         }
@@ -2099,6 +2200,109 @@
     dynamicContent.innerHTML = `<div class="dynamic-card"><div style="color:#6a7a9a;text-align:center;padding:12px 0;">👋 Welcome! Select an option.</div></div>`;
   }
 
+  // ---- EXIT PERMISSION LOGIC ----
+  let exitAttempted = false;
+
+  function showExitPermission() {
+    // Only show once per session
+    if (state.exitPermissionShown) return;
+    state.exitPermissionShown = true;
+    exitOverlay.classList.add('active');
+  }
+
+  function hideExitPermission() {
+    exitOverlay.classList.remove('active');
+  }
+
+  exitStayBtn.addEventListener('click', function() {
+    hideExitPermission();
+    // Reset exit attempted flag so user can try again
+    exitAttempted = false;
+  });
+
+  exitLeaveBtn.addEventListener('click', function() {
+    hideExitPermission();
+    // Allow the page to unload
+    exitAttempted = true;
+    // Let the beforeunload/navigation proceed
+    window.location.href = 'about:blank';
+  });
+
+  // ---- INTERCEPT NAVIGATION LEAVES ----
+  // Only intercept the final exit attempt
+
+  // For beforeunload (page reload, tab close, etc.)
+  window.addEventListener('beforeunload', function(e) {
+    if (state.isLoggedIn && !exitAttempted) {
+      // Show our custom popup instead of browser default
+      e.preventDefault();
+      // We need to handle this differently - we'll use a flag
+      // The popup will be shown via the navigation handler
+    }
+  });
+
+  // For unload (actual page leaving)
+  window.addEventListener('unload', function(e) {
+    // If user clicked "Exit", we allow it
+    // If not, we prevent via our logic
+  });
+
+  // ---- INTERCEPT PAGE NAVIGATION (links, back, forward, etc.) ----
+  // We use a combination of popstate and click handlers
+
+  // Track if we're in a navigation
+  let isNavigating = false;
+
+  // Intercept all clicks that might navigate away
+  document.addEventListener('click', function(e) {
+    const target = e.target.closest('a');
+    if (target && target.href) {
+      // Check if it's an external link or internal navigation
+      const href = target.getAttribute('href');
+      if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+        if (state.isLoggedIn && !exitAttempted) {
+          e.preventDefault();
+          showExitPermission();
+          // Store the target to navigate after exit
+          window._exitTarget = target.href;
+          return false;
+        }
+      }
+    }
+  }, true);
+
+  // Intercept popstate (back/forward)
+  window.addEventListener('popstate', function(e) {
+    if (state.isLoggedIn && !exitAttempted) {
+      // Show exit popup
+      showExitPermission();
+      // Push state back to keep user on page
+      history.pushState(null, '', window.location.href);
+    }
+  });
+
+  // Override history pushState/replaceState to detect navigation attempts
+  const originalPushState = history.pushState;
+  const originalReplaceState = history.replaceState;
+
+  history.pushState = function() {
+    if (state.isLoggedIn && !exitAttempted && arguments[2] && arguments[2] !== window.location.href) {
+      // Show exit popup
+      showExitPermission();
+      // Don't actually navigate
+      return;
+    }
+    return originalPushState.apply(this, arguments);
+  };
+
+  history.replaceState = function() {
+    if (state.isLoggedIn && !exitAttempted && arguments[2] && arguments[2] !== window.location.href) {
+      showExitPermission();
+      return;
+    }
+    return originalReplaceState.apply(this, arguments);
+  };
+
   // ---- LOGIN HANDLER ----
   async function handleLogin(e) {
     e.preventDefault();
@@ -2113,6 +2317,8 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
+      state.exitPermissionShown = false;
+      exitAttempted = false;
     }
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
@@ -2123,13 +2329,11 @@
     const val = this.value.replace(/\D/g,'').slice(0,10);
     this.value = val;
     
-    // Clear any previous timeout
     if (autoLoginTimeout) {
       clearTimeout(autoLoginTimeout);
       autoLoginTimeout = null;
     }
     
-    // If 10 digits entered, auto-login after 500ms debounce
     if (val.length === 10 && !state.isLoggedIn) {
       autoLoginTimeout = setTimeout(async function() {
         const phone = val;
@@ -2143,6 +2347,8 @@
           userPhoneDisplay.textContent = phone;
           await getBalance();
           renderWelcome();
+          state.exitPermissionShown = false;
+          exitAttempted = false;
         }
         loginBtn.disabled = false;
         loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
@@ -2165,6 +2371,8 @@
     state.withdrawCards = [];
     state.cardList = [];
     state.selectedCard = null;
+    state.exitPermissionShown = false;
+    exitAttempted = false;
     
     clearSession();
     
@@ -2172,6 +2380,7 @@
     dashboard.style.display = 'none';
     dynamicContent.innerHTML = '';
     balanceDisplay.textContent = '0.00';
+    hideExitPermission();
   }
 
   // ---- RESTORE SESSION ----
@@ -2180,6 +2389,8 @@
       loginSection.style.display = 'none';
       dashboard.style.display = 'block';
       userPhoneDisplay.textContent = state.phone || '8597630383';
+      state.exitPermissionShown = false;
+      exitAttempted = false;
       getBalance().then(() => {
         renderWelcome();
       });
@@ -2216,18 +2427,12 @@
   });
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
-  // ---- PREVENT BACK BUTTON FROM LOGGING OUT ----
-  window.addEventListener('popstate', function(e) {
-    if (state.isLoggedIn) {
-      history.pushState(null, '', window.location.href);
-    }
-  });
-
   // ---- INIT ----
   if (!restoreSession()) {
     // No session, show login
   }
   
+  // Push initial state to handle back button
   history.pushState(null, '', window.location.href);
   
   window.addEventListener('beforeunload', function() {
