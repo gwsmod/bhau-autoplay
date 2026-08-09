@@ -165,6 +165,7 @@
       color: #f7f8ff;
     }
 
+    /* --- LOGIN PAGE (unchanged) --- */
     .login-section {
       margin-top: 8px;
     }
@@ -307,7 +308,6 @@
       transform: none;
     }
 
-    /* Telegram Sections - Login Page Only */
     .telegram-section {
       background: rgba(3, 7, 20, 0.4);
       border: 1px solid rgba(0, 200, 255, 0.1);
@@ -364,123 +364,69 @@
       border-top: 1px solid rgba(255, 255, 255, 0.04);
     }
 
+    /* ============================================================ */
+    /* DASHBOARD — Premium 3D Glass Design */
+    /* ============================================================ */
+
     .dashboard {
       display: none;
       margin-top: 4px;
     }
 
+    /* User Badge — floating glass capsule */
     .user-badge {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(3, 7, 20, 0.4);
-      border-radius: 30px;
-      padding: 10px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      margin-bottom: 18px;
+      background: rgba(3, 7, 20, 0.35);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 60px;
+      padding: 10px 18px 10px 14px;
+      border: 1px solid rgba(255, 215, 0, 0.12);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px rgba(255, 255, 255, 0.04),
+        0 0 40px rgba(255, 215, 0, 0.04);
+      margin-bottom: 20px;
+      transition: box-shadow 0.3s;
     }
     .user-badge .phone {
       font-weight: 700;
       color: #7dffb3;
       font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .user-badge .phone::before {
+      content: "👤";
+      font-size: 16px;
     }
     .user-badge .balance {
       font-weight: 800;
       font-size: 18px;
       color: #ffd700;
-      background: rgba(255, 215, 0, 0.08);
-      padding: 4px 14px;
+      background: rgba(255, 215, 0, 0.07);
+      padding: 4px 16px;
       border-radius: 40px;
-      border: 1px solid rgba(255, 215, 0, 0.15);
-    }
-
-    #dynamicContent {
-      margin-bottom: 6px;
-      transition: all 0.3s ease;
-      order: -1;
-    }
-
-    .dashboard-content-wrapper {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-      transition: all 0.3s ease;
-    }
-
-    .menu-item {
-      background: rgba(3, 7, 20, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
-      padding: 14px 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      backdrop-filter: blur(4px);
-      position: relative;
-      overflow: hidden;
-    }
-    .menu-item::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(151, 119, 255, 0.03) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.4s;
-      pointer-events: none;
-    }
-    .menu-item:hover::before {
-      opacity: 1;
-    }
-    .menu-item:active { transform: scale(0.96); }
-    .menu-item:hover {
-      border-color: rgba(151, 119, 255, 0.3);
-      background: rgba(151, 119, 255, 0.06);
-    }
-    .menu-item .icon {
-      font-size: 28px;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .menu-item .title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #f0f3ff;
-    }
-    .menu-item .desc {
-      font-size: 9px;
-      color: #6a7a9a;
-      margin-top: 2px;
-    }
-
-    .menu-item.deposit-item { border-color: rgba(46, 213, 115, 0.12); background: rgba(46, 213, 115, 0.04); }
-    .menu-item.withdraw-item { border-color: rgba(212, 160, 32, 0.12); background: rgba(212, 160, 32, 0.04); }
-    .menu-item.card-item { border-color: rgba(255, 215, 0, 0.12); background: rgba(255, 215, 0, 0.03); }
-    .menu-item.auto-claim { border-color: rgba(255, 215, 0, 0.15); background: rgba(255, 215, 0, 0.03); animation: pulseGold 2.4s infinite; }
-    .menu-item.logout-item { border-color: rgba(255, 107, 107, 0.1); }
-    .menu-item.logout-item:hover { border-color: rgba(255, 107, 107, 0.3); background: rgba(255, 107, 107, 0.06); }
-    .menu-item.refer-item { border-color: rgba(0, 200, 255, 0.15); background: rgba(0, 200, 255, 0.04); }
-    .menu-item.active-option {
-      border-color: rgba(151, 119, 255, 0.5);
-      background: rgba(151, 119, 255, 0.1);
-    }
-
-    .save-number-panel {
-      background: rgba(3, 7, 20, 0.5);
       border: 1px solid rgba(255, 215, 0, 0.12);
-      border-radius: 22px;
-      padding: 16px;
+      box-shadow: inset 0 1px rgba(255, 215, 0, 0.05);
+    }
+
+    /* Auto Number Panel — premium floating glass */
+    .save-number-panel {
+      background: rgba(3, 7, 20, 0.3);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 215, 0, 0.08);
+      border-radius: 24px;
+      padding: 16px 18px;
       margin-top: 6px;
-      margin-bottom: 12px;
-      animation: fadeUp 0.3s ease;
+      margin-bottom: 14px;
+      box-shadow:
+        0 8px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px rgba(255, 255, 255, 0.03);
       transition: all 0.3s ease;
     }
     .save-number-panel.hidden-panel {
@@ -495,6 +441,14 @@
       justify-content: space-between;
       align-items: center;
     }
+    .save-number-panel .title .status-badge {
+      font-size: 11px;
+      color: #6a7a9a;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 2px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
     .save-number-panel .input-group {
       display: flex;
       gap: 8px;
@@ -502,31 +456,36 @@
     .save-number-panel .input-group input {
       flex: 1;
       padding: 10px 14px;
-      background: rgba(15, 22, 41, 0.7);
+      background: rgba(5, 9, 24, 0.6);
+      backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
+      border-radius: 14px;
       color: #eef2f9;
       font-size: 14px;
       outline: none;
       transition: 0.2s;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     .save-number-panel .input-group input:focus {
-      border-color: rgba(255, 215, 0, 0.3);
+      border-color: rgba(255, 215, 0, 0.2);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.04), inset 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     .save-number-panel .input-group .save-btn {
       padding: 10px 18px;
       background: linear-gradient(135deg, #ffd700, #f0a500);
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       color: #000;
       font-weight: 800;
       font-size: 13px;
       cursor: pointer;
       transition: 0.2s;
       white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
     }
     .save-number-panel .input-group .save-btn:hover {
       transform: scale(1.02);
+      box-shadow: 0 6px 30px rgba(255, 215, 0, 0.2);
     }
     .save-number-panel .input-group .save-btn:active {
       transform: scale(0.96);
@@ -536,88 +495,237 @@
       font-size: 11px;
       color: #6a7a9a;
     }
+    .save-number-panel .number-list {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
     .number-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 4px 8px;
-      margin: 2px 0;
-      background: rgba(255, 215, 0, 0.05);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 215, 0, 0.08);
+      gap: 6px;
+      padding: 4px 12px 4px 10px;
+      background: rgba(255, 215, 0, 0.04);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 215, 0, 0.06);
+      font-size: 12px;
+      font-weight: 500;
     }
     .number-item .num {
       color: #f7f8ff;
-      font-weight: 500;
     }
     .number-item .badge {
-      font-size: 9px;
+      font-size: 8px;
       color: #5df0ae;
-      background: rgba(93, 240, 174, 0.1);
-      padding: 2px 8px;
+      background: rgba(93, 240, 174, 0.08);
+      padding: 1px 8px;
       border-radius: 10px;
+      border: 1px solid rgba(93, 240, 174, 0.06);
     }
 
+    /* Dynamic Content (panel area) */
+    #dynamicContent {
+      margin-bottom: 6px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      order: -1;
+    }
+
+    .dashboard-content-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Option Menu — 3D glass tiles */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-item {
+      background: rgba(3, 7, 20, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 24px;
+      padding: 18px 8px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.2),
+        inset 0 1px rgba(255, 255, 255, 0.02);
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: radial-gradient(circle at 30% 20%, rgba(151, 119, 255, 0.04), transparent 60%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .menu-item:hover::before {
+      opacity: 1;
+    }
+    .menu-item:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+    .menu-item:hover {
+      border-color: rgba(151, 119, 255, 0.15);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+    .menu-item .icon {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 12px rgba(151, 119, 255, 0.08));
+      transition: filter 0.3s;
+    }
+    .menu-item:hover .icon {
+      filter: drop-shadow(0 2px 24px rgba(151, 119, 255, 0.15));
+    }
+    .menu-item .title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f0f3ff;
+      letter-spacing: 0.2px;
+    }
+    .menu-item .desc {
+      font-size: 9px;
+      color: #6a7a9a;
+      margin-top: 2px;
+      letter-spacing: 0.2px;
+    }
+
+    .menu-item.deposit-item { border-color: rgba(46, 213, 115, 0.08); }
+    .menu-item.deposit-item:hover { border-color: rgba(46, 213, 115, 0.2); }
+    .menu-item.withdraw-item { border-color: rgba(212, 160, 32, 0.08); }
+    .menu-item.withdraw-item:hover { border-color: rgba(212, 160, 32, 0.2); }
+    .menu-item.card-item { border-color: rgba(255, 215, 0, 0.06); }
+    .menu-item.card-item:hover { border-color: rgba(255, 215, 0, 0.15); }
+    .menu-item.auto-claim {
+      border-color: rgba(255, 215, 0, 0.08);
+      animation: pulseGold 2.8s infinite;
+    }
+    .menu-item.logout-item { border-color: rgba(255, 107, 107, 0.06); }
+    .menu-item.logout-item:hover { border-color: rgba(255, 107, 107, 0.2); }
+    .menu-item.refer-item { border-color: rgba(0, 200, 255, 0.06); }
+    .menu-item.refer-item:hover { border-color: rgba(0, 200, 255, 0.15); }
+
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 4px 24px rgba(255, 215, 0, 0.02); }
+      50% { box-shadow: 0 4px 40px rgba(255, 215, 0, 0.06); }
+    }
+
+    .menu-item.active-option {
+      border-color: rgba(151, 119, 255, 0.35);
+      background: rgba(151, 119, 255, 0.06);
+      box-shadow:
+        0 8px 40px rgba(151, 119, 255, 0.04),
+        inset 0 0 40px rgba(151, 119, 255, 0.02);
+    }
+
+    /* Dynamic Card — 3D glass panel */
     .dynamic-card {
-      background: rgba(3, 7, 20, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 22px;
-      padding: 16px;
+      background: rgba(3, 7, 20, 0.3);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 24px;
+      padding: 18px;
       margin-top: 6px;
-      animation: fadeUp 0.3s ease;
+      box-shadow:
+        0 8px 40px rgba(0, 0, 0, 0.25),
+        inset 0 1px rgba(255, 255, 255, 0.02);
+      animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       transition: all 0.3s ease;
     }
     @keyframes fadeUp {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
+      0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     .dynamic-card .title {
       font-weight: 700;
       color: #68a9ff;
       font-size: 16px;
       margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
+    .btn-close-panel {
+      background: rgba(255, 255, 255, 0.04);
+      color: #8a9aaa;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 4px 14px;
+      font-size: 11px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 600;
+    }
+    .btn-close-panel:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f7f8ff;
+    }
+
+    /* Amount grid for deposit */
     .amount-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      gap: 8px;
       margin: 8px 0;
     }
     .amount-btn {
-      padding: 8px 4px;
-      background: rgba(15,22,41,0.7);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 10px;
+      padding: 10px 4px;
+      background: rgba(5, 9, 24, 0.5);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
       color: #eef2f9;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 13px;
       cursor: pointer;
       transition: 0.2s;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.02);
     }
     .amount-btn:active { transform: scale(0.95); }
     .amount-btn.active {
       border-color: #7dffb3;
-      background: rgba(125,255,179,0.08);
+      background: rgba(125, 255, 179, 0.06);
       color: #7dffb3;
+      box-shadow: 0 0 30px rgba(125, 255, 179, 0.04);
     }
     .amount-btn.custom-amount-btn {
-      border-color: rgba(255, 215, 0, 0.2);
+      border-color: rgba(255, 215, 0, 0.12);
       color: #ffd700;
     }
     .amount-btn.custom-amount-btn.active {
       border-color: #ffd700;
-      background: rgba(255, 215, 0, 0.1);
+      background: rgba(255, 215, 0, 0.06);
     }
 
+    /* Payment methods */
     .payment-method {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 12px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 12px;
-      margin-bottom: 5px;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+      border-radius: 14px;
+      margin-bottom: 6px;
       border: 1px solid transparent;
       cursor: pointer;
       transition: 0.2s;
@@ -625,15 +733,17 @@
     }
     .payment-method.selected {
       border-color: #7dffb3;
-      background: rgba(125,255,179,0.05);
+      background: rgba(125, 255, 179, 0.04);
+      box-shadow: 0 0 30px rgba(125, 255, 179, 0.03);
     }
     .payment-method .pm-name { color: #eef2f9; font-weight: 500; }
     .payment-method .pm-desc { color: #6a7a9a; font-size: 10px; }
 
+    /* Buttons */
     .btn-sm {
-      padding: 8px 14px;
+      padding: 10px 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
@@ -645,38 +755,92 @@
     }
     .btn-sm:active { transform: scale(0.95); }
     .btn-block { width: 100%; }
-    .btn-success { background: #1f8b4c; color: #fff; }
-    .btn-warning { background: #d4a020; color: #000; }
-    .btn-primary { background: #3d5aa0; color: #fff; }
-    .btn-gold { background: linear-gradient(135deg, #ffd700, #f0a500); color: #000; font-weight: 800; }
-    .btn-deposit { background: linear-gradient(135deg, #2ed573, #1b9e4a); color: #fff; }
-    .btn-withdraw { background: linear-gradient(135deg, #d4a020, #b8841a); color: #fff; }
-    .btn-card-add { background: linear-gradient(135deg, #ff6b35, #e55a2b); color: #fff; }
-    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.08); color: #8a9aaa; }
-    .btn-danger { background: rgba(255, 70, 70, 0.15); color: #ff6b6b; border: 1px solid rgba(255,70,70,0.1); }
-    .btn-info { background: rgba(30, 144, 255, 0.2); color: #68a9ff; border: 1px solid rgba(30, 144, 255, 0.15); }
-    .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; }
-    .btn-close-panel {
-      background: rgba(255, 255, 255, 0.05);
-      color: #8a9aaa;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 4px 12px;
-      font-size: 11px;
-      border-radius: 20px;
+
+    .btn-deposit {
+      background: linear-gradient(135deg, #2ed573, #1b9e4a);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(46, 213, 115, 0.15);
+    }
+    .btn-deposit:hover { box-shadow: 0 6px 32px rgba(46, 213, 115, 0.2); transform: translateY(-1px); }
+
+    .btn-withdraw {
+      background: linear-gradient(135deg, #d4a020, #b8841a);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(212, 160, 32, 0.15);
+    }
+    .btn-withdraw:hover { box-shadow: 0 6px 32px rgba(212, 160, 32, 0.2); transform: translateY(-1px); }
+
+    .btn-card-add {
+      background: linear-gradient(135deg, #ff6b35, #e55a2b);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(255, 107, 53, 0.15);
+    }
+    .btn-card-add:hover { box-shadow: 0 6px 32px rgba(255, 107, 53, 0.2); transform: translateY(-1px); }
+
+    .btn-success { background: #1f8b4c; color: #fff; box-shadow: 0 4px 24px rgba(31, 139, 76, 0.15); }
+    .btn-warning { background: #d4a020; color: #000; box-shadow: 0 4px 24px rgba(212, 160, 32, 0.15); }
+    .btn-primary { background: #3d5aa0; color: #fff; box-shadow: 0 4px 24px rgba(61, 90, 160, 0.15); }
+    .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; box-shadow: 0 4px 24px rgba(0, 180, 216, 0.15); }
+    .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.06); color: #8a9aaa; }
+
+    /* Withdraw calc */
+    .withdraw-calc {
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+    .withdraw-calc .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+    .withdraw-calc .row:last-child { border-bottom: none; }
+    .withdraw-calc .label { color: #8a9aaa; }
+    .withdraw-calc .value { color: #f7f8ff; font-weight: 600; }
+    .withdraw-calc .value.fee { color: #ffd45d; }
+    .withdraw-calc .value.credit { color: #5df0ae; }
+
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .recommend-btn {
+      padding: 8px 4px;
+      background: rgba(5, 9, 24, 0.5);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
+      color: #eef2f9;
+      font-weight: 600;
+      font-size: 13px;
       cursor: pointer;
       transition: 0.2s;
-      float: right;
     }
-    .btn-close-panel:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #f7f8ff;
+    .recommend-btn:hover {
+      border-color: rgba(255, 215, 0, 0.15);
+      background: rgba(255, 215, 0, 0.03);
+    }
+    .recommend-btn:active { transform: scale(0.95); }
+    .recommend-btn.active {
+      border-color: #ffd700;
+      background: rgba(255, 215, 0, 0.05);
+      color: #ffd700;
     }
 
-    .mt-10 { margin-top: 10px; }
-    .mb-10 { margin-bottom: 10px; }
-    .text-center { text-align: center; }
-    .flex-row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .hidden { display: none !important; }
+    .balance-info {
+      font-size: 12px;
+      color: #8a9aaa;
+      text-align: center;
+      padding: 4px 0 8px;
+    }
+    .balance-info span { color: #5df0ae; font-weight: 700; }
 
     .input-group {
       margin-bottom: 10px;
@@ -692,59 +856,48 @@
     .input-group input, .input-group select {
       width: 100%;
       padding: 10px 14px;
-      background: rgba(15,22,41,0.7);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 12px;
+      background: rgba(5, 9, 24, 0.5);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
       color: #eef2f9;
       font-size: 14px;
       outline: none;
       transition: 0.2s;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     .input-group input:focus {
-      border-color: rgba(125,255,179,0.3);
+      border-color: rgba(125, 255, 179, 0.15);
+      box-shadow: 0 0 0 3px rgba(125, 255, 179, 0.02), inset 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .quick-amount {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 30px;
-      color: #8a9aaa;
-      padding: 4px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .quick-amount:active { background: rgba(255,255,255,0.06); }
+    .mt-10 { margin-top: 10px; }
+    .mb-10 { margin-bottom: 10px; }
+    .text-center { text-align: center; }
+    .flex-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .game-result {
-      background: rgba(0,0,0,0.25);
+      background: rgba(0, 0, 0, 0.2);
       padding: 10px;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 11px;
       margin-top: 8px;
     }
+    .game-result .ok { color: #5df0ae; }
 
     .refer-user-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 8px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
       font-size: 12px;
     }
-    .refer-user-item .user-phone {
-      color: #eef2f9;
-      font-weight: 500;
-    }
-    .refer-user-item .user-time {
-      color: #6a7a9a;
-      font-size: 10px;
-    }
-    .refer-user-item .user-status {
-      color: #5df0ae;
-      font-size: 10px;
-    }
+    .refer-user-item .user-phone { color: #eef2f9; font-weight: 500; }
+    .refer-user-item .user-time { color: #6a7a9a; font-size: 10px; }
+    .refer-user-item .user-status { color: #5df0ae; font-size: 10px; }
 
+    /* Exit overlay */
     .exit-overlay {
       display: none;
       position: fixed;
@@ -752,45 +905,32 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(12px);
       z-index: 9999;
       justify-content: center;
       align-items: center;
     }
-    .exit-overlay.active {
-      display: flex;
-    }
+    .exit-overlay.active { display: flex; }
     .exit-popup {
       background: linear-gradient(145deg, rgba(22, 27, 55, 0.95), rgba(6, 10, 25, 0.98));
-      border: 1px solid rgba(151, 119, 255, 0.3);
+      border: 1px solid rgba(151, 119, 255, 0.2);
       border-radius: 28px;
       padding: 30px 24px 24px;
       max-width: 380px;
       width: 90%;
       text-align: center;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(102, 36, 255, 0.1);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(102, 36, 255, 0.05);
       animation: popupIn 0.3s ease;
     }
-    .exit-popup .popup-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
+    @keyframes popupIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
-    .exit-popup .popup-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #f7f8ff;
-      margin-bottom: 6px;
-    }
-    .exit-popup .popup-sub {
-      color: #8a9aaa;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    .exit-popup .popup-buttons {
-      display: flex;
-      gap: 12px;
-    }
+    .exit-popup .popup-icon { font-size: 48px; margin-bottom: 12px; }
+    .exit-popup .popup-title { font-size: 22px; font-weight: 800; color: #f7f8ff; margin-bottom: 6px; }
+    .exit-popup .popup-sub { color: #8a9aaa; font-size: 14px; margin-bottom: 20px; }
+    .exit-popup .popup-buttons { display: flex; gap: 12px; }
     .exit-popup .popup-buttons button {
       flex: 1;
       padding: 14px 10px;
@@ -801,22 +941,18 @@
       cursor: pointer;
       transition: 0.2s;
     }
-    .exit-popup .popup-buttons button:active {
-      transform: scale(0.96);
-    }
+    .exit-popup .popup-buttons button:active { transform: scale(0.96); }
     .exit-popup .popup-buttons .btn-stay {
       background: linear-gradient(100deg, #126aff, #6124e9 60%, #b22cff);
       color: #fff;
-      box-shadow: 0 8px 25px rgba(73, 46, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(73, 46, 255, 0.2);
     }
     .exit-popup .popup-buttons .btn-exit {
-      background: rgba(255, 70, 70, 0.15);
+      background: rgba(255, 70, 70, 0.08);
       color: #ff6b6b;
-      border: 1px solid rgba(255, 70, 70, 0.2);
+      border: 1px solid rgba(255, 70, 70, 0.1);
     }
-    .exit-popup .popup-buttons .btn-exit:hover {
-      background: rgba(255, 70, 70, 0.25);
-    }
+    .exit-popup .popup-buttons .btn-exit:hover { background: rgba(255, 70, 70, 0.15); }
 
     @media (max-width: 440px) {
       .page { padding: 0 4px; }
@@ -830,6 +966,8 @@
       .logout-confirm-popup { padding: 24px 16px 20px; }
       .logout-confirm-popup .popup-title { font-size: 19px; }
       .welcome-text .sub-title { font-size: 17px; }
+      .user-badge { padding: 8px 12px; }
+      .user-badge .balance { font-size: 15px; padding: 3px 12px; }
     }
   </style>
 </head>
@@ -853,14 +991,13 @@
       </div>
     </div>
 
-    <!-- LOGIN SECTION -->
+    <!-- LOGIN SECTION (unchanged) -->
     <div id="loginSection" class="login-section">
       <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
         <div class="sub-title">BHAU LOTTERY PANNEL</div>
         <p>Login to continue your journey</p>
       </div>
-
       <form id="loginForm">
         <div class="form-group">
           <label class="label">📱 PHONE NUMBER</label>
@@ -881,14 +1018,12 @@
         <button type="button" class="autopaste-btn" id="autopasteBtn">📋 AUTOPASTE</button>
       </form>
 
-      <!-- Telegram Section 1: Referral & Number -->
       <div class="telegram-section">
         <div class="tg-title">📱 Need Referral &amp; Number?</div>
         <div class="tg-text">Join our Telegram channel to get referral and number information.</div>
         <a href="https://t.me/annareferbypass" target="_blank" class="tg-btn">📲 JOIN TELEGRAM</a>
       </div>
 
-      <!-- Telegram Section 2: Withdrawal Information -->
       <div class="telegram-section">
         <div class="tg-title">💸 Need Withdrawal Information?</div>
         <div class="tg-text">Join our Telegram channel for withdrawal-related information.</div>
@@ -898,10 +1033,11 @@
       <div class="login-footer">BY SANJU</div>
     </div>
 
-    <!-- DASHBOARD SECTION -->
+    <!-- DASHBOARD — Premium 3D Glass -->
     <div id="dashboard" class="dashboard">
+      <!-- User Badge -->
       <div class="user-badge">
-        <span class="phone">👤 +91 <span id="userPhoneDisplay">8597630383</span></span>
+        <span class="phone">+91 <span id="userPhoneDisplay">8597630383</span></span>
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
@@ -909,14 +1045,14 @@
       <div class="save-number-panel" id="autoNumberPanel">
         <div class="title">
           <span>📱 Auto Login Numbers</span>
-          <span id="numberStatus" style="font-size:11px;color:#6a7a9a;">0 unused</span>
+          <span class="status-badge" id="numberStatus">0 unused</span>
         </div>
         <div class="input-group">
           <input type="tel" id="saveNumberInput" maxlength="10" placeholder="Enter 10-digit number" inputmode="numeric">
           <button class="save-btn" id="saveNumberBtn">➕ Add</button>
         </div>
         <div class="status-text" id="saveStatusText"></div>
-        <div id="numberList" style="margin-top:8px;font-size:12px;"></div>
+        <div class="number-list" id="numberList"></div>
       </div>
 
       <div class="dashboard-content-wrapper" id="dashboardWrapper">
@@ -1975,9 +2111,8 @@
     state.isAutoClaiming = true;
     showPanel(`
       <div class="dynamic-card">
-        <div class="title">⚡ Auto Claim Progress</div>
+        <div class="title">⚡ Auto Claim Progress <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div id="autoClaimProgress" style="font-size:12px;color:#8a9aaa;"></div>
-        <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button>
       </div>
     `);
     const progressDiv = document.getElementById('autoClaimProgress');
@@ -2052,7 +2187,6 @@
     await getDepositAmounts();
     await getPaymentMethods();
     
-    // Find default UPI payment (UPI01, UPI02, UPI06)
     const upiPayments = state.paymentMethods.filter(m => 
       m.payTag === 'PAYMENT_CENTER_PAY' && 
       (m.payName && m.payName.toUpperCase().includes('UPI'))
@@ -2103,7 +2237,7 @@
     html += `</div></div>`;
     
     html += `<div id="customAmountInput" style="display:none;margin-bottom:8px;">
-      <input type="number" id="customAmountField" placeholder="Enter custom amount" min="1" style="width:100%;padding:10px 14px;background:rgba(15,22,41,0.7);border:1px solid rgba(255,255,255,0.05);border-radius:12px;color:#eef2f9;font-size:14px;outline:none;">
+      <input type="number" id="customAmountField" placeholder="Enter custom amount" min="1" style="width:100%;padding:10px 14px;background:rgba(5,9,24,0.5);border:1px solid rgba(255,255,255,0.04);border-radius:14px;color:#eef2f9;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
     </div>`;
     
     html += `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Payment</div>
@@ -2222,12 +2356,12 @@
           showToast('Deposit page opened!', 'success');
         }
         div.innerHTML = `
-          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+          <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
             <div style="color:#5df0ae;font-weight:600;">✅ Deposit created!</div>
-            ${url ? `<div style="font-size:9px;word-break:break-all;margin-top:4px;">🔗 ${url}</div>` : ''}
-            <div style="margin-top:4px;display:flex;gap:4px;">
-              <button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')">🌐 Open</button>
-              <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')">📋 Copy</button>
+            ${url ? `<div style="font-size:9px;word-break:break-all;margin-top:4px;color:#8a9aaa;">🔗 ${url}</div>` : ''}
+            <div style="margin-top:6px;display:flex;gap:6px;">
+              <button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')" style="padding:6px 14px;font-size:11px;">🌐 Open</button>
+              <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')" style="padding:6px 14px;font-size:11px;">📋 Copy</button>
             </div>
           </div>
         `;
@@ -2253,9 +2387,9 @@
         const holder = c.accountName || c.holderName || c.name || 'Unknown';
         const bank = c.bankName || c.bank || 'Bank';
         const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-        cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);padding:6px 12px;border-radius:10px;margin-bottom:4px;">
+        cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.2);padding:6px 12px;border-radius:12px;margin-bottom:4px;border:1px solid rgba(255,255,255,0.02);">
           <div style="font-size:12px;"><span style="color:#ffd700;">${bank}</span> - ${holder}<div style="color:#6a7a9a;font-size:10px;">${acc ? '****'+acc.slice(-4) : ''}</div></div>
-          <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;">🗑️</button>
+          <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;border:1px solid rgba(255,70,70,0.1);background:rgba(255,70,70,0.06);color:#ff6b6b;border-radius:10px;">🗑️</button>
         </div>`;
       }
     } else cardHtml = '<div style="color:#6a7a9a;font-size:12px;margin-bottom:10px;">No cards added</div>';
@@ -2265,7 +2399,7 @@
       <div class="dynamic-card">
         <div class="title">💳 Add Bank Card <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         ${cardHtml}
-        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
+        <div style="border-top:1px solid rgba(255,255,255,0.04);padding-top:12px;">
           <div class="input-group"><label>👤 Account Holder</label><input id="cardNameInput" value="${autoName}"></div>
           <div class="input-group"><label>💳 Account Number</label><input id="cardNumberInput" placeholder="1234567890"></div>
           <div class="input-group"><label>🏛️ IFSC</label><input id="ifscInput" value="MAHB0002009"></div>
@@ -2382,7 +2516,7 @@
         ${recHtml}
         <div style="margin-top:8px;">
           <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Enter Amount</div>
-          <input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(15,22,41,0.7);border:1px solid rgba(255,255,255,0.05);border-radius:12px;color:#eef2f9;font-size:14px;outline:none;">
+          <input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(5,9,24,0.5);border:1px solid rgba(255,255,255,0.04);border-radius:14px;color:#eef2f9;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
         </div>
         <div class="withdraw-calc" id="withdrawCalc">
           <div class="row"><span class="label">Withdrawal Amount</span><span class="value" id="calcAmount">₹0.00</span></div>
@@ -2492,7 +2626,7 @@
         sendTelegramMessage(telegramMsg);
         
         div.innerHTML = `
-          <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+          <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
             <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
             <div style="color:#8a9aaa;">₹${finalAmount.toFixed(2)} withdrawn</div>
             <div style="color:#8a9aaa;">Bank Credit: ₹${bankCredit.toFixed(2)}</div>
@@ -2533,9 +2667,9 @@
     showPanel(`
       <div class="dynamic-card">
         <div class="title">📊 Balance <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div style="text-align:center;padding:15px;">
-          <div style="font-size:32px;font-weight:800;color:#5df0ae;">₹${state.balance.toFixed(2)}</div>
-          <div style="color:#6a7a9a;font-size:12px;">Available Balance</div>
+        <div style="text-align:center;padding:20px;">
+          <div style="font-size:36px;font-weight:800;color:#5df0ae;text-shadow:0 0 40px rgba(93,240,174,0.05);">₹${state.balance.toFixed(2)}</div>
+          <div style="color:#6a7a9a;font-size:13px;margin-top:4px;">Available Balance</div>
         </div>
       </div>
     `);
@@ -2597,7 +2731,7 @@
       <div class="dynamic-card">
         <div class="title">📋 Transaction History (${allTxns.length}) <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
         <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-          <button class="btn-sm btn-info" id="txnAll" style="flex:1;">All</button>
+          <button class="btn-sm btn-info" id="txnAll" style="flex:1;background:rgba(30,144,255,0.1);color:#68a9ff;border:1px solid rgba(30,144,255,0.1);">All</button>
           <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
           <button class="btn-sm btn-withdraw" id="txnWithdraw" style="flex:1;">Withdrawals</button>
         </div>
@@ -2620,7 +2754,7 @@
         const cardInfo = isDeposit ? '' : (txn.userCardNumber ? ` · ${txn.userCardNumber}` : '');
 
         html += `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);" data-type="${txn.type}">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.02);" data-type="${txn.type}">
             <div style="flex:1;">
               <div>
                 <span>${icon} ${typeLabel}</span>
@@ -2688,7 +2822,7 @@
         <div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
     `;
 
-    html += `<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;">
+    html += `<div style="border-top:1px solid rgba(255,255,255,0.04);padding-top:10px;">
       <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
       <div style="max-height:350px;overflow-y:auto;">`;
     if (history && history.length > 0) {
@@ -2713,7 +2847,7 @@
       
       const unused = getUnusedNumbers();
       html += `
-        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);">
           <div style="font-size:10px;color:#5df0ae;text-align:center;">
             ✅ ${unused.length} unused number(s) available for AutoPaste
           </div>
@@ -2755,12 +2889,12 @@
             const shareText = shareData.shareText || 'Join Bhau Lottery and win big! 🎰';
             const resultDiv = document.getElementById('shareResult');
             resultDiv.innerHTML = `
-              <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+              <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
                 <div style="color:#5df0ae;font-weight:600;">✅ Share link ready!</div>
                 <div style="font-size:11px;color:#8a9aaa;word-break:break-all;margin:6px 0;">🔗 ${shareUrl}</div>
-                <div style="display:flex;gap:6px;">
-                  <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}')">📋 Copy Link</button>
-                  <button class="btn-sm btn-warning" onclick="window.open('${shareUrl}','_blank')">🌐 Open</button>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}')" style="padding:6px 14px;font-size:11px;">📋 Copy Link</button>
+                  <button class="btn-sm btn-warning" onclick="window.open('${shareUrl}','_blank')" style="padding:6px 14px;font-size:11px;">🌐 Open</button>
                 </div>
                 ${shareText ? `<div style="font-size:10px;color:#6a7a9a;margin-top:4px;">📝 ${shareText}</div>` : ''}
               </div>
