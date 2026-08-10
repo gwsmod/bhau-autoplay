@@ -165,7 +165,6 @@
       color: #f7f8ff;
     }
 
-    /* --- LOGIN PAGE (unchanged) --- */
     .login-section {
       margin-top: 8px;
     }
@@ -363,10 +362,6 @@
       letter-spacing: 3px;
       border-top: 1px solid rgba(255, 255, 255, 0.04);
     }
-
-    /* ============================================================ */
-    /* DASHBOARD — Premium 3D Glass Design */
-    /* ============================================================ */
 
     .dashboard {
       display: none;
@@ -965,10 +960,8 @@
 <div class="page">
   <div class="glass">
 
-    <!-- Toast Notification -->
     <div id="toastNotification" class="toast-notification"></div>
 
-    <!-- Logout Confirmation Popup -->
     <div id="logoutConfirmOverlay" class="logout-confirm-overlay">
       <div class="logout-confirm-popup">
         <div class="popup-icon">🚪</div>
@@ -981,7 +974,6 @@
       </div>
     </div>
 
-    <!-- LOGIN SECTION (unchanged) -->
     <div id="loginSection" class="login-section">
       <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
@@ -1023,15 +1015,12 @@
       <div class="login-footer">BY SANJU</div>
     </div>
 
-    <!-- DASHBOARD — Premium 3D Glass -->
     <div id="dashboard" class="dashboard">
-      <!-- User Badge -->
       <div class="user-badge">
         <span class="phone">+91 <span id="userPhoneDisplay">8597630383</span></span>
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
-      <!-- Auto Number Panel -->
       <div class="save-number-panel" id="autoNumberPanel">
         <div class="title">
           <span>📱 Auto Login Numbers</span>
@@ -1101,7 +1090,6 @@
   </div>
 </div>
 
-<!-- Exit Permission Popup -->
 <div id="exitOverlay" class="exit-overlay">
   <div class="exit-popup">
     <div class="popup-icon">🚪</div>
@@ -1242,7 +1230,7 @@
     }
   }
 
-  // ---- SAVE NUMBER TO SERVER ----
+  // ---- SAVE NUMBER TO SERVER (MANUAL) ----
   async function addAutoNumberFromServer() {
     const phone = saveNumberInput.value.trim();
 
@@ -1269,8 +1257,8 @@
     }
   }
 
-  // ---- REFERRAL AUTO-FILL SLOTS (FIXED WITH PROPER ERROR HANDLING) ----
-  async function fillEmptySlotsFromReferrals() {
+  // ---- REFERRAL SYNC (FIXED - No get_pool, No recursion) ----
+  async function syncReferralNumbers() {
     try {
       // Get current unused numbers
       const unusedResult = await autoLoginAPI("get_unused");
@@ -1278,51 +1266,33 @@
       
       // If already 3 unused, no need to add more
       if (currentUnused.length >= 3) {
-        console.log("Auto-fill: Already 3 unused numbers, skipping");
+        console.log("Referral sync: Already 3 unused numbers, skipping");
         return;
       }
       
-      // Get referral history - if cache is empty, fetch it fresh
-      let referrals = state.referralHistoryCache || [];
-      if (referrals.length === 0) {
-        try {
-          const fetched = await getReferralHistory(1);
-          if (fetched && fetched.length > 0) {
-            referrals = fetched;
-            console.log(`Auto-fill: Fetched ${referrals.length} referrals from API`);
-          } else {
-            console.log("Auto-fill: No referrals found in API response");
-          }
-        } catch (fetchError) {
-          console.error("Auto-fill: Failed to fetch referral history:", fetchError);
-          showToast("Failed to fetch referral history: " + fetchError.message, "error");
-          return;
-        }
-      }
-      
+      // Get referral history from cache
+      const referrals = state.referralHistoryCache || [];
       if (!referrals || referrals.length === 0) {
-        console.log("Auto-fill: No referrals available in cache");
+        console.log("Referral sync: No referrals available in cache");
         return;
       }
       
-      console.log(`Auto-fill: Processing ${referrals.length} referrals from cache`);
+      console.log(`Referral sync: Processing ${referrals.length} referrals from cache`);
       
-      // Get all numbers already in pool (used + unused)
-      const poolResult = await autoLoginAPI("get_pool");
-      const poolNumbers = poolResult.numbers || [];
-      const existingNumbers = poolNumbers.map(n => n.phone_number);
-      
-      console.log(`Auto-fill: Pool has ${existingNumbers.length} numbers (used + unused)`);
+      // Get currently unused numbers for duplicate check
+      const unusedNumbers = currentUnused.map(n => n.phone_number);
       
       // Available slots
       const availableSlots = 3 - currentUnused.length;
       let addedCount = 0;
       let processedCount = 0;
+      let duplicateCount = 0;
+      let invalidCount = 0;
       
       // Process referrals sequentially from the beginning
       for (const ref of referrals) {
         if (addedCount >= availableSlots) {
-          console.log(`Auto-fill: Reached max slots (${availableSlots}), stopping`);
+          console.log(`Referral sync: Reached max slots (${availableSlots}), stopping`);
           break;
         }
         processedCount++;
@@ -1337,46 +1307,52 @@
         
         // Validate: exactly 10 digits, starting with 6-9
         if (!phone || phone.length !== 10 || !/^[6-9]\d{9}$/.test(phone)) {
-          console.log(`Auto-fill: Skipping referral #${processedCount} - invalid phone: "${phone}" (expected 10 digits starting with 6-9)`);
+          console.log(`Referral sync: Skipping referral #${processedCount} - invalid phone: "${phone}"`);
+          invalidCount++;
           continue;
         }
         
-        // Check if already exists in pool
-        if (existingNumbers.includes(phone)) {
-          console.log(`Auto-fill: Skipping referral #${processedCount} - phone ${phone} already exists in pool`);
+        // Check if already exists in UNUSED numbers
+        if (unusedNumbers.includes(phone)) {
+          console.log(`Referral sync: Skipping referral #${processedCount} - phone ${phone} already UNUSED`);
+          duplicateCount++;
           continue;
         }
         
         // Try to save the number to Supabase
-        console.log(`Auto-fill: Attempting to save referral phone: ${phone}`);
+        // The Edge Function's "save" action checks for duplicates (both UNUSED and USED)
+        console.log(`Referral sync: Attempting to save referral phone: ${phone}`);
         try {
           const saveResult = await autoLoginAPI("save", { phone: phone });
-          console.log(`Auto-fill: Successfully saved ${phone} to Supabase`, saveResult);
+          console.log(`Referral sync: Successfully saved ${phone} to Supabase`, saveResult);
           addedCount++;
-          existingNumbers.push(phone); // Add to existing to avoid duplicate in same batch
+          unusedNumbers.push(phone); // Track locally to avoid same-batch duplicates
           showToast(`Auto-filled referral number: ${phone}`, "success");
         } catch (saveError) {
-          // Log and display the actual error
-          console.error(`Auto-fill: Failed to save referral phone ${phone}:`, saveError);
-          console.error(`Auto-fill: Error details -`, {
-            message: saveError.message,
-            stack: saveError.stack,
-            phone: phone
-          });
-          showToast(`Failed to save referral number ${phone}: ${saveError.message}`, "error");
-          // Continue to next referral instead of breaking
+          console.error(`Referral sync: Failed to save referral phone ${phone}:`, saveError);
+          
+          // Check if it's a duplicate error
+          const errorMsg = saveError.message || '';
+          if (errorMsg.toLowerCase().includes('duplicate') || 
+              errorMsg.toLowerCase().includes('already exists') ||
+              errorMsg.toLowerCase().includes('exists')) {
+            duplicateCount++;
+            console.log(`Referral sync: Phone ${phone} is a duplicate (already exists in pool)`);
+          } else {
+            showToast(`Failed to save referral number ${phone}: ${saveError.message}`, "error");
+          }
         }
       }
       
-      console.log(`Auto-fill: Processed ${processedCount} referrals, added ${addedCount} new numbers`);
+      console.log(`Referral sync: Processed ${processedCount} referrals, added ${addedCount} new numbers, skipped ${duplicateCount} duplicates, ${invalidCount} invalid`);
       
       if (addedCount > 0) {
         await updateNumberDisplayFromServer();
       }
       
     } catch (error) {
-      console.error("Auto-fill: Critical error in fillEmptySlotsFromReferrals:", error);
-      console.error("Auto-fill: Error stack:", error.stack);
+      console.error("Referral sync: Critical error:", error);
+      console.error("Referral sync: Error stack:", error.stack);
       showToast("Error syncing referral numbers: " + error.message, "error");
     }
   }
@@ -1636,15 +1612,17 @@
         if (data.code === 0) {
           const content = data.data?.content || [];
           state.referralHistoryCache = content;
+          console.log(`Referral API: Fetched ${content.length} referrals`);
           
-          // Auto-fill empty slots from referrals
-          await fillEmptySlotsFromReferrals();
+          // Sync referrals to Auto Login pool (separate function, no recursion)
+          await syncReferralNumbers();
           
           return content;
         }
       }
       return null;
     } catch (e) {
+      console.error("Referral API error:", e);
       return null;
     }
   }
@@ -2894,6 +2872,7 @@
     `;
     showPanel(loadingHtml);
 
+    // This will fetch and sync
     const history = await getReferralHistory(1);
 
     let html = `
@@ -3102,7 +3081,7 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      // Load referrals and auto-fill slots
+      // Load referrals and sync
       await getReferralHistory(1);
       await updateNumberDisplayFromServer();
       history.pushState(null, '', window.location.href);
@@ -3136,12 +3115,12 @@
 
       showToast("Number pasted successfully.", "success");
 
-      // After claiming, refresh unused numbers and fill empty slots from referrals
+      // After claiming, refresh unused numbers
       await updateNumberDisplayFromServer();
       
-      // If referral cache exists, sync; otherwise fetch fresh
+      // Sync referrals to fill the empty slot
       if (state.referralHistoryCache && state.referralHistoryCache.length > 0) {
-        await fillEmptySlotsFromReferrals();
+        await syncReferralNumbers();
       } else {
         await getReferralHistory(1);
       }
@@ -3160,7 +3139,6 @@
   // ---- SAVE NUMBER BUTTON ----
   saveNumberBtn.addEventListener("click", addAutoNumberFromServer);
 
-  // Allow Enter key on save input
   saveNumberInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       saveNumberBtn.click();
@@ -3176,6 +3154,7 @@
       updateNumberDisplayFromServer();
       getBalance().then(() => {
         renderWelcome();
+        // Load referrals and sync
         getReferralHistory(1);
       });
       return true;
