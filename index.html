@@ -1269,7 +1269,7 @@
     }
   }
 
-  // ---- REFERRAL AUTO-FILL SLOTS (FIXED) ----
+  // ---- REFERRAL AUTO-FILL SLOTS (FIXED WITH PROPER ERROR HANDLING) ----
   async function fillEmptySlotsFromReferrals() {
     try {
       // Get current unused numbers
@@ -1278,6 +1278,7 @@
       
       // If already 3 unused, no need to add more
       if (currentUnused.length >= 3) {
+        console.log("Auto-fill: Already 3 unused numbers, skipping");
         return;
       }
       
@@ -1288,34 +1289,46 @@
           const fetched = await getReferralHistory(1);
           if (fetched && fetched.length > 0) {
             referrals = fetched;
+            console.log(`Auto-fill: Fetched ${referrals.length} referrals from API`);
+          } else {
+            console.log("Auto-fill: No referrals found in API response");
           }
-        } catch (e) {
-          // Silent fail - we'll just use whatever is in cache
+        } catch (fetchError) {
+          console.error("Auto-fill: Failed to fetch referral history:", fetchError);
+          showToast("Failed to fetch referral history: " + fetchError.message, "error");
+          return;
         }
       }
       
       if (!referrals || referrals.length === 0) {
+        console.log("Auto-fill: No referrals available in cache");
         return;
       }
+      
+      console.log(`Auto-fill: Processing ${referrals.length} referrals from cache`);
       
       // Get all numbers already in pool (used + unused)
       const poolResult = await autoLoginAPI("get_pool");
       const poolNumbers = poolResult.numbers || [];
       const existingNumbers = poolNumbers.map(n => n.phone_number);
       
+      console.log(`Auto-fill: Pool has ${existingNumbers.length} numbers (used + unused)`);
+      
       // Available slots
       const availableSlots = 3 - currentUnused.length;
       let addedCount = 0;
+      let processedCount = 0;
       
       // Process referrals sequentially from the beginning
       for (const ref of referrals) {
-        if (addedCount >= availableSlots) break;
+        if (addedCount >= availableSlots) {
+          console.log(`Auto-fill: Reached max slots (${availableSlots}), stopping`);
+          break;
+        }
+        processedCount++;
         
-        // Try multiple possible field names for the referral phone number
-        // Based on the API response, the field is 'inviteUserPhone'
-        let phone = ref.inviteUserPhone || ref.userPhone || ref.phone || 
-                   ref.invitedPhone || ref.phoneNumber || ref.userPhoneNumber || 
-                   ref.mobile || ref.contact || ref.phoneNo || '';
+        // Use the confirmed field: inviteUserPhone
+        let phone = ref.inviteUserPhone || '';
         
         // Clean phone number - remove non-digit characters
         if (phone) {
@@ -1323,24 +1336,48 @@
         }
         
         // Validate: exactly 10 digits, starting with 6-9
-        if (phone && phone.length === 10 && /^[6-9]\d{9}$/.test(phone) && !existingNumbers.includes(phone)) {
-          try {
-            await autoLoginAPI("save", { phone: phone });
-            addedCount++;
-            existingNumbers.push(phone); // Add to existing to avoid duplicate in same batch
-          } catch (e) {
-            // Skip duplicates or errors
-          }
+        if (!phone || phone.length !== 10 || !/^[6-9]\d{9}$/.test(phone)) {
+          console.log(`Auto-fill: Skipping referral #${processedCount} - invalid phone: "${phone}" (expected 10 digits starting with 6-9)`);
+          continue;
+        }
+        
+        // Check if already exists in pool
+        if (existingNumbers.includes(phone)) {
+          console.log(`Auto-fill: Skipping referral #${processedCount} - phone ${phone} already exists in pool`);
+          continue;
+        }
+        
+        // Try to save the number to Supabase
+        console.log(`Auto-fill: Attempting to save referral phone: ${phone}`);
+        try {
+          const saveResult = await autoLoginAPI("save", { phone: phone });
+          console.log(`Auto-fill: Successfully saved ${phone} to Supabase`, saveResult);
+          addedCount++;
+          existingNumbers.push(phone); // Add to existing to avoid duplicate in same batch
+          showToast(`Auto-filled referral number: ${phone}`, "success");
+        } catch (saveError) {
+          // Log and display the actual error
+          console.error(`Auto-fill: Failed to save referral phone ${phone}:`, saveError);
+          console.error(`Auto-fill: Error details -`, {
+            message: saveError.message,
+            stack: saveError.stack,
+            phone: phone
+          });
+          showToast(`Failed to save referral number ${phone}: ${saveError.message}`, "error");
+          // Continue to next referral instead of breaking
         }
       }
       
+      console.log(`Auto-fill: Processed ${processedCount} referrals, added ${addedCount} new numbers`);
+      
       if (addedCount > 0) {
-        showToast(`Auto-filled ${addedCount} referral number(s)`, "success");
         await updateNumberDisplayFromServer();
       }
       
     } catch (error) {
-      console.error("Fill slots error:", error);
+      console.error("Auto-fill: Critical error in fillEmptySlotsFromReferrals:", error);
+      console.error("Auto-fill: Error stack:", error.stack);
+      showToast("Error syncing referral numbers: " + error.message, "error");
     }
   }
 
