@@ -1287,15 +1287,16 @@
         return;
       }
       
-      // Get referral numbers already in pool (used or unused)
+      // Get all numbers already in pool (used + unused)
       const poolResult = await autoLoginAPI("get_pool");
       const poolNumbers = poolResult.numbers || [];
       const existingNumbers = poolNumbers.map(n => n.phone_number);
       
-      // Find referrals not already in pool
+      // Available slots
       const availableSlots = 3 - currentUnused.length;
       let addedCount = 0;
       
+      // Process referrals sequentially from the beginning
       for (const ref of referrals) {
         if (addedCount >= availableSlots) break;
         const phone = ref.inviteUserPhone;
@@ -1303,6 +1304,7 @@
           try {
             await autoLoginAPI("save", { phone: phone });
             addedCount++;
+            existingNumbers.push(phone); // Add to existing to avoid duplicate in same batch
           } catch (e) {
             // Skip duplicates or errors
           }
