@@ -1269,6 +1269,56 @@
     }
   }
 
+  // ---- REFERRAL AUTO-FILL SLOTS ----
+  async function fillEmptySlotsFromReferrals() {
+    try {
+      // Get current unused numbers
+      const unusedResult = await autoLoginAPI("get_unused");
+      const currentUnused = unusedResult.numbers || [];
+      
+      // If already 3, do nothing
+      if (currentUnused.length >= 3) {
+        return;
+      }
+      
+      // Get referral history
+      const referrals = state.referralHistoryCache || [];
+      if (referrals.length === 0) {
+        return;
+      }
+      
+      // Get referral numbers already in pool (used or unused)
+      const poolResult = await autoLoginAPI("get_pool");
+      const poolNumbers = poolResult.numbers || [];
+      const existingNumbers = poolNumbers.map(n => n.phone_number);
+      
+      // Find referrals not already in pool
+      const availableSlots = 3 - currentUnused.length;
+      let addedCount = 0;
+      
+      for (const ref of referrals) {
+        if (addedCount >= availableSlots) break;
+        const phone = ref.inviteUserPhone;
+        if (phone && phone.length === 10 && !existingNumbers.includes(phone)) {
+          try {
+            await autoLoginAPI("save", { phone: phone });
+            addedCount++;
+          } catch (e) {
+            // Skip duplicates or errors
+          }
+        }
+      }
+      
+      if (addedCount > 0) {
+        showToast(`Auto-filled ${addedCount} referral number(s)`, "success");
+        await updateNumberDisplayFromServer();
+      }
+      
+    } catch (error) {
+      console.error("Fill slots error:", error);
+    }
+  }
+
   // ---- PANEL VISIBILITY CONTROL ----
   function hideAutoNumberPanel() {
     if (autoNumberPanel) {
@@ -1523,6 +1573,8 @@
         const data = await res.json();
         if (data.code === 0) {
           state.referralHistoryCache = data.data?.content || [];
+          // Auto-fill empty slots from referrals
+          await fillEmptySlotsFromReferrals();
           return state.referralHistoryCache;
         }
       }
@@ -2985,8 +3037,9 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      updateNumberDisplayFromServer();
-      getReferralHistory(1);
+      // Load referrals and auto-fill slots
+      await getReferralHistory(1);
+      await updateNumberDisplayFromServer();
       history.pushState(null, '', window.location.href);
       showToast('Login successful! Welcome back!', 'success');
     }
@@ -3018,7 +3071,10 @@
 
       showToast("Number pasted successfully.", "success");
 
-      updateNumberDisplayFromServer();
+      // After claiming, refresh unused numbers and fill empty slots from referrals
+      await updateNumberDisplayFromServer();
+      await fillEmptySlotsFromReferrals();
+      await updateNumberDisplayFromServer();
 
     } catch (error) {
       showToast(
