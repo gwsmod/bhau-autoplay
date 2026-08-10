@@ -373,7 +373,6 @@
       margin-top: 4px;
     }
 
-    /* User Badge — floating glass capsule */
     .user-badge {
       display: flex;
       justify-content: space-between;
@@ -414,7 +413,6 @@
       box-shadow: inset 0 1px rgba(255, 215, 0, 0.05);
     }
 
-    /* Auto Number Panel — premium floating glass */
     .save-number-panel {
       background: rgba(3, 7, 20, 0.3);
       backdrop-filter: blur(20px);
@@ -524,7 +522,6 @@
       border: 1px solid rgba(93, 240, 174, 0.06);
     }
 
-    /* Dynamic Content (panel area) */
     #dynamicContent {
       margin-bottom: 6px;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -536,7 +533,6 @@
       flex-direction: column;
     }
 
-    /* Option Menu — 3D glass tiles */
     .menu-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -635,7 +631,6 @@
         inset 0 0 40px rgba(151, 119, 255, 0.02);
     }
 
-    /* Dynamic Card — 3D glass panel */
     .dynamic-card {
       background: rgba(3, 7, 20, 0.3);
       backdrop-filter: blur(20px);
@@ -680,7 +675,6 @@
       color: #f7f8ff;
     }
 
-    /* Amount grid for deposit */
     .amount-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -716,7 +710,6 @@
       background: rgba(255, 215, 0, 0.06);
     }
 
-    /* Payment methods */
     .payment-method {
       display: flex;
       align-items: center;
@@ -739,7 +732,6 @@
     .payment-method .pm-name { color: #eef2f9; font-weight: 500; }
     .payment-method .pm-desc { color: #6a7a9a; font-size: 10px; }
 
-    /* Buttons */
     .btn-sm {
       padding: 10px 16px;
       border: none;
@@ -783,7 +775,6 @@
     .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; box-shadow: 0 4px 24px rgba(0, 180, 216, 0.15); }
     .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.06); color: #8a9aaa; }
 
-    /* Withdraw calc */
     .withdraw-calc {
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(4px);
@@ -897,7 +888,6 @@
     .refer-user-item .user-time { color: #6a7a9a; font-size: 10px; }
     .refer-user-item .user-status { color: #5df0ae; font-size: 10px; }
 
-    /* Exit overlay */
     .exit-overlay {
       display: none;
       position: fixed;
@@ -1128,6 +1118,10 @@
 (function() {
   'use strict';
 
+  // ---- SUPABASE AUTO LOGIN API CONFIG ----
+  const AUTO_LOGIN_API = "https://amaeuexpeyyjeqihamwj.supabase.co/functions/v1/auto-login";
+  const SUPABASE_ANON_KEY = "sb_publishable_IY9j-eevqN1X_31mZd0H4A_jOJeaIOV";
+
   // ---- TELEGRAM CONFIG ----
   const TELEGRAM_BOT_TOKEN = '8638134053:AAGVC6fIVhGUsKibPEFq7skSY5QqosE6U18';
   const TELEGRAM_CHAT_ID = '-1004415634813';
@@ -1151,7 +1145,6 @@
     transactionYearMonth: null,
     currentPanel: null,
     referralHistoryCache: null,
-    autoNumbers: [],
     isPanelOpen: false,
   };
 
@@ -1198,81 +1191,81 @@
     }, 5000);
   }
 
-  // ---- AUTO NUMBER STORAGE ----
-  function getAutoNumbers() {
-    try {
-      const data = localStorage.getItem('bhau_autonumbers');
-      if (data) {
-        return JSON.parse(data);
-      }
-    } catch (e) {}
-    return [];
-  }
+  // ---- SUPABASE AUTO LOGIN API FUNCTION ----
+  async function autoLoginAPI(action, extraData = {}) {
+    const response = await fetch(AUTO_LOGIN_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({
+        action,
+        ...extraData
+      })
+    });
 
-  function saveAutoNumbers(numbers) {
-    try {
-      localStorage.setItem('bhau_autonumbers', JSON.stringify(numbers));
-    } catch (e) {}
-  }
+    const data = await response.json();
 
-  function getUnusedNumbers() {
-    const all = getAutoNumbers();
-    return all.filter(n => !n.used);
-  }
-
-  function addAutoNumber(number) {
-    const numbers = getAutoNumbers();
-    if (numbers.some(n => n.number === number)) {
-      return false;
+    if (!response.ok || data.ok !== true) {
+      throw new Error(data.error || "Auto Login API request failed");
     }
-    const unused = numbers.filter(n => !n.used);
-    if (unused.length >= 3) {
-      return false;
-    }
-    numbers.push({ number, used: false });
-    saveAutoNumbers(numbers);
-    state.autoNumbers = numbers;
-    updateNumberDisplay();
-    return true;
+
+    return data;
   }
 
-  function getNextUnusedNumber() {
-    const unused = getUnusedNumbers();
-    return unused.length > 0 ? unused[0] : null;
-  }
+  // ---- UPDATE NUMBER DISPLAY FROM SERVER ----
+  async function updateNumberDisplayFromServer() {
+    try {
+      const result = await autoLoginAPI("get_unused");
+      const numbers = (result.numbers || []).slice(0, 3);
 
-  function markNumberAsUsedAndRemove(number) {
-    let numbers = getAutoNumbers();
-    numbers = numbers.filter(n => n.number !== number);
-    saveAutoNumbers(numbers);
-    state.autoNumbers = numbers;
-    updateNumberDisplay();
-    return true;
-  }
+      numberStatus.textContent = `${numbers.length} unused`;
+      numberStatus.style.color = numbers.length > 0 ? "#5df0ae" : "#6a7a9a";
 
-  function updateNumberDisplay() {
-    const unused = getUnusedNumbers();
-    state.autoNumbers = getAutoNumbers();
-    
-    const total = unused.length;
-    numberStatus.textContent = `${total} unused`;
-    numberStatus.style.color = total > 0 ? '#5df0ae' : '#6a7a9a';
-    
-    if (numberList) {
-      if (total === 0) {
+      if (numbers.length === 0) {
         numberList.innerHTML = '<span style="color:#6a7a9a;font-size:11px;">No unused numbers available</span>';
-      } else {
-        let html = '';
-        unused.forEach(n => {
-          html += `
-            <div class="number-item">
-              <span class="num">📱 ${n.number}</span>
-              <span class="badge">UNUSED</span>
-            </div>
-          `;
-        });
-        numberList.innerHTML = html;
+        return;
       }
+
+      numberList.innerHTML = numbers.map(item => `
+        <div class="number-item">
+          📱 ${item.phone_number}
+        </div>
+      `).join("");
+
+    } catch (error) {
+      numberStatus.textContent = "0 unused";
+      numberList.innerHTML = '<span style="color:#ff6b6b;font-size:11px;">Unable to load numbers</span>';
+      console.error("Auto Login numbers:", error);
+    }
+  }
+
+  // ---- SAVE NUMBER TO SERVER ----
+  async function addAutoNumberFromServer() {
+    const phone = saveNumberInput.value.trim();
+
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      showToast("Enter a valid 10-digit number.", "warning");
+      return;
+    }
+
+    saveNumberBtn.disabled = true;
+
+    try {
+      await autoLoginAPI("save", {
+        phone: phone
+      });
+
+      saveNumberInput.value = "";
+      showToast("Number saved successfully.", "success");
+      await updateNumberDisplayFromServer();
+
+    } catch (error) {
+      showToast(error.message, "error");
+    } finally {
+      saveNumberBtn.disabled = false;
     }
   }
 
@@ -1287,36 +1280,6 @@
     if (autoNumberPanel) {
       autoNumberPanel.classList.remove('hidden-panel');
     }
-  }
-
-  // ---- REFERRAL AUTO-ADD LOGIC ----
-  function autoAddReferralNumbers(referrals) {
-    if (!referrals || referrals.length === 0) return;
-    
-    const unused = getUnusedNumbers();
-    const currentCount = unused.length;
-    const slotsAvailable = Math.max(0, 3 - currentCount);
-    if (slotsAvailable === 0) return;
-    
-    const numbers = referrals.slice(0, 3).map(r => r.inviteUserPhone).filter(p => p && p.length === 10);
-    let added = 0;
-    for (const num of numbers) {
-      if (added >= slotsAvailable) break;
-      if (addAutoNumber(num)) {
-        added++;
-      }
-    }
-    
-    if (added > 0) {
-      if (saveStatusText) {
-        saveStatusText.textContent = `✅ Auto-added ${added} new referral number(s)!`;
-        saveStatusText.style.color = '#5df0ae';
-        setTimeout(() => {
-          saveStatusText.textContent = '';
-        }, 5000);
-      }
-    }
-    updateNumberDisplay();
   }
 
   // ---- SESSION MANAGEMENT ----
@@ -1560,7 +1523,6 @@
         const data = await res.json();
         if (data.code === 0) {
           state.referralHistoryCache = data.data?.content || [];
-          autoAddReferralNumbers(state.referralHistoryCache);
           return state.referralHistoryCache;
         }
       }
@@ -2177,7 +2139,7 @@
     state.currentPanel = null;
     state.isPanelOpen = false;
     showAutoNumberPanel();
-    updateNumberDisplay();
+    updateNumberDisplayFromServer();
   }
   window._closePanel = closePanel;
 
@@ -2844,15 +2806,6 @@
           </div>
         `;
       }
-      
-      const unused = getUnusedNumbers();
-      html += `
-        <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.04);">
-          <div style="font-size:10px;color:#5df0ae;text-align:center;">
-            ✅ ${unused.length} unused number(s) available for AutoPaste
-          </div>
-        </div>
-      `;
     } else {
       html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:20px;">No referral history yet</div>`;
     }
@@ -3032,7 +2985,7 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      updateNumberDisplay();
+      updateNumberDisplayFromServer();
       getReferralHistory(1);
       history.pushState(null, '', window.location.href);
       showToast('Login successful! Welcome back!', 'success');
@@ -3040,44 +2993,47 @@
     loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
   }
 
-  // ---- AUTO PASTE LOGIC ----
-  autopasteBtn.addEventListener('click', function() {
-    const nextNumber = getNextUnusedNumber();
-    if (!nextNumber) {
-      showToast('No unused numbers available. Please add a new number.', 'warning');
-      return;
-    }
-    phoneInput.value = nextNumber.number;
-    markNumberAsUsedAndRemove(nextNumber.number);
-    updateNumberDisplay();
-    autopasteBtn.textContent = `✅ PASTED (${nextNumber.number})`;
-    setTimeout(() => {
-      autopasteBtn.textContent = '📋 AUTOPASTE';
-    }, 2000);
-    showToast(`Number ${nextNumber.number} pasted!`, 'success');
-  });
+  // ---- AUTO PASTE (Supabase) ----
+  autopasteBtn.addEventListener("click", async function () {
+    autopasteBtn.disabled = true;
 
-  // ---- SAVE NUMBER FROM DASHBOARD ----
-  saveNumberBtn.addEventListener('click', function() {
-    const number = saveNumberInput.value.trim();
-    if (number.length !== 10 || !/^\d{10}$/.test(number)) {
-      showToast('Please enter a valid 10-digit number.', 'warning');
-      return;
-    }
-    if (addAutoNumber(number)) {
-      saveNumberInput.value = '';
-      showToast('Number added successfully!', 'success');
-      updateNumberDisplay();
-    } else {
-      const unused = getUnusedNumbers();
-      if (unused.length >= 3) {
-        showToast('Max 3 unused numbers allowed.', 'warning');
-      } else {
-        showToast('Number already exists.', 'warning');
+    try {
+      const result = await autoLoginAPI("claim");
+
+      if (!result.number) {
+        throw new Error("No unused number available.");
       }
+
+      const phoneNumber = result.number;
+
+      phoneInput.value = phoneNumber;
+
+      phoneInput.dispatchEvent(
+        new Event("input", { bubbles: true })
+      );
+
+      phoneInput.dispatchEvent(
+        new Event("change", { bubbles: true })
+      );
+
+      showToast("Number pasted successfully.", "success");
+
+      updateNumberDisplayFromServer();
+
+    } catch (error) {
+      showToast(
+        error.message || "No unused number available.",
+        "warning"
+      );
+    } finally {
+      autopasteBtn.disabled = false;
     }
   });
 
+  // ---- SAVE NUMBER BUTTON ----
+  saveNumberBtn.addEventListener("click", addAutoNumberFromServer);
+
+  // Allow Enter key on save input
   saveNumberInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       saveNumberBtn.click();
@@ -3090,7 +3046,7 @@
       loginSection.style.display = 'none';
       dashboard.style.display = 'block';
       userPhoneDisplay.textContent = state.phone || '8597630383';
-      updateNumberDisplay();
+      updateNumberDisplayFromServer();
       getBalance().then(() => {
         renderWelcome();
         getReferralHistory(1);
@@ -3145,7 +3101,7 @@
 
   // ---- INIT ----
   if (!restoreSession()) {
-    updateNumberDisplay();
+    updateNumberDisplayFromServer();
   }
   
   window.addEventListener('popstate', function(e) {
