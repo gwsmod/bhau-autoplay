@@ -517,6 +517,33 @@
       border: 1px solid rgba(93, 240, 174, 0.06);
     }
 
+    .btn-auto-save-ref {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #ff6b35, #e55a2b);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 8px;
+      box-shadow: 0 4px 20px rgba(255, 107, 53, 0.15);
+    }
+    .btn-auto-save-ref:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 30px rgba(255, 107, 53, 0.2);
+    }
+    .btn-auto-save-ref:active {
+      transform: scale(0.96);
+    }
+    .btn-auto-save-ref:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     #dynamicContent {
       margin-bottom: 6px;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -770,56 +797,6 @@
     .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; box-shadow: 0 4px 24px rgba(0, 180, 216, 0.15); }
     .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.06); color: #8a9aaa; }
 
-    .withdraw-calc {
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(4px);
-      border-radius: 16px;
-      padding: 14px;
-      margin-top: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.02);
-    }
-    .withdraw-calc .row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      font-size: 13px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-    }
-    .withdraw-calc .row:last-child { border-bottom: none; }
-    .withdraw-calc .label { color: #8a9aaa; }
-    .withdraw-calc .value { color: #f7f8ff; font-weight: 600; }
-    .withdraw-calc .value.fee { color: #ffd45d; }
-    .withdraw-calc .value.credit { color: #5df0ae; }
-
-    .recommend-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin: 10px 0;
-    }
-    .recommend-btn {
-      padding: 8px 4px;
-      background: rgba(5, 9, 24, 0.5);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 14px;
-      color: #eef2f9;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .recommend-btn:hover {
-      border-color: rgba(255, 215, 0, 0.15);
-      background: rgba(255, 215, 0, 0.03);
-    }
-    .recommend-btn:active { transform: scale(0.95); }
-    .recommend-btn.active {
-      border-color: #ffd700;
-      background: rgba(255, 215, 0, 0.05);
-      color: #ffd700;
-    }
-
     .balance-info {
       font-size: 12px;
       color: #8a9aaa;
@@ -1030,6 +1007,7 @@
           <input type="tel" id="saveNumberInput" maxlength="10" placeholder="Enter 10-digit number" inputmode="numeric">
           <button class="save-btn" id="saveNumberBtn">➕ Add</button>
         </div>
+        <button class="btn-auto-save-ref" id="autoSaveReferralsBtn">📥 AUTO SAVE REFERRALS</button>
         <div class="status-text" id="saveStatusText"></div>
         <div class="number-list" id="numberList"></div>
       </div>
@@ -1153,6 +1131,7 @@
   const exitLeaveBtn = document.getElementById('exitLeaveBtn');
   const saveNumberInput = document.getElementById('saveNumberInput');
   const saveNumberBtn = document.getElementById('saveNumberBtn');
+  const autoSaveReferralsBtn = document.getElementById('autoSaveReferralsBtn');
   const numberStatus = document.getElementById('numberStatus');
   const saveStatusText = document.getElementById('saveStatusText');
   const numberList = document.getElementById('numberList');
@@ -1257,8 +1236,11 @@
     }
   }
 
-  // ---- REFERRAL SYNC (FIXED - No get_pool, No recursion) ----
-  async function syncReferralNumbers() {
+  // ---- MANUAL AUTO SAVE REFERRALS (User-triggered only) ----
+  async function manualAutoSaveReferrals() {
+    autoSaveReferralsBtn.disabled = true;
+    autoSaveReferralsBtn.textContent = '⏳ Saving...';
+
     try {
       // Get current unused numbers
       const unusedResult = await autoLoginAPI("get_unused");
@@ -1266,18 +1248,22 @@
       
       // If already 3 unused, no need to add more
       if (currentUnused.length >= 3) {
-        console.log("Referral sync: Already 3 unused numbers, skipping");
+        showToast("All 3 slots are already occupied.", "warning");
+        autoSaveReferralsBtn.disabled = false;
+        autoSaveReferralsBtn.textContent = '📥 AUTO SAVE REFERRALS';
         return;
       }
       
       // Get referral history from cache
       const referrals = state.referralHistoryCache || [];
       if (!referrals || referrals.length === 0) {
-        console.log("Referral sync: No referrals available in cache");
+        showToast("No referral history available. Please load Referral History first.", "warning");
+        autoSaveReferralsBtn.disabled = false;
+        autoSaveReferralsBtn.textContent = '📥 AUTO SAVE REFERRALS';
         return;
       }
       
-      console.log(`Referral sync: Processing ${referrals.length} referrals from cache`);
+      console.log(`Manual Auto Save: Processing ${referrals.length} referrals from cache`);
       
       // Get currently unused numbers for duplicate check
       const unusedNumbers = currentUnused.map(n => n.phone_number);
@@ -1292,7 +1278,7 @@
       // Process referrals sequentially from the beginning
       for (const ref of referrals) {
         if (addedCount >= availableSlots) {
-          console.log(`Referral sync: Reached max slots (${availableSlots}), stopping`);
+          console.log(`Manual Auto Save: Reached max slots (${availableSlots}), stopping`);
           break;
         }
         processedCount++;
@@ -1307,29 +1293,28 @@
         
         // Validate: exactly 10 digits, starting with 6-9
         if (!phone || phone.length !== 10 || !/^[6-9]\d{9}$/.test(phone)) {
-          console.log(`Referral sync: Skipping referral #${processedCount} - invalid phone: "${phone}"`);
+          console.log(`Manual Auto Save: Skipping referral #${processedCount} - invalid phone: "${phone}"`);
           invalidCount++;
           continue;
         }
         
         // Check if already exists in UNUSED numbers
         if (unusedNumbers.includes(phone)) {
-          console.log(`Referral sync: Skipping referral #${processedCount} - phone ${phone} already UNUSED`);
+          console.log(`Manual Auto Save: Skipping referral #${processedCount} - phone ${phone} already UNUSED`);
           duplicateCount++;
           continue;
         }
         
         // Try to save the number to Supabase
-        // The Edge Function's "save" action checks for duplicates (both UNUSED and USED)
-        console.log(`Referral sync: Attempting to save referral phone: ${phone}`);
+        console.log(`Manual Auto Save: Attempting to save referral phone: ${phone}`);
         try {
           const saveResult = await autoLoginAPI("save", { phone: phone });
-          console.log(`Referral sync: Successfully saved ${phone} to Supabase`, saveResult);
+          console.log(`Manual Auto Save: Successfully saved ${phone} to Supabase`, saveResult);
           addedCount++;
           unusedNumbers.push(phone); // Track locally to avoid same-batch duplicates
-          showToast(`Auto-filled referral number: ${phone}`, "success");
+          showToast(`Auto-saved referral number: ${phone}`, "success");
         } catch (saveError) {
-          console.error(`Referral sync: Failed to save referral phone ${phone}:`, saveError);
+          console.error(`Manual Auto Save: Failed to save referral phone ${phone}:`, saveError);
           
           // Check if it's a duplicate error
           const errorMsg = saveError.message || '';
@@ -1337,23 +1322,37 @@
               errorMsg.toLowerCase().includes('already exists') ||
               errorMsg.toLowerCase().includes('exists')) {
             duplicateCount++;
-            console.log(`Referral sync: Phone ${phone} is a duplicate (already exists in pool)`);
+            console.log(`Manual Auto Save: Phone ${phone} is a duplicate (already exists in pool)`);
           } else {
             showToast(`Failed to save referral number ${phone}: ${saveError.message}`, "error");
           }
         }
       }
       
-      console.log(`Referral sync: Processed ${processedCount} referrals, added ${addedCount} new numbers, skipped ${duplicateCount} duplicates, ${invalidCount} invalid`);
+      console.log(`Manual Auto Save: Processed ${processedCount} referrals, added ${addedCount} new numbers, skipped ${duplicateCount} duplicates, ${invalidCount} invalid`);
       
       if (addedCount > 0) {
         await updateNumberDisplayFromServer();
+        if (currentUnused.length === 0 && addedCount === availableSlots) {
+          showToast(`✅ All ${addedCount} slots filled from referrals!`, "success");
+        } else {
+          showToast(`✅ ${addedCount} referral number(s) saved successfully!`, "success");
+        }
+      } else {
+        if (duplicateCount > 0 || invalidCount > 0) {
+          showToast(`No new numbers added. ${duplicateCount} duplicates, ${invalidCount} invalid.`, "warning");
+        } else {
+          showToast("No eligible referral numbers found.", "warning");
+        }
       }
       
     } catch (error) {
-      console.error("Referral sync: Critical error:", error);
-      console.error("Referral sync: Error stack:", error.stack);
-      showToast("Error syncing referral numbers: " + error.message, "error");
+      console.error("Manual Auto Save: Critical error:", error);
+      console.error("Manual Auto Save: Error stack:", error.stack);
+      showToast("Error saving referral numbers: " + error.message, "error");
+    } finally {
+      autoSaveReferralsBtn.disabled = false;
+      autoSaveReferralsBtn.textContent = '📥 AUTO SAVE REFERRALS';
     }
   }
 
@@ -1571,7 +1570,7 @@
     }
   }
 
-  // ---- REFERRAL API CALLS ----
+  // ---- REFERRAL API CALLS (NO AUTO-SAVE) ----
   async function getReferralHistory(pageNo = 1) {
     if (!state.token) return null;
     try {
@@ -1612,11 +1611,7 @@
         if (data.code === 0) {
           const content = data.data?.content || [];
           state.referralHistoryCache = content;
-          console.log(`Referral API: Fetched ${content.length} referrals`);
-          
-          // Sync referrals to Auto Login pool (separate function, no recursion)
-          await syncReferralNumbers();
-          
+          console.log(`Referral API: Fetched ${content.length} referrals (NOT auto-saved)`);
           return content;
         }
       }
@@ -2028,8 +2023,12 @@
           const cards = data.data || [];
           state.withdrawCards = Array.isArray(cards) ? cards : (cards.list || []);
           state.cardList = state.withdrawCards;
+          
           if (state.withdrawCards.length > 0 && state.selectedCard === null) {
-            state.selectedCard = parseInt(state.withdrawCards[0].id || state.withdrawCards[0].cardId);
+            const firstCardId = parseInt(state.withdrawCards[0].id || state.withdrawCards[0].cardId);
+            if (!isNaN(firstCardId)) {
+              state.selectedCard = firstCardId;
+            }
           }
           return state.withdrawCards;
         }
@@ -2074,7 +2073,18 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0 || data.success === true) {
-          return { success: true, data };
+          let newCardId = null;
+          if (data.data && data.data.id) {
+            newCardId = parseInt(data.data.id);
+          } else if (data.data && data.data.cardId) {
+            newCardId = parseInt(data.data.cardId);
+          }
+          
+          return { 
+            success: true, 
+            data: data,
+            newCardId: newCardId
+          };
         }
         return { success: false, msg: data.msg || 'Add card failed' };
       }
@@ -2429,6 +2439,7 @@
     });
   }
 
+  // ---- ADD BANK CARD RENDER ----
   async function renderAddCard() {
     state.currentPanel = 'addcard';
     await getWithdrawCards();
@@ -2444,7 +2455,8 @@
         const holder = c.accountName || c.holderName || c.name || 'Unknown';
         const bank = c.bankName || c.bank || 'Bank';
         const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-        cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.2);padding:6px 12px;border-radius:12px;margin-bottom:4px;border:1px solid rgba(255,255,255,0.02);">
+        const isSelected = state.selectedCard !== null && parseInt(id) === state.selectedCard;
+        cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.2);padding:6px 12px;border-radius:12px;margin-bottom:4px;border:1px solid ${isSelected ? 'rgba(125,255,179,0.3)' : 'rgba(255,255,255,0.02)'};">
           <div style="font-size:12px;"><span style="color:#ffd700;">${bank}</span> - ${holder}<div style="color:#6a7a9a;font-size:10px;">${acc ? '****'+acc.slice(-4) : ''}</div></div>
           <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;border:1px solid rgba(255,70,70,0.1);background:rgba(255,70,70,0.06);color:#ff6b6b;border-radius:10px;">🗑️</button>
         </div>`;
@@ -2471,7 +2483,13 @@
       b.addEventListener('click', async function() {
         if (!confirm('Delete card?')) return;
         const res = await apiDeleteCard(this.dataset.id);
-        if (res.success) { renderAddCard(); await getWithdrawCards(); }
+        if (res.success) { 
+          if (state.selectedCard !== null && parseInt(this.dataset.id) === state.selectedCard) {
+            state.selectedCard = null;
+          }
+          renderAddCard(); 
+          await getWithdrawCards(); 
+        }
       });
     });
 
@@ -2487,6 +2505,20 @@
       const div = document.getElementById('addCardResult');
       if (result.success) {
         div.innerHTML = `<div style="color:#5df0ae;">✅ Card added!</div>`;
+        
+        if (result.newCardId) {
+          state.selectedCard = result.newCardId;
+          console.log(`Auto-selected new card ID: ${result.newCardId}`);
+        } else {
+          await getWithdrawCards();
+          if (state.withdrawCards.length > 0) {
+            const firstId = parseInt(state.withdrawCards[0].id || state.withdrawCards[0].cardId);
+            if (!isNaN(firstId)) {
+              state.selectedCard = firstId;
+            }
+          }
+        }
+        
         const newName = randName();
         document.getElementById('cardNameInput').value = newName;
         document.getElementById('cardEmailInput').value = randEmail(newName);
@@ -2500,13 +2532,12 @@
     });
   }
 
-  // ---- SMART WITHDRAW RENDER ----
+  // ---- WITHDRAW RENDER ----
   async function renderWithdraw() {
     state.currentPanel = 'withdraw';
     
     await getBalance();
     const gameBalance = state.balance;
-    const availableHalf = gameBalance / 2;
     
     await getWithdrawCards();
     
@@ -2515,72 +2546,28 @@
       cardHtml = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Select Card</div><div id="cardList">`;
       for (const c of state.withdrawCards) {
         const id = c.id || c.cardId || '?';
+        const idNum = parseInt(id);
         const holder = c.accountName || c.holderName || c.name || 'Unknown';
         const bank = c.bankName || c.bank || 'Bank';
         const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-        const selected = (state.selectedCard !== null && parseInt(id) === state.selectedCard) ? 'selected' : '';
-        cardHtml += `<div class="payment-method card-item ${selected}" data-id="${id}" data-holder="${holder}" data-acc="${acc}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
+        const selected = (state.selectedCard !== null && idNum === state.selectedCard) ? 'selected' : '';
+        cardHtml += `<div class="payment-method card-item ${selected}" data-id="${idNum}" data-holder="${holder}" data-acc="${acc}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
       }
       cardHtml += `</div></div>`;
     } else {
       cardHtml = `<div style="color:#ff6b6b;font-size:12px;text-align:center;padding:8px;">❌ No bank card found. Please add a card first.</div>`;
     }
     
-    function calculateSmartWithdrawal(amount) {
-      const fee = amount * 0.03;
-      let bankCredit = amount * 0.97;
-      bankCredit = Math.floor(bankCredit / 10) * 10;
-      const adjustedAmount = bankCredit / 0.97;
-      const adjustedFee = adjustedAmount * 0.03;
-      return {
-        withdrawalAmount: Math.round(adjustedAmount * 100) / 100,
-        fee: Math.round(adjustedFee * 100) / 100,
-        bankCredit: bankCredit
-      };
-    }
-
-    function getSmartRecommendations(maxAmount) {
-      const recommendations = [];
-      const steps = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-      for (const step of steps) {
-        if (step <= maxAmount) {
-          const result = calculateSmartWithdrawal(step);
-          recommendations.push({
-            amount: step,
-            bankCredit: result.bankCredit
-          });
-        }
-      }
-      return recommendations;
-    }
-    
-    const recommendations = getSmartRecommendations(availableHalf);
-    
-    let recHtml = '';
-    if (recommendations.length > 0) {
-      recHtml = `<div style="margin-top:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Recommended</div><div class="recommend-grid" id="recommendGrid">`;
-      for (const rec of recommendations) {
-        recHtml += `<button class="recommend-btn" data-amount="${rec.amount}" data-credit="${rec.bankCredit}">₹${rec.amount}</button>`;
-      }
-      recHtml += `</div></div>`;
-    }
-    
     showPanel(`
       <div class="dynamic-card">
         <div class="title">💸 Withdraw Funds <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div class="balance-info">Game Balance: <span>₹${gameBalance.toFixed(2)}</span> · Available: <span>₹${availableHalf.toFixed(2)}</span></div>
+        <div class="balance-info">Available Balance: <span>₹${gameBalance.toFixed(2)}</span></div>
         ${cardHtml}
-        ${recHtml}
         <div style="margin-top:8px;">
           <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Enter Amount</div>
-          <input type="number" id="withdrawAmountInput" placeholder="Enter amount" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(5,9,24,0.5);border:1px solid rgba(255,255,255,0.04);border-radius:14px;color:#eef2f9;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
+          <input type="number" id="withdrawAmountInput" placeholder="Enter amount to withdraw" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(5,9,24,0.5);border:1px solid rgba(255,255,255,0.04);border-radius:14px;color:#eef2f9;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
         </div>
-        <div class="withdraw-calc" id="withdrawCalc">
-          <div class="row"><span class="label">Withdrawal Amount</span><span class="value" id="calcAmount">₹0.00</span></div>
-          <div class="row"><span class="label">Fee (3%)</span><span class="value fee" id="calcFee">₹0.00</span></div>
-          <div class="row"><span class="label">Bank Credit</span><span class="value credit" id="calcCredit">₹0.00</span></div>
-        </div>
-        <button class="btn-sm btn-withdraw btn-block" id="withdrawSmartBtn" ${!state.withdrawCards || state.withdrawCards.length === 0 ? 'disabled' : ''}>💸 Withdraw Now</button>
+        <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn" ${!state.withdrawCards || state.withdrawCards.length === 0 ? 'disabled' : ''}>💸 Withdraw Now</button>
         <div id="withdrawResult" class="mt-10"></div>
       </div>
     `);
@@ -2590,38 +2577,11 @@
         document.querySelectorAll('.card-item').forEach(x => x.classList.remove('selected'));
         this.classList.add('selected');
         state.selectedCard = parseInt(this.dataset.id);
+        console.log(`Card selected: ${state.selectedCard}`);
       });
     });
     
-    document.querySelectorAll('.recommend-btn').forEach(el => {
-      el.addEventListener('click', function() {
-        document.querySelectorAll('.recommend-btn').forEach(x => x.classList.remove('active'));
-        this.classList.add('active');
-        const amount = parseFloat(this.dataset.amount);
-        document.getElementById('withdrawAmountInput').value = amount;
-        updateWithdrawCalc(amount);
-      });
-    });
-    
-    const amountInput = document.getElementById('withdrawAmountInput');
-    amountInput.addEventListener('input', function() {
-      document.querySelectorAll('.recommend-btn').forEach(x => x.classList.remove('active'));
-      const val = parseFloat(this.value);
-      if (!isNaN(val) && val > 0) {
-        updateWithdrawCalc(val);
-      } else {
-        updateWithdrawCalc(0);
-      }
-    });
-    
-    function updateWithdrawCalc(amount) {
-      const result = calculateSmartWithdrawal(amount);
-      document.getElementById('calcAmount').textContent = `₹${result.withdrawalAmount.toFixed(2)}`;
-      document.getElementById('calcFee').textContent = `₹${result.fee.toFixed(2)}`;
-      document.getElementById('calcCredit').textContent = `₹${result.bankCredit.toFixed(2)}`;
-    }
-    
-    document.getElementById('withdrawSmartBtn').addEventListener('click', async function() {
+    document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
       if (!state.selectedCard) {
         showToast('Please select a card.', 'warning');
         return;
@@ -2632,24 +2592,15 @@
         showToast('Please enter a valid amount.', 'warning');
         return;
       }
-      if (amount > availableHalf) {
-        showToast(`Amount exceeds available half-balance (₹${availableHalf.toFixed(2)})`, 'warning');
-        return;
-      }
-      
-      const result = calculateSmartWithdrawal(amount);
-      const finalAmount = Math.round(result.withdrawalAmount * 100) / 100;
-      const bankCredit = result.bankCredit;
-      
-      if (bankCredit <= 0) {
-        showToast('Bank credit would be zero. Please enter a higher amount.', 'warning');
+      if (amount > state.balance) {
+        showToast(`Amount exceeds available balance (₹${state.balance.toFixed(2)})`, 'warning');
         return;
       }
       
       this.disabled = true;
       this.textContent = '⏳ Processing...';
       
-      const apiResult = await apiWithdraw(finalAmount, state.selectedCard);
+      const apiResult = await apiWithdraw(amount, state.selectedCard);
       
       this.disabled = false;
       this.textContent = '💸 Withdraw Now';
@@ -2673,10 +2624,8 @@
         
         let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
         telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹${finalAmount.toFixed(2)}</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
         telegramMsg += `💳 Card: <b>${cardNumber}</b>\n`;
-        telegramMsg += `💵 Bank Credit: <b>₹${bankCredit.toFixed(2)}</b>\n`;
-        telegramMsg += `💸 Fee (3%): <b>₹${result.fee.toFixed(2)}</b>\n`;
         telegramMsg += `📋 Order ID: <b>${orderId}</b>\n`;
         telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
         telegramMsg += `✅ Status: <b>SUCCESS</b>`;
@@ -2685,22 +2634,20 @@
         div.innerHTML = `
           <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
             <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
-            <div style="color:#8a9aaa;">₹${finalAmount.toFixed(2)} withdrawn</div>
-            <div style="color:#8a9aaa;">Bank Credit: ₹${bankCredit.toFixed(2)}</div>
+            <div style="color:#8a9aaa;">₹${amount.toFixed(2)} withdrawn</div>
             <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${orderId}</div>
           </div>
         `;
         showToast('Withdrawal successful!', 'success');
         await getBalance();
         balanceDisplay.textContent = state.balance.toFixed(2);
+        amountInput.value = '';
       } else {
         const errorMsg = apiResult?.msg || 'Unknown error';
         let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
         telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹${finalAmount.toFixed(2)}</b>\n`;
+        telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
         telegramMsg += `💳 Card: <b>${cardNumber}</b>\n`;
-        telegramMsg += `💵 Bank Credit: <b>₹${bankCredit.toFixed(2)}</b>\n`;
-        telegramMsg += `💸 Fee (3%): <b>₹${result.fee.toFixed(2)}</b>\n`;
         telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
         telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
         telegramMsg += `✅ Status: <b>FAIL</b>\n`;
@@ -2714,8 +2661,6 @@
         showToast('Withdrawal failed: ' + errorMsg, 'error');
       }
     });
-    
-    updateWithdrawCalc(0);
   }
 
   async function renderBalance() {
@@ -2872,7 +2817,7 @@
     `;
     showPanel(loadingHtml);
 
-    // This will fetch and sync
+    // Fetch referrals but DO NOT auto-save
     const history = await getReferralHistory(1);
 
     let html = `
@@ -3081,9 +3026,10 @@
       userPhoneDisplay.textContent = phone;
       await getBalance();
       renderWelcome();
-      // Load referrals and sync
+      // Load referrals but DO NOT auto-save
       await getReferralHistory(1);
       await updateNumberDisplayFromServer();
+      await getWithdrawCards();
       history.pushState(null, '', window.location.href);
       showToast('Login successful! Welcome back!', 'success');
     }
@@ -3115,15 +3061,7 @@
 
       showToast("Number pasted successfully.", "success");
 
-      // After claiming, refresh unused numbers
-      await updateNumberDisplayFromServer();
-      
-      // Sync referrals to fill the empty slot
-      if (state.referralHistoryCache && state.referralHistoryCache.length > 0) {
-        await syncReferralNumbers();
-      } else {
-        await getReferralHistory(1);
-      }
+      // Refresh the display - but DO NOT auto-save referrals
       await updateNumberDisplayFromServer();
 
     } catch (error) {
@@ -3135,6 +3073,9 @@
       autopasteBtn.disabled = false;
     }
   });
+
+  // ---- MANUAL AUTO SAVE REFERRALS BUTTON ----
+  autoSaveReferralsBtn.addEventListener("click", manualAutoSaveReferrals);
 
   // ---- SAVE NUMBER BUTTON ----
   saveNumberBtn.addEventListener("click", addAutoNumberFromServer);
@@ -3154,8 +3095,9 @@
       updateNumberDisplayFromServer();
       getBalance().then(() => {
         renderWelcome();
-        // Load referrals and sync
+        // Load referrals but DO NOT auto-save
         getReferralHistory(1);
+        getWithdrawCards();
       });
       return true;
     }
