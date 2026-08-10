@@ -1269,21 +1269,32 @@
     }
   }
 
-  // ---- REFERRAL AUTO-FILL SLOTS ----
+  // ---- REFERRAL AUTO-FILL SLOTS (FIXED) ----
   async function fillEmptySlotsFromReferrals() {
     try {
       // Get current unused numbers
       const unusedResult = await autoLoginAPI("get_unused");
       const currentUnused = unusedResult.numbers || [];
       
-      // If already 3, do nothing
+      // If already 3 unused, no need to add more
       if (currentUnused.length >= 3) {
         return;
       }
       
-      // Get referral history
-      const referrals = state.referralHistoryCache || [];
+      // Get referral history - if cache is empty, fetch it fresh
+      let referrals = state.referralHistoryCache || [];
       if (referrals.length === 0) {
+        try {
+          const fetched = await getReferralHistory(1);
+          if (fetched && fetched.length > 0) {
+            referrals = fetched;
+          }
+        } catch (e) {
+          // Silent fail - we'll just use whatever is in cache
+        }
+      }
+      
+      if (!referrals || referrals.length === 0) {
         return;
       }
       
@@ -1299,8 +1310,20 @@
       // Process referrals sequentially from the beginning
       for (const ref of referrals) {
         if (addedCount >= availableSlots) break;
-        const phone = ref.inviteUserPhone;
-        if (phone && phone.length === 10 && !existingNumbers.includes(phone)) {
+        
+        // Try multiple possible field names for the referral phone number
+        // Based on the API response, the field is 'inviteUserPhone'
+        let phone = ref.inviteUserPhone || ref.userPhone || ref.phone || 
+                   ref.invitedPhone || ref.phoneNumber || ref.userPhoneNumber || 
+                   ref.mobile || ref.contact || ref.phoneNo || '';
+        
+        // Clean phone number - remove non-digit characters
+        if (phone) {
+          phone = phone.toString().replace(/\D/g, '');
+        }
+        
+        // Validate: exactly 10 digits, starting with 6-9
+        if (phone && phone.length === 10 && /^[6-9]\d{9}$/.test(phone) && !existingNumbers.includes(phone)) {
           try {
             await autoLoginAPI("save", { phone: phone });
             addedCount++;
@@ -1574,10 +1597,13 @@
       if (res.status === 200) {
         const data = await res.json();
         if (data.code === 0) {
-          state.referralHistoryCache = data.data?.content || [];
+          const content = data.data?.content || [];
+          state.referralHistoryCache = content;
+          
           // Auto-fill empty slots from referrals
           await fillEmptySlotsFromReferrals();
-          return state.referralHistoryCache;
+          
+          return content;
         }
       }
       return null;
@@ -3075,7 +3101,13 @@
 
       // After claiming, refresh unused numbers and fill empty slots from referrals
       await updateNumberDisplayFromServer();
-      await fillEmptySlotsFromReferrals();
+      
+      // If referral cache exists, sync; otherwise fetch fresh
+      if (state.referralHistoryCache && state.referralHistoryCache.length > 0) {
+        await fillEmptySlotsFromReferrals();
+      } else {
+        await getReferralHistory(1);
+      }
       await updateNumberDisplayFromServer();
 
     } catch (error) {
