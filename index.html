@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -683,7 +684,513 @@
     @media (max-width: 380px) {
       .menu-grid { grid-template-columns: 1fr 1fr; }
     }
-  </style>
+  
+/* ===== BHAU LOTTERY DASHBOARD V2 — DASHBOARD ONLY ===== */
+#dashboard{
+  margin-top:4px;
+}
+#dashboard .user-badge{
+  min-height:112px;
+  padding:16px 20px;
+  border-radius:27px;
+  background:linear-gradient(135deg,rgba(39,15,72,.72),rgba(8,7,25,.92));
+  border:1px solid rgba(178,85,255,.65);
+  box-shadow:0 0 25px rgba(126,38,255,.18),inset 0 0 20px rgba(255,255,255,.025);
+  position:relative;
+  overflow:hidden;
+}
+#dashboard .user-badge:before{
+  content:"";
+  position:absolute;
+  width:180px;height:180px;border-radius:50%;
+  left:-80px;top:-100px;
+  background:rgba(168,70,255,.18);
+  filter:blur(35px);
+  pointer-events:none;
+}
+#dashboard .user-badge .phone{
+  font-size:18px;
+  font-weight:900;
+  color:#fff;
+}
+#dashboard .user-badge .phone::before{content:"👤";font-size:30px;margin-right:10px}
+#dashboard .user-badge .balance{
+  margin-top:7px;
+  padding:0;
+  background:none;
+  border:0;
+  color:#aaa7bd;
+  font-size:15px;
+}
+#dashboard .user-badge .balance:before{content:"💰 ";font-size:17px}
+#dashboard .user-badge .balance span{
+  color:#ffd21c;
+  font-size:18px;
+  font-weight:900;
+}
+#dashboard .user-badge:after{
+  content:"👛";
+  position:absolute;
+  right:20px;
+  top:27px;
+  font-size:44px;
+  filter:drop-shadow(0 0 10px #a957ff);
+}
+#dashboard .save-number-panel{display:none!important}
+#dashboard .dashboard-content-wrapper{display:block}
+#dashboard #dynamicContent{margin-bottom:14px}
+#dashboard .menu-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:15px;
+}
+#dashboard .menu-item{
+  min-height:235px;
+  border-radius:23px;
+  padding:15px 9px 13px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  text-align:center;
+  background:linear-gradient(145deg,rgba(24,20,48,.95),rgba(5,6,18,.97));
+  position:relative;
+  overflow:hidden;
+  border-width:1px;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+#dashboard .menu-item:before{
+  content:"";
+  position:absolute;
+  width:110px;height:110px;border-radius:50%;
+  top:10px;left:50%;
+  transform:translateX(-50%);
+  filter:blur(40px);
+  opacity:.18;
+  pointer-events:none;
+}
+#dashboard .menu-item:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.035),transparent 45%);
+  pointer-events:none;
+}
+#dashboard .menu-item:active{transform:scale(.97)}
+#dashboard .menu-item .icon{
+  position:relative;
+  z-index:1;
+  font-size:55px;
+  display:block;
+  margin-top:5px;
+  filter:drop-shadow(0 0 10px rgba(255,255,255,.22));
+}
+#dashboard .menu-item .title{
+  position:relative;
+  z-index:1;
+  font-size:17px;
+  font-weight:900;
+  color:#fff;
+  white-space:nowrap;
+}
+#dashboard .menu-item .desc{
+  position:relative;
+  z-index:1;
+  font-size:12px;
+  color:#b4afc6;
+  margin-top:6px;
+  line-height:1.25;
+}
+#dashboard .menu-item .icon:after{
+  content:"";
+}
+#dashboard .menu-item[data-action="games"]{
+  border-color:#a63dff;
+  box-shadow:0 0 18px rgba(170,50,255,.14);
+}
+#dashboard .menu-item[data-action="games"]:before{background:#a42dff}
+#dashboard .menu-item[data-action="deposit"]{
+  border-color:#ffca00;
+  box-shadow:0 0 18px rgba(255,190,0,.12);
+}
+#dashboard .menu-item[data-action="deposit"]:before{background:#ffb300}
+#dashboard .menu-item[data-action="withdraw"]{
+  border-color:#00e5e8;
+  box-shadow:0 0 18px rgba(0,220,230,.12);
+}
+#dashboard .menu-item[data-action="withdraw"]:before{background:#00e5e8}
+#dashboard .menu-item[data-action="addcard"]{
+  border-color:#ff28b6;
+  box-shadow:0 0 18px rgba(255,20,180,.13);
+}
+#dashboard .menu-item[data-action="addcard"]:before{background:#ff159f}
+#dashboard .menu-item[data-action="autoclaim"]{
+  border-color:#078cff;
+  box-shadow:0 0 18px rgba(0,100,255,.13);
+}
+#dashboard .menu-item[data-action="autoclaim"]:before{background:#008cff}
+#dashboard .menu-item[data-action="balance"]{
+  border-color:#ff9d00;
+  box-shadow:0 0 18px rgba(255,100,0,.13);
+}
+#dashboard .menu-item[data-action="balance"]:before{background:#ff7300}
+
+#dashboard .dashboard-action-btn{
+  position:relative;
+  z-index:2;
+  width:92%;
+  padding:10px 4px;
+  border-radius:25px;
+  background:rgba(255,255,255,.035);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);
+}
+#dashboard .menu-item[data-action="games"] .dashboard-action-btn{border-color:#ad43ff}
+#dashboard .menu-item[data-action="deposit"] .dashboard-action-btn{border-color:#ffc400}
+#dashboard .menu-item[data-action="withdraw"] .dashboard-action-btn{border-color:#00e5e8}
+#dashboard .menu-item[data-action="addcard"] .dashboard-action-btn{border-color:#ff249f}
+#dashboard .menu-item[data-action="autoclaim"] .dashboard-action-btn{border-color:#078cff}
+#dashboard .menu-item[data-action="balance"] .dashboard-action-btn{border-color:#ff9d00}
+
+#dashboard .dashboard-logout{
+  margin-top:15px;
+  min-height:95px;
+  border-radius:25px;
+  border:1px solid #ff3e32;
+  background:linear-gradient(135deg,rgba(54,16,23,.75),rgba(8,7,17,.95));
+  box-shadow:0 0 20px rgba(255,40,30,.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px 17px;
+}
+#dashboard .dashboard-logout-left{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+#dashboard .dashboard-logout-icon{
+  font-size:43px;
+  filter:drop-shadow(0 0 8px #ff3b2f);
+}
+#dashboard .dashboard-logout-title{
+  font-size:20px;
+  font-weight:900;
+  color:#fff;
+}
+#dashboard .dashboard-logout-sub{
+  margin-top:5px;
+  font-size:12px;
+  color:#a9a4b5;
+}
+#dashboard .dashboard-logout-btn{
+  border:1px solid #ff4237;
+  border-radius:25px;
+  padding:11px 14px;
+  color:#fff;
+  font-size:10px;
+  font-weight:900;
+  background:linear-gradient(135deg,#7d1515,#31090d);
+  box-shadow:0 0 14px rgba(255,40,30,.2);
+  cursor:pointer;
+}
+#dashboard .dashboard-footer{
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  color:#a9a3c5;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+#dashboard .dashboard-footer-item{text-align:center}
+#dashboard .dashboard-footer-icon{
+  display:block;
+  font-size:21px;
+  margin-bottom:4px;
+}
+@media(max-width:440px){
+  #dashboard .menu-grid{grid-template-columns:repeat(3,1fr);gap:9px}
+  #dashboard .menu-item{min-height:220px;padding:13px 6px}
+  #dashboard .menu-item .icon{font-size:47px}
+  #dashboard .menu-item .title{font-size:14px}
+  #dashboard .menu-item .desc{font-size:10px}
+  #dashboard .dashboard-action-btn{font-size:9px;padding:9px 2px}
+  #dashboard .user-badge{padding:14px}
+  #dashboard .user-badge .phone{font-size:15px}
+  #dashboard .user-badge:after{font-size:34px;right:14px}
+  #dashboard .dashboard-logout{padding:12px}
+  #dashboard .dashboard-logout-title{font-size:17px}
+  #dashboard .dashboard-logout-btn{padding:10px 9px;font-size:9px}
+}
+@media(max-width:330px){
+  #dashboard .menu-grid{grid-template-columns:1fr 1fr}
+  #dashboard .menu-item{min-height:205px}
+}
+
+
+/* ===== DASHBOARD INTERACTION / CLICK TRANSITIONS ===== */
+#dashboard .menu-item,
+#dashboard .dashboard-action-btn,
+#dashboard .dashboard-logout-btn{
+  -webkit-tap-highlight-color:transparent;
+  transform:translateZ(0);
+}
+#dashboard .menu-item{
+  cursor:pointer;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s ease,border-color .22s ease,filter .22s ease;
+}
+#dashboard .menu-item.is-pressed{
+  transform:scale(.94);
+  filter:brightness(1.28);
+  transition-duration:.09s;
+}
+#dashboard .menu-item.is-active-glow{
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 28px rgba(160,80,255,.22),inset 0 0 24px rgba(255,255,255,.035);
+}
+#dashboard .dashboard-action-btn,
+#dashboard .dashboard-logout-btn{
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+#dashboard .dashboard-action-btn:active,
+#dashboard .dashboard-logout-btn:active{transform:scale(.95);filter:brightness(1.25)}
+#dashboard #dynamicContent{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  transition:opacity .22s ease,transform .22s ease;
+}
+#dashboard #dynamicContent.panel-enter{animation:dashboardPanelIn .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes dashboardPanelIn{
+  from{opacity:0;transform:translateY(12px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+#dashboard .menu-item[data-action="transactions"]{border-color:#ff7b2f;box-shadow:0 0 18px rgba(255,100,40,.11)}
+#dashboard .menu-item[data-action="transactions"]:before{background:#ff7b2f}
+#dashboard .menu-item[data-action="refer"]{border-color:#8b5cf6;box-shadow:0 0 18px rgba(139,92,246,.13)}
+#dashboard .menu-item[data-action="refer"]:before{background:#8b5cf6}
+#dashboard .menu-item[data-action="logout"]{border-color:#ff3e32;box-shadow:0 0 18px rgba(255,40,30,.12)}
+#dashboard .menu-item[data-action="logout"]:before{background:#ff3e32}
+#dashboard .menu-item[data-action="transactions"] .dashboard-action-btn{border-color:#ff7b2f}
+#dashboard .menu-item[data-action="refer"] .dashboard-action-btn{border-color:#8b5cf6}
+#dashboard .menu-item[data-action="logout"] .dashboard-action-btn{border-color:#ff4237}
+
+
+/* ===== AUTO LOGIN NUMBERS — VISIBLE DASHBOARD WIDGET ===== */
+#dashboard .save-number-panel{
+  display:block!important;
+  background:linear-gradient(145deg,rgba(24,20,48,.96),rgba(5,6,18,.98));
+  border:1px solid rgba(139,92,246,.16);
+  border-radius:24px;
+  padding:16px 18px;
+  margin-top:18px;
+  margin-bottom:14px;
+  box-shadow:0 12px 38px rgba(0,0,0,.22),inset 0 0 25px rgba(255,255,255,.012);
+  position:relative;
+  overflow:hidden;
+}
+#dashboard .save-number-panel:before{
+  content:"";
+  position:absolute;
+  width:150px;height:150px;
+  border-radius:50%;
+  left:-80px;top:-95px;
+  background:rgba(116,67,255,.14);
+  filter:blur(34px);
+  pointer-events:none;
+}
+#dashboard .save-number-panel.hidden-panel{display:none!important}
+#dashboard .save-number-panel .title,
+#dashboard .save-number-panel .input-group,
+#dashboard .save-number-panel .btn-auto-save-ref,
+#dashboard .save-number-panel .status-text,
+#dashboard .save-number-panel .number-list{position:relative;z-index:1}
+#dashboard .save-number-panel .title{
+  color:#aebcff;
+  font-size:14px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+#dashboard .save-number-panel .title .status-badge{
+  color:#77819d;
+  background:rgba(255,255,255,.025);
+  border-color:rgba(255,255,255,.025);
+  padding:3px 14px;
+}
+#dashboard .save-number-panel .input-group{gap:8px}
+#dashboard .save-number-panel .input-group input{
+  min-width:0;
+  height:40px;
+  padding:10px 14px;
+  border-radius:16px;
+  background:#080c1a;
+  border:1px solid rgba(255,255,255,.035);
+  color:#e2e8f0;
+}
+#dashboard .save-number-panel .input-group .save-btn{
+  height:40px;
+  padding:10px 18px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  box-shadow:0 4px 18px rgba(251,189,36,.10);
+}
+#dashboard .save-number-panel .btn-auto-save-ref{
+  height:40px;
+  padding:10px;
+  margin-top:10px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#fb7185,#e11d48);
+  box-shadow:0 5px 20px rgba(251,113,133,.10);
+}
+#dashboard .save-number-panel .btn-auto-save-ref:active,
+#dashboard .save-number-panel .save-btn:active{transform:scale(.97)}
+#dashboard .save-number-panel .status-text{color:#69738b;font-size:11px}
+#dashboard .save-number-panel .number-list{margin-top:9px}
+#dashboard .save-number-panel .number-item{border-color:rgba(139,92,246,.10);background:rgba(139,92,246,.035)}
+@media(max-width:440px){
+  #dashboard .save-number-panel{padding:16px 18px;margin-top:18px}
+  #dashboard .save-number-panel .input-group{display:flex;flex-direction:row}
+  #dashboard .save-number-panel .input-group input{height:40px}
+  #dashboard .save-number-panel .input-group .save-btn{width:auto;height:40px}
+}
+@media(max-width:330px){
+  #dashboard .save-number-panel .input-group{gap:6px}
+  #dashboard .save-number-panel .input-group .save-btn{padding-left:14px;padding-right:14px}
+}
+
+
+/* ===== COMPACT DASHBOARD — FIT ALL OPTIONS ON ONE PAGE ===== */
+#dashboard .menu-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin-top:10px;
+}
+#dashboard .menu-item{
+  min-height:154px;
+  height:154px;
+  padding:10px 6px 9px;
+  border-radius:19px;
+}
+#dashboard .menu-item .icon{
+  font-size:38px;
+  line-height:1;
+  margin-top:2px;
+}
+#dashboard .menu-item .title{
+  font-size:12px;
+  line-height:1.1;
+}
+#dashboard .menu-item .desc{
+  font-size:9px;
+  margin-top:4px;
+}
+#dashboard .dashboard-action-btn{
+  width:88%;
+  padding:7px 2px;
+  font-size:8px;
+  line-height:1;
+  border-radius:18px;
+}
+#dashboard .save-number-panel{
+  margin-top:12px;
+  margin-bottom:10px;
+  padding:12px 14px;
+  border-radius:20px;
+}
+#dashboard .save-number-panel .title{
+  font-size:12px;
+  margin-bottom:7px;
+}
+#dashboard .save-number-panel .input-group input{
+  padding:9px 12px!important;
+  font-size:12px!important;
+}
+#dashboard .save-number-panel .input-group .save-btn{
+  padding:8px 14px!important;
+  font-size:11px!important;
+}
+#dashboard .save-number-panel .btn-auto-save-ref{
+  padding:9px!important;
+  font-size:11px!important;
+  margin-top:8px!important;
+}
+#dashboard .dashboard-footer{
+  margin-top:10px;
+  font-size:8px;
+}
+#dashboard .dashboard-footer-icon{
+  font-size:16px;
+  margin-bottom:2px;
+}
+#dashboard .user-badge{
+  min-height:72px;
+  padding:11px 15px;
+}
+#dashboard .user-badge .phone{
+  font-size:14px;
+}
+#dashboard .user-badge .phone::before{
+  font-size:22px;
+  margin-right:7px;
+}
+#dashboard .user-badge .balance{
+  font-size:12px;
+  margin-top:3px;
+}
+#dashboard .user-badge .balance span{
+  font-size:15px;
+}
+#dashboard .user-badge:after{
+  font-size:30px;
+  top:20px;
+  right:14px;
+}
+#dashboard .dashboard-logout{
+  display:none!important;
+}
+
+@media(max-width:440px){
+  #dashboard .menu-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+  #dashboard .menu-item{
+    min-height:145px;
+    height:145px;
+    padding:9px 5px 8px;
+  }
+  #dashboard .menu-item .icon{font-size:34px}
+  #dashboard .menu-item .title{font-size:11px}
+  #dashboard .menu-item .desc{font-size:8px}
+  #dashboard .dashboard-action-btn{
+    width:90%;
+    padding:7px 1px;
+    font-size:7.5px;
+  }
+  #dashboard .save-number-panel{
+    padding:11px 12px;
+  }
+}
+@media(max-width:330px){
+  #dashboard .menu-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;
+  }
+  #dashboard .menu-item{
+    min-height:136px;
+    height:136px;
+  }
+  #dashboard .menu-item .icon{font-size:31px}
+  #dashboard .menu-item .title{font-size:10px}
+  #dashboard .menu-item .desc{font-size:7px}
+  #dashboard .dashboard-action-btn{font-size:7px}
+}
+
+</style>
 </head>
 <body>
 <div class="page">
@@ -741,15 +1248,17 @@
         <a href="https://t.me/bhauwithdraldata" target="_blank" class="tg-btn">📲 JOIN TELEGRAM</a>
       </div>
 
-      <div class="login-footer">CRAFTED BY <span class="highlight">SOUMYA</span></div>
+      <div class="login-footer">DEV BY <span class="highlight">SANJU</span></div>
     </div>
 
     <div id="dashboard" class="dashboard">
+
       <div class="user-badge">
         <span class="phone">+91 <span id="userPhoneDisplay">8597630383</span></span>
         <span class="balance">₹<span id="balanceDisplay">0.00</span></span>
       </div>
 
+      <!-- Hidden functional panel retained for existing auto-login logic -->
       <div class="save-number-panel" id="autoNumberPanel">
         <div class="title">
           <span>📱 Auto Login Numbers</span>
@@ -766,54 +1275,107 @@
 
       <div class="dashboard-content-wrapper" id="dashboardWrapper">
         <div id="dynamicContent"></div>
-        
+
         <div class="menu-grid" id="menuGrid">
-          <div class="menu-item deposit-item" data-action="deposit">
-            <span class="icon">💰</span>
-            <div class="title">Deposit</div>
-            <div class="desc">Add funds</div>
-          </div>
+
           <div class="menu-item" data-action="games">
             <span class="icon">🎮</span>
-            <div class="title">Games</div>
-            <div class="desc">Fan Tan · Chicken</div>
+            <div>
+              <div class="title">LAUNCH GAMES</div>
+              <div class="desc">Play &amp; Win Big</div>
+            </div>
+            <button class="dashboard-action-btn">PLAY NOW &nbsp; ▶</button>
           </div>
-          <div class="menu-item card-item" data-action="addcard">
+
+          <div class="menu-item" data-action="deposit">
+            <span class="icon">💰</span>
+            <div>
+              <div class="title">DEPOSIT</div>
+              <div class="desc">Add funds to account</div>
+            </div>
+            <button class="dashboard-action-btn">DEPOSIT NOW &nbsp; ▶</button>
+          </div>
+
+          <div class="menu-item" data-action="withdraw">
+            <span class="icon">👛</span>
+            <div>
+              <div class="title">WITHDRAW</div>
+              <div class="desc">Withdraw your earnings</div>
+            </div>
+            <button class="dashboard-action-btn">WITHDRAW NOW &nbsp; ▶</button>
+          </div>
+
+          <div class="menu-item" data-action="addcard">
             <span class="icon">💳</span>
-            <div class="title">Add Card</div>
-            <div class="desc">Bank card</div>
+            <div>
+              <div class="title">BANK CARD</div>
+              <div class="desc">Add or manage bank card</div>
+            </div>
+            <button class="dashboard-action-btn">ADD CARD &nbsp; ▶</button>
           </div>
-          <div class="menu-item auto-claim" data-action="autoclaim">
+
+          <div class="menu-item" data-action="autoclaim">
             <span class="icon">⚡</span>
-            <div class="title">Auto Claim</div>
-            <div class="desc">VIP + 2 Spins</div>
+            <div>
+              <div class="title">AUTO CLAIM</div>
+              <div class="desc">VIP Reward + 2 Spins</div>
+            </div>
+            <button class="dashboard-action-btn">CLAIM NOW &nbsp; ▶</button>
           </div>
+
           <div class="menu-item" data-action="balance">
             <span class="icon">📊</span>
-            <div class="title">Balance</div>
-            <div class="desc">Check funds</div>
+            <div>
+              <div class="title">SHOW BALANCE</div>
+              <div class="desc">Check your balance</div>
+            </div>
+            <button class="dashboard-action-btn">CHECK NOW &nbsp; ▶</button>
           </div>
-          <div class="menu-item withdraw-item" data-action="withdraw">
-            <span class="icon">💸</span>
-            <div class="title">Withdraw</div>
-            <div class="desc">Withdraw funds</div>
-          </div>
+
           <div class="menu-item" data-action="transactions">
             <span class="icon">📋</span>
-            <div class="title">History</div>
-            <div class="desc">Transactions</div>
+            <div>
+              <div class="title">HISTORY</div>
+              <div class="desc">Transactions</div>
+            </div>
+            <button class="dashboard-action-btn">VIEW NOW &nbsp; ▶</button>
           </div>
-          <div class="menu-item refer-item" data-action="refer">
+
+          <div class="menu-item" data-action="refer">
             <span class="icon">👥</span>
-            <div class="title">Referrals</div>
-            <div class="desc">Refer & earn</div>
+            <div>
+              <div class="title">REFERRALS</div>
+              <div class="desc">Refer &amp; earn</div>
+            </div>
+            <button class="dashboard-action-btn">VIEW NOW &nbsp; ▶</button>
           </div>
-          <div class="menu-item logout-item" data-action="logout">
+
+          <div class="menu-item" data-action="logout">
             <span class="icon">🚪</span>
-            <div class="title">Logout</div>
-            <div class="desc">Exit & reset</div>
+            <div>
+              <div class="title">LOGOUT</div>
+              <div class="desc">Exit &amp; reset</div>
+            </div>
+            <button class="dashboard-action-btn">LOGOUT NOW &nbsp; ▶</button>
+          </div>
+
+        </div>
+
+        <div class="dashboard-footer">
+          <div class="dashboard-footer-item">
+            <span class="dashboard-footer-icon">🛡️</span>
+            100% SECURE
+          </div>
+          <div class="dashboard-footer-item">
+            <span class="dashboard-footer-icon">⚡</span>
+            FAST &amp; SAFE
+          </div>
+          <div class="dashboard-footer-item">
+            <span class="dashboard-footer-icon">🔒</span>
+            TRUSTED PLATFORM
           </div>
         </div>
+
       </div>
     </div>
 
@@ -1783,6 +2345,31 @@
         case 'transactions': renderTransactions(); break;
         case 'refer': renderReferral(); break;
         default: closePanel();
+      }
+    });
+  });
+
+
+  // Dashboard V2 logout button
+  const dashboardLogout=document.querySelector('#dashboard .dashboard-logout');
+  if(dashboardLogout){
+    dashboardLogout.addEventListener('click',()=>{ showLogoutConfirmation(); });
+  }
+
+  // ─── DASHBOARD CLICK TRANSITIONS ─────────────────────────────────────
+  document.querySelectorAll('#dashboard .menu-item').forEach(item=>{
+    item.addEventListener('pointerdown',()=>item.classList.add('is-pressed'));
+    item.addEventListener('pointerup',()=>item.classList.remove('is-pressed'));
+    item.addEventListener('pointercancel',()=>item.classList.remove('is-pressed'));
+    item.addEventListener('pointerleave',()=>item.classList.remove('is-pressed'));
+    item.addEventListener('click',()=>{
+      document.querySelectorAll('#dashboard .menu-item').forEach(x=>x.classList.remove('is-active-glow'));
+      item.classList.add('is-active-glow');
+      const panel=document.getElementById('dynamicContent');
+      if(panel){
+        panel.classList.remove('panel-enter');
+        void panel.offsetWidth;
+        panel.classList.add('panel-enter');
       }
     });
   });
