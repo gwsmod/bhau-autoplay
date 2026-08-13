@@ -1190,6 +1190,167 @@
   #dashboard .dashboard-action-btn{font-size:7px}
 }
 
+
+/* ===== LIVE 3D DEV CREDIT ===== */
+.login-footer{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  margin-top:20px;
+  padding:10px 14px;
+  border-top:1px solid rgba(255,255,255,.04);
+  letter-spacing:3px;
+  perspective:600px;
+  overflow:hidden;
+}
+.login-footer::before{
+  content:"";
+  position:absolute;
+  width:130px;
+  height:130px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,190,30,.18),transparent 68%);
+  filter:blur(12px);
+  animation:devAura 2.8s ease-in-out infinite;
+  pointer-events:none;
+}
+.login-footer::after{
+  content:"";
+  position:absolute;
+  left:-35%;
+  top:0;
+  width:28%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  transform:skewX(-22deg);
+  animation:devSweep 3.2s linear infinite;
+  pointer-events:none;
+}
+.login-footer .highlight{
+  position:relative;
+  z-index:2;
+  display:inline-block;
+  margin-left:7px;
+  color:#ffd84a;
+  font-size:15px;
+  font-weight:1000;
+  letter-spacing:4px;
+  text-shadow:
+    0 1px 0 #8a5a00,
+    0 2px 0 #6b4300,
+    0 3px 0 #3f2600,
+    0 0 8px rgba(255,193,7,.85),
+    0 0 20px rgba(255,165,0,.5);
+  transform:translateZ(18px);
+  animation:devFloat 1.9s ease-in-out infinite;
+}
+.login-footer{
+  color:#9ca3af;
+  font-weight:900;
+  text-shadow:0 1px 0 #000;
+}
+@keyframes devFloat{
+  0%,100%{transform:translateY(0) rotateX(0deg) translateZ(18px)}
+  50%{transform:translateY(-3px) rotateX(7deg) translateZ(25px)}
+}
+@keyframes devAura{
+  0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(.85)}
+  50%{opacity:.95;transform:translate(-50%,-50%) scale(1.15)}
+}
+@keyframes devSweep{
+  0%{left:-35%}
+  100%{left:125%}
+}
+
+
+/* ===== DEPOSIT: SCROLL CHANNELS + STICKY 3D ACTION ===== */
+#dashboard .deposit-shell{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  max-height:calc(100vh - 120px);
+}
+#dashboard #paymentMethodsList{
+  max-height:260px;
+  overflow-y:auto;
+  padding:4px 3px 8px 1px;
+  scrollbar-width:thin;
+  overscroll-behavior:contain;
+}
+#dashboard #paymentMethodsList::-webkit-scrollbar{width:5px}
+#dashboard #paymentMethodsList::-webkit-scrollbar-thumb{
+  background:linear-gradient(#8b5cf6,#ec4899);
+  border-radius:20px;
+}
+#dashboard .deposit-action-bar{
+  position:sticky;
+  bottom:0;
+  z-index:20;
+  margin:8px -2px -2px;
+  padding:9px 0 2px;
+  background:linear-gradient(180deg,rgba(12,15,31,0),rgba(12,15,31,.96) 30%);
+  backdrop-filter:blur(8px);
+}
+#dashboard #depositSubmitBtn{
+  min-height:48px;
+  border-radius:16px;
+  border:1px solid rgba(255,205,50,.75)!important;
+  background:linear-gradient(145deg,#ffe36a 0%,#ffbd1a 35%,#f59e0b 68%,#b45309 100%)!important;
+  color:#15100a!important;
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.4px;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.65),
+    inset 0 -4px 0 rgba(110,55,0,.38),
+    0 5px 0 #8a4f00,
+    0 10px 22px rgba(245,158,11,.25),
+    0 0 18px rgba(255,196,0,.22);
+  transform:translateY(0);
+  transition:transform .14s,box-shadow .14s,filter .14s;
+}
+#dashboard #depositSubmitBtn::first-letter{font-size:17px}
+#dashboard #depositSubmitBtn:hover{
+  filter:brightness(1.08);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.72),
+    inset 0 -4px 0 rgba(110,55,0,.38),
+    0 5px 0 #8a4f00,
+    0 12px 28px rgba(245,158,11,.35),
+    0 0 24px rgba(255,196,0,.35);
+}
+#dashboard #depositSubmitBtn:active{
+  transform:translateY(4px);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.5),
+    inset 0 -2px 0 rgba(110,55,0,.35),
+    0 1px 0 #8a4f00,
+    0 5px 14px rgba(245,158,11,.22);
+}
+#dashboard .payment-method{
+  cursor:pointer;
+  transition:transform .16s,border-color .16s,box-shadow .16s,background .16s;
+}
+#dashboard .payment-method:active{transform:scale(.985)}
+#dashboard .payment-method.selected{
+  border-color:rgba(255,193,7,.7)!important;
+  box-shadow:0 0 16px rgba(255,193,7,.14),inset 0 0 12px rgba(255,193,7,.04);
+}
+#dashboard .deposit-auto-hint{
+  margin-top:6px;
+  color:#94a3b8;
+  font-size:9px;
+  text-align:center;
+}
+@media(max-width:440px){
+  #dashboard #paymentMethodsList{max-height:230px}
+  #dashboard #depositSubmitBtn{min-height:46px;font-size:13px}
+}
+
 </style>
 </head>
 <body>
@@ -1787,7 +1948,7 @@
       if(r.status===200){ const d=await r.json(); if(d.code===0) S.paymentMethods=d.data||[]; }
     }catch(_){}
 
-    let html=`<div class="dynamic-card"><div class="title">💰 Deposit <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
+    let html=`<div class="dynamic-card deposit-shell"><div class="title">💰 Deposit <button class="btn-close-panel" onclick="window._closePanel()">✕ Close</button></div>
       <div id="depositContent"><div style="margin-bottom:8px;"><div style="color:#6b7280;font-size:10px;font-weight:600;margin-bottom:4px;">Amount</div>
       <div class="amount-grid" id="amountGrid">`;
     if(S.depositAmounts.length){
@@ -1813,7 +1974,10 @@
       }
     }
     html+=`</div></div>
-      <button class="btn-sm btn-deposit btn-block" id="depositSubmitBtn">💳 Deposit Now</button>
+      <div class="deposit-action-bar">
+        <button class="btn-sm btn-deposit btn-block" id="depositSubmitBtn">💳 DEPOSIT NOW &nbsp; ▶</button>
+        <div class="deposit-auto-hint">Select a payment channel to open its deposit page instantly.</div>
+      </div>
       <div id="depositResult" class="mt-10"></div></div></div>`;
     showPanel(html);
 
@@ -1838,49 +2002,88 @@
       const v=parseFloat(this.value);
       S.selectedAmount=(!isNaN(v) && v>0)?v:null;
     });
-    document.querySelectorAll('.payment-method').forEach(el=>{
-      el.addEventListener('click',function(){
-        document.querySelectorAll('.payment-method').forEach(x=>x.classList.remove('selected'));
-        this.classList.add('selected');
-        S.selectedPayment={id:parseInt(this.dataset.id),tag:this.dataset.tag};
-      });
-    });
-    document.getElementById('depositSubmitBtn').addEventListener('click',async function(){
+    async function openSelectedDeposit(){
       if(!S.selectedAmount){ showToast('Please select or enter an amount.','warning'); return; }
-      if(!S.selectedPayment){ showToast('Please select a payment method.','warning'); return; }
+      if(!S.selectedPayment){ showToast('Please select a payment channel.','warning'); return; }
+
+      // Reserve a browser tab from the user click so popup blockers do not stop
+      // the payment page after the API request completes.
+      let depositWindow=null;
+      try{ depositWindow=window.open('about:blank','_blank'); }catch(_){}
+
       let balanceId=null;
       for(const item of S.depositAmounts){
-        if(parseFloat(item.balance)===parseFloat(S.selectedAmount)){ balanceId=String(item.id); break; }
+        if(parseFloat(item.balance)===parseFloat(S.selectedAmount)){
+          balanceId=String(item.id);
+          break;
+        }
       }
       if(!balanceId && S.depositAmounts.length) balanceId=String(S.depositAmounts[0].id);
-      if(!balanceId){ showToast('No valid balance ID.','error'); return; }
-      this.disabled=true; this.textContent='⏳ Processing...';
+      if(!balanceId){ showToast('No valid deposit amount available.','error'); return; }
+
+      const btn=document.getElementById('depositSubmitBtn');
+      if(btn){ btn.disabled=true; btn.textContent='⏳ OPENING DEPOSIT...'; }
+
       try{
         const r=await fetch('https://api.bh2255.xyz/app/pay/income',{
           method:'POST',
           headers:{'Accept':'application/json, text/plain, */*','Content-Type':'application/json','token':S.token,'packageid':'2','visitor':S.visitor,'Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
-          body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,reqDate:Date.now(),ua:'Mozilla/5.0',packageId:2,packageInfo:'com.resulta.checka',versionCode:'999',balanceId:String(balanceId),payTag:S.selectedPayment.tag||'PAYMENT_CENTER_PAY',payTypeId:String(S.selectedPayment.id),rechargeBalance:0,payCategory:1})
+          body:JSON.stringify({
+            channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,
+            reqDate:Date.now(),ua:'Mozilla/5.0',packageId:2,
+            packageInfo:'com.resulta.checka',versionCode:'999',
+            balanceId:String(balanceId),
+            payTag:S.selectedPayment.tag||'PAYMENT_CENTER_PAY',
+            payTypeId:String(S.selectedPayment.id),
+            rechargeBalance:0,payCategory:1
+          })
         });
         const d=await r.json();
         const div=document.getElementById('depositResult');
+
         if(r.status===200 && d.code===0){
           let url=d.data?d.data.replace(/\\/g,''):'';
-          if(url){ window.open(url,'_blank'); showToast('Deposit page opened!','success'); }
-          div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;">
-            <div style="color:#34d399;font-weight:600;">✅ Deposit created!</div>
-            ${url?`<div style="font-size:9px;word-break:break-all;margin-top:4px;color:#6b7280;">🔗 ${url}</div>`:''}
-            <div style="margin-top:6px;display:flex;gap:6px;">
-              <button class="btn-sm btn-warning" onclick="window.open('${url}','_blank')" style="padding:6px 14px;font-size:11px;">🌐 Open</button>
-              <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText('${url}')" style="padding:6px 14px;font-size:11px;">📋 Copy</button>
-            </div>
-          </div>`;
+          if(url){
+            if(depositWindow && !depositWindow.closed){
+              depositWindow.location.href=url;
+            }else{
+              window.location.href=url;
+            }
+            showToast('Deposit page opened!','success');
+            if(div){
+              div.innerHTML=`<div style="background:rgba(0,0,0,.2);padding:10px;border-radius:16px;">
+                <div style="color:#34d399;font-weight:600;">✅ Deposit page opened</div>
+                <div style="font-size:9px;word-break:break-all;margin-top:4px;color:#6b7280;">🔗 ${url}</div>
+              </div>`;
+            }
+          }else{
+            showToast('Deposit created, but no payment URL was returned.','warning');
+            if(div) div.innerHTML=`<div style="color:#fbbf24;">⚠️ No payment URL returned.</div>`;
+          }
         }else{
-          div.innerHTML=`<div style="color:#fb7185;">❌ ${d.msg||'Failed'}</div>`;
-          showToast('Deposit failed: '+(d.msg||'Unknown'),'error');
+          const msg=d.msg||'Failed to create deposit';
+          if(div) div.innerHTML=`<div style="color:#fb7185;">❌ ${msg}</div>`;
+          showToast('Deposit failed: '+msg,'error');
         }
-      }catch(e){ showToast('Error: '+e.message,'error'); }
-      this.disabled=false; this.textContent='💳 Deposit Now';
+      }catch(e){
+        showToast('Error: '+e.message,'error');
+      }finally{
+        if(btn){ btn.disabled=false; btn.textContent='💳 DEPOSIT NOW  ▶'; }
+      }
+    }
+
+    document.querySelectorAll('.payment-method').forEach(el=>{
+      el.addEventListener('click',async function(){
+        document.querySelectorAll('.payment-method').forEach(x=>x.classList.remove('selected'));
+        this.classList.add('selected');
+        S.selectedPayment={id:parseInt(this.dataset.id),tag:this.dataset.tag};
+
+        // Clicking a channel immediately uses that channel and opens its deposit page.
+        await openSelectedDeposit();
+      });
     });
+
+    document.getElementById('depositSubmitBtn').addEventListener('click',openSelectedDeposit);
   }
 
   // ─── WITHDRAW ─────────────────────────────────────────────────────────────
