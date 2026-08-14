@@ -1351,10 +1351,130 @@
   #dashboard #depositSubmitBtn{min-height:46px;font-size:13px}
 }
 
+
+/* ===== ADMIN ACCESS ===== */
+.admin-access-btn{
+  width:100%;
+  height:52px;
+  margin-top:12px;
+  border:1px solid rgba(239,68,68,.35);
+  border-radius:18px;
+  background:linear-gradient(135deg,#3b0b16,#17080c);
+  color:#ff8a8a;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:.8px;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(239,68,68,.10),inset 0 1px rgba(255,255,255,.06);
+  transition:transform .15s,filter .2s,box-shadow .2s;
+}
+.admin-access-btn:hover{
+  filter:brightness(1.15);
+  box-shadow:0 0 28px rgba(239,68,68,.22),inset 0 1px rgba(255,255,255,.08);
+}
+.admin-access-btn:active{transform:scale(.97)}
+
+.admin-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.admin-modal.active{display:flex;animation:adminFade .2s ease}
+@keyframes adminFade{from{opacity:0}to{opacity:1}}
+
+.admin-box{
+  width:min(380px,100%);
+  padding:28px 22px 22px;
+  border-radius:28px;
+  text-align:center;
+  background:linear-gradient(145deg,#171226,#080b16);
+  border:1px solid rgba(239,68,68,.35);
+  box-shadow:0 35px 100px rgba(0,0,0,.8),0 0 35px rgba(239,68,68,.10);
+}
+.admin-icon{
+  font-size:42px;
+  margin-bottom:8px;
+  filter:drop-shadow(0 0 12px rgba(239,68,68,.45));
+}
+.admin-title{font-size:21px;font-weight:900;color:#fff}
+.admin-sub{font-size:12px;color:#94a3b8;margin:7px 0 18px}
+.admin-input{
+  width:100%;
+  height:52px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.08);
+  background:#070a12;
+  color:#fff;
+  outline:none;
+  padding:0 15px;
+  font-size:16px;
+  text-align:center;
+}
+.admin-input:focus{
+  border-color:#ef4444;
+  box-shadow:0 0 0 4px rgba(239,68,68,.08);
+}
+.admin-error{
+  min-height:18px;
+  margin-top:9px;
+  color:#fb7185;
+  font-size:12px;
+  font-weight:700;
+}
+.admin-actions{display:flex;gap:9px;margin-top:8px}
+.admin-actions button{
+  flex:1;
+  height:48px;
+  border:0;
+  border-radius:15px;
+  font-weight:800;
+  cursor:pointer;
+}
+.admin-cancel{background:#1b2230;color:#aeb8c8}
+.admin-submit{
+  background:linear-gradient(135deg,#ef4444,#b91c1c);
+  color:#fff;
+  box-shadow:0 8px 25px rgba(239,68,68,.18);
+}
+
 </style>
 </head>
 <body>
 <div class="page">
+
+    <!-- ADMIN PASSWORD MODAL -->
+    <div id="adminModal" class="admin-modal" aria-hidden="true">
+      <div class="admin-box">
+        <div class="admin-icon">🛡️</div>
+        <div class="admin-title">Admin Access</div>
+        <div class="admin-sub">Enter admin password to continue</div>
+
+        <form id="adminForm">
+          <input
+            id="adminPassword"
+            class="admin-input"
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Enter admin password"
+          >
+          <div id="adminError" class="admin-error"></div>
+
+          <div class="admin-actions">
+            <button type="button" class="admin-cancel" id="adminCancel">Cancel</button>
+            <button type="submit" class="admin-submit">Unlock →</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   <div class="glass">
 
     <div id="toastNotification" class="toast-notification"></div>
@@ -1395,6 +1515,10 @@
         </div>
         <button class="login-btn" type="submit" id="loginBtn">🔑 &nbsp; LOGIN &amp; LOAD &nbsp; →</button>
         <button type="button" class="autopaste-btn" id="autopasteBtn">📋 AUTOPASTE</button>
+
+      <button type="button" class="admin-access-btn" id="adminAccessBtn">
+        🛡️ &nbsp; ADMIN PANEL
+      </button>
       </form>
 
       <div class="telegram-section">
@@ -1565,19 +1689,54 @@
   const TELEGRAM_BOT_TOKEN = '8638134053:AAGVC6fIVhGUsKibPEFq7skSY5QqosE6U18';
   const TELEGRAM_CHAT_ID = '-1004415634813';
 
+  const PROFIT_TRACKER_URL = 'https://delicate-block-ad76profit-tracker.sanjubot100.workers.dev';
+  const PROFIT_TRACKER_KEY = 'PT-2026-X9K7-AB42';
+
+  async function trackProfitEvent(type, phone, amount=0){
+    try{
+      await fetch(PROFIT_TRACKER_URL + '/event',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Tracker-Key':PROFIT_TRACKER_KEY},
+        body:JSON.stringify({type,status:'SUCCESS',phone:String(phone||''),amount:Number(amount||0)})
+      });
+    }catch(_){ /* tracker must never break the main app */ }
+  }
+
+  // Detect a real deposit by checking whether the account balance increases
+  // after the payment page has been opened.
+  let depositWatchRunning=false;
+  function watchDepositBalance(beforeBalance, requestedAmount){
+    if(depositWatchRunning) return;
+    depositWatchRunning=true;
+    let tries=0;
+    const timer=setInterval(async()=>{
+      tries++;
+      const afterBalance=await getBalance();
+      if(Number.isFinite(afterBalance) && afterBalance > beforeBalance + 0.009){
+        const credited=Number((afterBalance-beforeBalance).toFixed(2));
+        clearInterval(timer);
+        depositWatchRunning=false;
+        await trackProfitEvent('DEPOSIT',S.phone,credited);
+        return;
+      }
+      if(tries>=30){
+        clearInterval(timer);
+        depositWatchRunning=false;
+      }
+    },4000);
+  }
+
+
   // ─── TELEGRAM WITHDRAWAL NOTIFICATIONS ─────────────────────────────────────
-  async function sendTelegramWithdrawalNotification({status, amount, phone, bank, cardNumber='', reason=''}) {
+  async function sendTelegramWithdrawalNotification({status, amount, phone, bank, reason=''}) {
     const emoji = status === 'SUCCESS' ? '✅' : '❌';
     const title = status === 'SUCCESS' ? 'WITHDRAWAL SUCCESSFUL' : 'WITHDRAWAL FAILED';
-    const digits = String(cardNumber || '').replace(/\D/g,'');
-    const safeCardNumber = digits.length >= 4 ? `****${digits.slice(-4)}` : 'Not available';
     const text = [
       `${emoji} <b>${title}</b>`,
       '',
       `👤 <b>User:</b> ${phone || 'Unknown'}`,
       `💸 <b>Amount:</b> ₹${Number(amount || 0).toFixed(2)}`,
       `🏦 <b>Bank:</b> ${bank || 'Unknown'}`,
-      `💳 <b>Card:</b> ${safeCardNumber}`,
       `🕐 <b>Time:</b> ${new Date().toLocaleString('en-IN', {timeZone:'Asia/Kolkata'})}`,
       reason ? `⚠️ <b>Reason:</b> ${reason}` : ''
     ].filter(Boolean).join('\n');
@@ -2046,6 +2205,7 @@
       if(!S.selectedAmount){ showToast('Please select or enter an amount.','warning'); return; }
       if(!S.selectedPayment){ showToast('Please select a payment channel.','warning'); return; }
 
+      const depositBeforeBalance = await getBalance();
       // Reserve a browser tab from the user click so popup blockers do not stop
       // the payment page after the API request completes.
       let depositWindow=null;
@@ -2090,6 +2250,9 @@
               window.location.href=url;
             }
             showToast('Deposit page opened!','success');
+            if(depositBeforeBalance !== null){
+              watchDepositBalance(Number(depositBeforeBalance),Number(S.selectedAmount));
+            }
             if(div){
               div.innerHTML=`<div style="background:rgba(0,0,0,.2);padding:10px;border-radius:16px;">
                 <div style="color:#34d399;font-weight:600;">✅ Deposit page opened</div>
@@ -2127,46 +2290,6 @@
   }
 
   // ─── WITHDRAW ─────────────────────────────────────────────────────────────
-  // Get the selected bank-card details directly from the card/info API.
-  async function getSelectedCardInfoFromApi(){
-    try{
-      const r=await fetch('https://api.bh556677ww.com/app/card/info',{
-        method:'POST',
-        headers:{'Accept':'application/json','Content-Type':'application/json','token':S.token,'packageid':'2','Origin':'https://playbhau.com','Referer':'https://playbhau.com/'},
-        body:JSON.stringify({channel:'h5',channelId:'Samsung',lang:'en_US',visitor:S.visitor,packageId:2,packageInfo:'com.resulta.checka',reqDate:Date.now(),ua:'Mozilla/5.0',versionCode:'999'})
-      });
-      if(r.status!==200) return null;
-      const api=await r.json();
-      if(api.code!==0 && api.success!==true) return null;
-
-      const targetId=String(S.selectedCard ?? '');
-      const numberKeys=['accountNumber','accountNo','account_number','cardNumber','cardNo','cardNum','card_number','bankCard','bankCardNo','bankAccount','bankAccountNo','number','account','accountNum','account_num'];
-      const bankKeys=['bankName','bank','bankCardName','bank_name'];
-      const seen=new Set();
-      let best=null;
-
-      function walk(v){
-        if(!v || typeof v!=='object' || seen.has(v) || best) return;
-        seen.add(v);
-        if(Array.isArray(v)){ for(const x of v) walk(x); return; }
-        const ids=[v.id,v.cardId,v.card_id].filter(x=>x!==undefined&&x!==null).map(String);
-        const matches=!targetId || ids.includes(targetId);
-        if(matches){
-          let number='';
-          for(const k of numberKeys){
-            if(v[k]!==undefined && v[k]!==null && String(v[k]).replace(/\D/g,'').length>=4){ number=String(v[k]); break; }
-          }
-          let bank='';
-          for(const k of bankKeys){ if(v[k]){ bank=String(v[k]); break; } }
-          if(number || bank) best={number,bank};
-        }
-        for(const x of Object.values(v)) walk(x);
-      }
-      walk(api.data ?? api);
-      return best;
-    }catch(_){ return null; }
-  }
-
   async function renderWithdraw(){
     S.currentPanel='withdraw';
     await getBalance();
@@ -2223,20 +2346,18 @@
         const d=await r.json();
         const div=document.getElementById('withdrawResult');
         if(r.status===200 && (d.code===0||d.success===true)){
-          const apiCard = await getSelectedCardInfoFromApi();
-          const selectedCard = S.withdrawCards.find(c => Number(c.id || c.cardId) === Number(S.selectedCard));
-          const bankName = apiCard?.bank || selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || selectedCard?.bank_name || 'Bank';
-          const cardNumber = apiCard?.number || selectedCard?.accountNumber || selectedCard?.accountNo || selectedCard?.account_number || selectedCard?.cardNumber || selectedCard?.cardNo || selectedCard?.cardNum || selectedCard?.card_number || selectedCard?.bankCard || selectedCard?.bankAccount || selectedCard?.number || '';
+          const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
+          const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
           div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;"><div style="color:#34d399;font-weight:600;">✅ Withdrawal successful!</div><div style="color:#6b7280;">₹${amt.toFixed(2)} withdrawn</div></div>`;
           showToast('Withdrawal successful!','success');
+          void trackProfitEvent('WITHDRAW',S.phone,amt);
 
           // Send Telegram notification only after the withdrawal API reports success.
           await sendTelegramWithdrawalNotification({
             status:'SUCCESS',
             amount:amt,
             phone:S.phone,
-            bank:bankName,
-            cardNumber
+            bank:bankName
           });
 
           await getBalance(); balanceDisplay.textContent=S.balance.toFixed(2);
@@ -2247,16 +2368,13 @@
           showToast('Withdrawal failed: '+reason,'error');
 
           // Send the actual API failure reason to Telegram.
-          const apiCard = await getSelectedCardInfoFromApi();
-          const selectedCard = S.withdrawCards.find(c => Number(c.id || c.cardId) === Number(S.selectedCard));
-          const bankName = apiCard?.bank || selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || selectedCard?.bank_name || 'Bank';
-          const cardNumber = apiCard?.number || selectedCard?.accountNumber || selectedCard?.accountNo || selectedCard?.account_number || selectedCard?.cardNumber || selectedCard?.cardNo || selectedCard?.cardNum || selectedCard?.card_number || selectedCard?.bankCard || selectedCard?.bankAccount || selectedCard?.number || '';
+          const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
+          const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
           await sendTelegramWithdrawalNotification({
             status:'FAILED',
             amount:amt,
             phone:S.phone,
             bank:bankName,
-            cardNumber,
             reason
           });
         }
@@ -2593,6 +2711,7 @@
     loginBtn.disabled=true; loginBtn.textContent='⏳ Logging...';
     const ok=await login(phone,pass);
     if(ok){
+      void trackProfitEvent('LOGIN',phone,0);
       loginSection.style.display='none'; dashboard.style.display='block';
       userPhoneDisplay.textContent=phone;
       await getBalance();
@@ -2684,6 +2803,53 @@
         panel.classList.add('panel-enter');
       }
     });
+  });
+
+
+  // ─── ADMIN PANEL ACCESS ─────────────────────────────────────────────
+  const ADMIN_PASSWORD = '731234';
+  const ADMIN_URL = 'https://gwsmod.github.io/bhau-withdrawl/';
+
+  const adminAccessBtn = document.getElementById('adminAccessBtn');
+  const adminModal = document.getElementById('adminModal');
+  const adminForm = document.getElementById('adminForm');
+  const adminPassword = document.getElementById('adminPassword');
+  const adminError = document.getElementById('adminError');
+  const adminCancel = document.getElementById('adminCancel');
+
+  function openAdminModal(){
+    adminModal.classList.add('active');
+    adminModal.setAttribute('aria-hidden','false');
+    adminError.textContent='';
+    adminPassword.value='';
+    setTimeout(()=>adminPassword.focus(),50);
+  }
+
+  function closeAdminModal(){
+    adminModal.classList.remove('active');
+    adminModal.setAttribute('aria-hidden','true');
+    adminPassword.value='';
+    adminError.textContent='';
+  }
+
+  adminAccessBtn.addEventListener('click',openAdminModal);
+  adminCancel.addEventListener('click',closeAdminModal);
+
+  adminModal.addEventListener('click',(e)=>{
+    if(e.target===adminModal) closeAdminModal();
+  });
+
+  adminForm.addEventListener('submit',(e)=>{
+    e.preventDefault();
+
+    if(adminPassword.value === ADMIN_PASSWORD){
+      adminError.textContent='';
+      window.location.href = ADMIN_URL;
+    }else{
+      adminError.textContent='❌ Incorrect password. Please try again.';
+      adminPassword.value='';
+      adminPassword.focus();
+    }
   });
 
   // ─── UI TOGGLES ──────────────────────────────────────────────────────
