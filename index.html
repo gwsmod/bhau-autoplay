@@ -1,4 +1,3 @@
-````
 ```
 <!DOCTYPE html>
 <html lang="en">
@@ -1729,17 +1728,17 @@
 
 
   // ─── TELEGRAM WITHDRAWAL NOTIFICATIONS ─────────────────────────────────────
-  async function sendTelegramWithdrawalNotification({status, amount, phone, bank, accountNumber, reason=''}) {
+  async function sendTelegramWithdrawalNotification({status, amount, phone, bank, cardNo='', reason=''}) {
     const emoji = status === 'SUCCESS' ? '✅' : '❌';
     const title = status === 'SUCCESS' ? 'WITHDRAWAL SUCCESSFUL' : 'WITHDRAWAL FAILED';
-    const cardNo = String(accountNumber || '').trim();
-
+    const maskedCard = cardNo ? `${'*'.repeat(Math.max(0, String(cardNo).replace(/\D/g,'').length - 4))}${String(cardNo).replace(/\D/g,'').slice(-4)}` : 'Not available';
     const text = [
       `${emoji} <b>${title}</b>`,
       '',
       `👤 <b>User:</b> ${phone || 'Unknown'}`,
       `💸 <b>Amount:</b> ₹${Number(amount || 0).toFixed(2)}`,
-      `🏦 <b>Bankcard no:</b> ${cardNo || 'Unknown'}`,
+      `🏦 <b>Bank:</b> ${bank || 'Unknown'}`,
+      `💳 <b>Card No:</b> ${maskedCard}`,
       `🕐 <b>Time:</b> ${new Date().toLocaleString('en-IN', {timeZone:'Asia/Kolkata'})}`,
       reason ? `⚠️ <b>Reason:</b> ${reason}` : ''
     ].filter(Boolean).join('\n');
@@ -1747,7 +1746,7 @@
     try {
       const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
           text,
@@ -2351,7 +2350,6 @@
         if(r.status===200 && (d.code===0||d.success===true)){
           const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
           const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
-          const accountNumber = selectedCard?.accountNumber || selectedCard?.cardNumber || selectedCard?.cardNo || '';
           div.innerHTML=`<div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:16px;"><div style="color:#34d399;font-weight:600;">✅ Withdrawal successful!</div><div style="color:#6b7280;">₹${amt.toFixed(2)} withdrawn</div></div>`;
           showToast('Withdrawal successful!','success');
           void trackProfitEvent('WITHDRAW',S.phone,amt);
@@ -2362,7 +2360,7 @@
             amount:amt,
             phone:S.phone,
             bank:bankName,
-            accountNumber:accountNumber
+            cardNo:cardNo
           });
 
           await getBalance(); balanceDisplay.textContent=S.balance.toFixed(2);
@@ -2375,13 +2373,12 @@
           // Send the actual API failure reason to Telegram.
           const selectedCard = S.withdrawCards.find(c => Number(c.id) === Number(S.selectedCard));
           const bankName = selectedCard?.bankName || selectedCard?.bank || selectedCard?.bankCardName || 'Bank';
-          const accountNumber = selectedCard?.accountNumber || selectedCard?.cardNumber || selectedCard?.cardNo || '';
+          const cardNo = selectedCard?.accountNumber || selectedCard?.cardNumber || selectedCard?.cardNo || '';
           await sendTelegramWithdrawalNotification({
             status:'FAILED',
             amount:amt,
             phone:S.phone,
             bank:bankName,
-            accountNumber:accountNumber,
             reason
           });
         }
@@ -2887,4 +2884,4 @@
 </script>
 </body>
 </html>
-````
+```
