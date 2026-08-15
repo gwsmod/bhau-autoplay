@@ -1444,6 +1444,7 @@
 }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 <div class="page">
@@ -1814,112 +1815,238 @@
   const logoutYesBtn = $('logoutYesBtn');
   const logoutNoBtn = $('logoutNoBtn');
 
-  // ─── GOOGLE LENS / CAMERA LAUNCHER ────────────────────────────────────────
-  function openGoogleLensOrCamera() {
-    // Check if we're on Android
-    const isAndroid = /android/i.test(navigator.userAgent);
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    
-    if (isAndroid) {
-      // Try to open Google Lens via intent
-      try {
-        // Google Lens intent for Android
-        const lensIntent = 'intent://scan/#Intent;scheme=googleapp;package=com.google.android.googlequicksearchbox;action=com.google.android.googlequicksearchbox.GOOGLE_LENS;end';
-        window.location.href = lensIntent;
-        
-        // If Lens doesn't open, fallback to camera after a timeout
-        setTimeout(() => {
-          // Check if we're still on the page (Lens didn't open)
-          const fallbackInput = document.createElement('input');
-          fallbackInput.type = 'file';
-          fallbackInput.accept = 'image/*';
-          fallbackInput.capture = 'environment';
-          fallbackInput.style.display = 'none';
-          document.body.appendChild(fallbackInput);
-          fallbackInput.click();
-          document.body.removeChild(fallbackInput);
-          showToast('Google Lens not available. Opening camera...', 'warning');
-        }, 1500);
-        
+  // ─── RD ACCOUNT CAMERA SCANNER — SINGLE-PASS CAPTURE ───────────────────────
+  // No second capture / no confirmation step.
+  let rdScanStream=null, rdScanRunning=false, rdOcrBusy=false, rdScanTimer=null;
+  let rdLastNumber='';
+  let rdCaptured=false;
+
+  function rdEnsureScannerUI(){
+    if(document.getElementById('rdScanModal')) return;
+
+    const style=document.createElement('style');
+    style.id='rdScanStyles';
+    style.textContent=`
+      #rdScanModal{position:fixed;inset:0;z-index:999999;display:none;background:#000;color:#fff;flex-direction:column}
+      #rdScanModal.active{display:flex}
+      #rdScanVideo{width:100%;height:100%;object-fit:cover;filter:saturate(1.08) contrast(1.04)}
+      .rdScanTop{position:absolute;top:0;left:0;right:0;z-index:3;padding:18px 18px 45px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(#000c,transparent)}
+      .rdScanTitle{font-size:17px;font-weight:900}
+      .rdScanClose{width:44px;height:44px;border:0;border-radius:50%;background:#ffffff22;color:#fff;font-size:27px}
+      .rdScanBox{position:absolute;z-index:2;left:5%;right:5%;top:50%;transform:translateY(-50%);height:135px;border:3px solid #19f59a;border-radius:20px;box-shadow:0 0 0 9999px rgba(0,0,0,.38),0 0 30px #19f59a55}
+      .rdScanLine{position:absolute;left:0;right:0;top:3px;height:3px;background:#19f59a;box-shadow:0 0 14px #19f59a;animation:rdScanMove 1.7s linear infinite}
+      @keyframes rdScanMove{0%{top:4%}50%{top:94%}100%{top:4%}}
+      .rdScanHint{position:absolute;z-index:4;left:18px;right:18px;bottom:105px;text-align:center;background:#000c;border-radius:15px;padding:12px 10px;font-size:13px;font-weight:800}
+      .rdScanStop{position:absolute;z-index:4;bottom:25px;left:50%;transform:translateX(-50%);border:0;border-radius:28px;padding:14px 28px;background:#ef4444;color:#fff;font-size:14px;font-weight:900}
+    `;
+    document.head.appendChild(style);
+
+    const modal=document.createElement('div');
+    modal.id='rdScanModal';
+    modal.innerHTML=`
+      <div class="rdScanTop">
+        <div class="rdScanTitle">🏦 RD Account Scanner</div>
+        <button type="button" class="rdScanClose" id="rdScanClose">×</button>
+      </div>
+      <video id="rdScanVideo" autoplay muted playsinline></video>
+      <div class="rdScanBox"><div class="rdScanLine"></div></div>
+      <div class="rdScanHint" id="rdScanHint">🔎 Looking only for RD account number starting with 6058…</div>
+      <button type="button" class="rdScanStop" id="rdScanStop">✕ Stop Scanner</button>
+      <canvas id="rdScanCanvas" hidden></canvas>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('rdScanClose').onclick=stopRDScanner;
+    document.getElementById('rdScanStop').onclick=stopRDScanner;
+  }
+
+  function rdScanStatus(text){
+    const el=document.getElementById('rdScanHint');
+    if(el) el.textContent=text;
+  }
+
+  function rdExtractNumber(text){
+    if(!text) return '';
+
+    const blocked='60587267492';
+
+    // OCR may confuse a few characters with digits.
+    const normalized=String(text)
+      .replace(/[Oo]/g,'0').replace(/[IiLl]/g,'1').replace(/[Zz]/g,'2')
+      .replace(/[Ss]/g,'5').replace(/[Gg]/g,'6').replace(/[Bb]/g,'8')
+      .replace(/[^\d]/g,'');
+
+    for(let i=0;i<=normalized.length-11;i++){
+      const part=normalized.slice(i,i+11);
+      if(/^6058\d{7}$/.test(part) && part!==blocked) return part;
+    }
+
+    const spaced=String(text)
+      .replace(/[Oo]/g,'0').replace(/[IiLl]/g,'1').replace(/[Zz]/g,'2')
+      .replace(/[Ss]/g,'5').replace(/[Gg]/g,'6').replace(/[Bb]/g,'8');
+
+    const m=spaced.match(/6\s*0\s*5\s*8(?:\s*\d){7}/);
+    if(m){
+      const n=m[0].replace(/\D/g,'');
+      if(/^6058\d{7}$/.test(n) && n!==blocked) return n;
+    }
+
+    return '';
+  }
+
+  async function rdOCRFrame(){
+    if(!rdScanRunning || rdOcrBusy) return;
+
+    const video=document.getElementById('rdScanVideo');
+    const canvas=document.getElementById('rdScanCanvas');
+    if(!video || !canvas || !video.videoWidth) return;
+
+    rdOcrBusy=true;
+
+    try{
+      const vw=video.videoWidth, vh=video.videoHeight;
+      const cw=Math.floor(vw*.92), ch=Math.floor(vh*.30);
+      const sx=Math.floor((vw-cw)/2), sy=Math.floor((vh-ch)/2);
+      const scale=2;
+
+      canvas.width=cw*scale;
+      canvas.height=ch*scale;
+
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});
+      ctx.imageSmoothingEnabled=true;
+      ctx.drawImage(video,sx,sy,cw,ch,0,0,cw*scale,ch*scale);
+
+      rdScanStatus('🔎 Reading RD account number…');
+
+      const result=await Tesseract.recognize(canvas,'eng',{logger:()=>{}, tessedit_char_whitelist:'0123456789', psm:7});
+      if(!rdScanRunning) return;
+
+      const number=rdExtractNumber(result?.data?.text||'');
+
+      if(number){
+        // SINGLE-PASS: the first valid RD number is accepted immediately.
+        if(rdCaptured) return;
+        rdCaptured=true;
+        rdLastNumber=number;
+
+        const input=document.getElementById('cardNumberInput');
+
+        if(input){
+          input.value=number;
+          input.dispatchEvent(new Event('input',{bubbles:true}));
+          input.dispatchEvent(new Event('change',{bubbles:true}));
+        }
+
+        rdScanStatus(`✅ RD account captured: ${number}`);
+
+        if(typeof showToast==='function'){
+          showToast('✅ RD account number captured','success');
+        }
+
+        // Close smoothly and return to Add Card immediately.
+        setTimeout(()=>{
+          stopRDScanner();
+          const target=document.getElementById('cardNumberInput');
+          if(target){
+            target.scrollIntoView({behavior:'smooth',block:'center'});
+            target.focus({preventScroll:true});
+          }
+        },300);
+
         return;
-      } catch (e) {
-        // Fallback to camera
-        openCamera();
+      }else{
+        rdScanStatus('🔎 Looking for RD account number starting with 6058…');
       }
-    } else if (isIOS) {
-      // iOS: use native camera or Live Text (iOS 16+)
-      // We'll use the file input with camera capture
-      openCamera();
-    } else {
-      // Desktop: open file picker
-      openFilePicker();
+    }catch(err){
+      console.error('RD OCR error:',err);
+      rdScanStatus('⚠️ Scan retrying… keep RD number clear');
+    }finally{
+      rdOcrBusy=false;
     }
   }
 
-  function openCamera() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.style.display = 'none';
-    document.body.appendChild(input);
-    
-    input.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        showToast('📸 Photo captured! You can now use Google Lens from your gallery to copy the number.', 'success');
-        // Show a helpful message with instructions
-        setTimeout(() => {
-          const userWantsManual = confirm(
-            '📸 Photo saved to gallery.\n\n' +
-            'To copy the account number:\n' +
-            '1. Open Google Lens from your gallery\n' +
-            '2. Select the photo you just took\n' +
-            '3. Copy the numbers and paste them here\n\n' +
-            'OR tap "OK" to enter the number manually now.'
-          );
-          if (userWantsManual) {
-            const manualNumber = prompt('Please type the account number manually:');
-            if (manualNumber && manualNumber.trim().length > 0) {
-              const inputField = document.getElementById('cardNumberInput');
-              if (inputField) {
-                inputField.value = manualNumber.trim().replace(/\s/g, '');
-                showToast('✅ Number entered manually.', 'success');
-              }
-            }
-          }
-        }, 1000);
-      }
-      document.body.removeChild(input);
-    });
-    
-    input.click();
+  function rdScanLoop(){
+    if(!rdScanRunning) return;
+    rdOCRFrame();
+    rdScanTimer=setTimeout(rdScanLoop,650);
   }
 
-  function openFilePicker() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.style.display = 'none';
-    document.body.appendChild(input);
-    
-    input.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        showToast('📸 Image selected. You can copy the number from it.', 'success');
-        const manualNumber = prompt('Please type the account number you see in the image:');
-        if (manualNumber && manualNumber.trim().length > 0) {
-          const inputField = document.getElementById('cardNumberInput');
-          if (inputField) {
-            inputField.value = manualNumber.trim().replace(/\s/g, '');
-            showToast('✅ Number entered.', 'success');
-          }
+  async function startRDScanner(){
+    rdEnsureScannerUI();
+
+    if(!window.Tesseract){
+      alert('OCR library could not load. Check internet connection and reload the page.');
+      return;
+    }
+
+    if(!navigator.mediaDevices?.getUserMedia){
+      alert('Camera is not supported. Use Chrome/Brave on HTTPS.');
+      return;
+    }
+
+    try{
+      const modal=document.getElementById('rdScanModal');
+      const video=document.getElementById('rdScanVideo');
+
+      modal.classList.add('active');
+      rdScanStatus('📷 Starting rear camera…');
+
+      rdScanStream=await navigator.mediaDevices.getUserMedia({
+        audio:false,
+        video:{
+          facingMode:{ideal:'environment'},
+          width:{ideal:1920},
+          height:{ideal:1080}
         }
-      }
-      document.body.removeChild(input);
-    });
-    
-    input.click();
+      });
+
+      video.srcObject=rdScanStream;
+      await video.play();
+
+      rdScanRunning=true;
+      rdOcrBusy=false;
+      rdLastNumber='';
+      rdCaptured=false;
+
+      rdScanStatus('🔎 Looking for RD account number starting with 6058…');
+      rdScanLoop();
+    }catch(err){
+      console.error('Camera error:',err);
+      document.getElementById('rdScanModal')?.classList.remove('active');
+
+      if(err.name==='NotAllowedError')
+        alert('Camera permission denied. Allow camera permission for this site.');
+      else
+        alert('Camera error: '+err.message);
+    }
+  }
+
+  function stopRDScanner(){
+    rdScanRunning=false;
+
+    if(rdScanTimer){
+      clearTimeout(rdScanTimer);
+      rdScanTimer=null;
+    }
+
+    if(rdScanStream){
+      rdScanStream.getTracks().forEach(t=>{try{t.stop()}catch(_){}});
+      rdScanStream=null;
+    }
+
+    const video=document.getElementById('rdScanVideo');
+    if(video){
+      try{video.pause();video.srcObject=null}catch(_){}
+    }
+
+    document.getElementById('rdScanModal')?.classList.remove('active');
+    rdOcrBusy=false;
+    rdLastNumber='';
+    rdCaptured=false;
+  }
+
+  // Compatibility: existing calls now use our scanner, never Google Lens.
+  function openGoogleLensOrCamera(){
+    startRDScanner();
   }
 
   // ─── TOAST ──────────────────────────────────────────────────────────────────
@@ -2422,7 +2549,7 @@
           <label>💳 Account Number</label>
           <div class="input-row">
             <input id="cardNumberInput" placeholder="Enter account number">
-            <button class="btn-camera" id="cameraBtn" title="Open Google Lens / Camera to scan number">📷</button>
+            <button class="btn-camera" id="cameraBtn" title="Scan RD account number">📷</button>
           </div>
         </div>
         <div class="input-group"><label>🏛️ IFSC</label><input id="ifscInput" value="MAHB0002009"></div>
@@ -2433,8 +2560,10 @@
 
     // ─── CAMERA / GOOGLE LENS BUTTON ──────────────────────────────────────
     const cameraBtn = document.getElementById('cameraBtn');
-    cameraBtn.addEventListener('click', function() {
-      openGoogleLensOrCamera();
+    cameraBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      startRDScanner();
     });
 
     // ─── DELETE CARD ──────────────────────────────────────────────────────
